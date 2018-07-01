@@ -6,18 +6,16 @@
 
 /**
  * 明確地將變數資料型態分類
+ * 在bill framework裡有對js的資料型態 作明確的定義
+ * 有以下資料型態
+ * Number.NaN(錯誤數字，計算失敗),Number.POSITIVE_INFINITY(錯誤數字，超過數字最大值),Number.NEGATIVE_INFINITY(錯誤數字，小於數字最小值),number(數字),
+ * string(字串),boolean(布林),null(null),number_array(數字型陣列),string_array(字串型陣列),function(函式),undefined(未定義),unknown(未知)
  * @param checked_var mixed 要檢測的變數
  * @return string 資料型態名稱
  */
 function global_typeof(checked_var) {
 	if(typeof(checked_var)==='number'){
-		if(checked_var===NaN){
-			return 'NaN';
-		}else if(checked_var===Number.MAX_VALUE){
-			return 'Number.MAX_VALUE';
-		}else if(checked_var===Number.MIN_VALUE){
-			return 'Number.MIN_VALUE'
-		}else if(checked_var===Number.NaN){
+		if(checked_var===Number.NaN){
 			return 'Number.NaN'
 		}else if(checked_var===Number.POSITIVE_INFINITY){
 			return 'Number.POSITIVE_INFINITY';
@@ -34,30 +32,51 @@ function global_typeof(checked_var) {
 		if(checked_var===null){
 			return 'null';
 		}else if(checked_var.length!==undefined){
-			return 'array';//json []
+			return 'number_array';//json []
 		}else{
-			return 'object';//json {}
+			return 'string_array';//json {}
 		}
 	}else if(typeof(checked_var)==='function'){
 		return 'function';
 	}else if(typeof(checked_var)==='undefined'){
 		return 'undefined';
 	}else{
-		return '';
+		return 'unknown';
 	}
 }
+
+/**
+ * 檢查輸入的變數是否為有長度字串 
+ * @param checked_var mixed 要檢測的變數
+ * @return bool
+ */
 function global_is_non_empty_string(checked_var) {
-	if(typeof(checked_var)!=='string'){
+	if(global_typeof(checked_var)!=='string'){
 		return false;
 	}
 	if(checked_var===''){
 		return false;
 	}
-	return true;
+	return true;//若變數的資料型態是string且不為空，則返回true
 }
+
+/**
+ * 檢查輸入的變數是否為有長度字串 
+ * @param checked_var mixed 要檢測的變數
+ * @return bool
+ */
 function global_is_solid_string(checked_var) {
 	return global_is_non_empty_string(checked_var);
 }
+
+/**
+ * 
+ * 檢查輸入的字串是否以特定字串開頭
+ *
+ * @param string subword 該特定字串
+ * @param string testword 被檢查的字串
+ * @return bool
+ */
 function global_is_start_with(subword,testword) {
 	if(global_is_non_empty_string(subword) &&  global_is_non_empty_string(testword)){
 	
@@ -71,6 +90,15 @@ function global_is_start_with(subword,testword) {
 		return false;
 	}
 }
+
+/**
+ * 
+ * 檢查輸入的字串是否以特定字串結尾
+ *
+ * @param string subword 該特定字串
+ * @param string testword 被檢查的字串
+ * @return bool
+ */
 function global_is_end_with(subword,testword) {
 	if(global_is_non_empty_string(subword) &&  global_is_non_empty_string(testword)){
 	
@@ -85,8 +113,15 @@ function global_is_end_with(subword,testword) {
 	}
 }
 
+/**
+ * 
+ * 讓js的執行停頓x秒
+ *
+ * @param number seconds 
+ * @return bool
+ */
 function global_sleep(seconds) {
-	if(typeof(seconds)==='number'){
+	if(global_typeof(seconds)==='number'){
 	
 	}else{
 		alert('seconds參數資料型態錯誤');
@@ -101,11 +136,26 @@ function global_sleep(seconds) {
 	}
 }
 
-
+/**
+ * 
+ * 去得知某年的某月有多少天
+ *
+ * @param number iYear
+ * @param number iMonth
+ * @return number 天數
+ */
 function global_daysInMonth(iYear,iMonth)
 {
 	return 32 - new Date(iYear, iMonth-1, 32).getDate();
 }
+
+/**
+ * 
+ * 檢查輸入的變數是否為空
+ *
+ * @param mixed checked_var
+ * @return bool
+ */
 function global_is_empty(checked_var){
 	if(checked_var===undefined || checked_var===null || checked_var===''){
 		return true;
@@ -113,6 +163,15 @@ function global_is_empty(checked_var){
 		return false;
 	}
 }
+
+/**
+ * 
+ * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
+ *
+ * @param string the_format 格式
+ * @param string the_datebigint 日期
+ * @return string
+ */
 function global_datebigint_toFormattedString(the_format,the_datebigint)
 {
 	if(global_is_solid_string(the_datebigint)){
@@ -188,6 +247,13 @@ function global_datebigint_toFormattedString(the_format,the_datebigint)
 	}
 } 
 
+/**
+ * 
+ * 剖析日期 返回 相關資訊
+ *
+ * @param string the_datebigint 日期
+ * @return string_array
+ */
 function global_datebigint_parse(the_datebigint)
 {
 	if(global_is_solid_string(the_datebigint)){
@@ -265,7 +331,14 @@ function global_datebigint_parse(the_datebigint)
 	}
 } 
 
-function global_objToString(obj, level) {
+/**
+ * 
+ * 取得string_array的詳細內容
+ *
+ * @param string_array obj 要觀察的string_array
+ * @return string
+ */
+function global_objToString(obj) {
 	var out = '';
 	for (var i in obj)
 	{
@@ -276,13 +349,18 @@ function global_objToString(obj, level) {
 	return out;
 }
 
+/**
+ * 
+ * 檢查輸入的值是否為 有元素的陣列 或 有屬性的物件
+ *
+ * @param mixed checked_var 要檢查的變數
+ * @return bool
+ */
 function global_is_non_empty_array(checked_var) {
-	if(typeof(checked_var)!=='object'){
+	if(global_typeof(checked_var)!=='string_array' && global_typeof(checked_var)!=='number_array'){
 		return false;
 	}
-	if(checked_var===null){
-		return false;
-	}
+
 	if(checked_var.length===undefined){
 		var temp_size=0;
 		for(var tempkey in checked_var){
@@ -300,10 +378,24 @@ function global_is_non_empty_array(checked_var) {
 	return true;
 }
 
+/**
+ * 
+ * 檢查輸入的值是否為 有元素的陣列 或 有屬性的物件
+ *
+ * @param mixed checked_var 要檢查的變數
+ * @return bool
+ */
 function global_is_solid_array(checked_var) {
 	return global_is_non_empty_array(checked_var);
 }
 
+/**
+ * 
+ * 取得檔案的附檔名
+ *
+ * @param string filename
+ * @return string
+ */
 function global_fetch_file_extension(filename)
 {
 	if(global_is_non_empty_string(filename)){
@@ -320,6 +412,14 @@ function global_fetch_file_extension(filename)
 		return '';
 	}
 }
+
+/**
+ * 
+ * 取得檔案的主要檔名
+ *
+ * @param string filename
+ * @return string
+ */
 function global_fetch_file_mainname(filename)
 {
 	if(global_is_non_empty_string(filename)){
@@ -336,11 +436,26 @@ function global_fetch_file_mainname(filename)
 		return '';
 	}
 }
-//變更URL的QUREY字串
+
+
+/**
+ * 
+ * 變更url的query參數部分
+ * @param string the_url 
+ * @param array updated_params
+ * @return string
+ *
+ * 舉例:
+ * var the_url='http://www.xxxx.com.tw/index.php?a=1&b=2&c=3';
+ * var the_new_url=global_set_url_params(the_url,{'a':'4','b':'5','c':'6'});
+ * echo the_new_url;
+ * output為 http://www.xxxx.com.tw/index.php?a=4&b=5&c=6
+ *
+ */
 function global_set_url_params(the_url,updated_params)
 {
 	var result_string='';
-	if(global_is_non_empty_string(the_url) && global_typeof(updated_params)==='object'){
+	if(global_is_non_empty_string(the_url) && global_typeof(updated_params)==='string_array'){
 	
 	}else{
 		return result_string;
@@ -403,6 +518,16 @@ function global_set_url_params(the_url,updated_params)
 		return result_string;
 	}
 }
+
+/**
+ * 
+ * 取得url的某query參數的值
+ *
+ * @param string the_url 
+ * @param string param_name 參數名稱
+ * @return string
+ *
+ */
 function global_get_url_param(the_url,param_name)
 {
 	var result_string='';
@@ -442,13 +567,23 @@ function global_get_url_param(the_url,param_name)
 		return result_string;
 	}
 }
+
+/**
+ * 
+ * 根據參數及樣板字串 轉換成字串
+ *
+ * @param string template_string 
+ * @param string_array params 參數陣列
+ * @return string
+ *
+ */
 function global_parse_template_string(template_string,params)
 {
 	if(global_typeof(template_string)!=='string'){
 		alert('template_string argument error');
 		return;
 	}
-	if(global_typeof(params)!=='object'){
+	if(global_typeof(params)!=='string_array'){
 		alert('params argument error');
 		return;
 	}
@@ -461,6 +596,23 @@ function global_parse_template_string(template_string,params)
 	); // "gold ring|string"
 	
 }
+
+/**
+ * 
+ * 將特定字首字串及特定字尾字串的方式，去取得中間的字串
+ *
+ * @param string source_string 要處理的來源字串
+ * @param string start_string 特定字首字串
+ * @param string end_string 特定字尾字串
+ * @return string 中間的字串
+ *
+ * 舉例:
+ * var the_string='data_row_a80235_id';
+ * var the_fetch_string=global_fetch_specific_string(the_string,'data_row_1','_id');
+ * console.log(the_fetch_string);
+ * output為 a80235
+ *
+ */
 function global_fetch_specific_string(source_string,start_string,end_string)
 {
 	if(global_typeof(source_string)!=='string'){
@@ -488,6 +640,15 @@ function global_fetch_specific_string(source_string,start_string,end_string)
 	}
 	
 }
+
+/**
+ * 
+ * 將正規表示法的特殊字元escape成一般字元
+ *
+ * @param string source_string 要處理的來源字串
+ * @return string 中間的字串
+ *
+ */
 function global_escape_for_regexp(source_string)
 {
 	var return_string='';
@@ -499,15 +660,44 @@ function global_escape_for_regexp(source_string)
 	
 	return return_string;
 }
+
+/**
+ * 
+ * 用js的方式去模擬典擊連結
+ *
+ * @param string href
+ * @param string href_target_is_blank 
+ * @return 
+ *
+ */
 function global_custom_href_process(href,href_target_is_blank){
 	window.open(href,(href_target_is_blank=='1'?'_blank':'_self'));
 }
+
+/**
+ * 
+ * 將num四捨五入取到小數點第pos位
+ *
+ * @param number num
+ * @param number pos  
+ * @return 
+ *
+ */
 function global_round(num,pos){
 	var size = Math.pow(10, pos);
 	return Math.round(num * size) / size;
 
 }
 
+/**
+ * 
+ * 磁碟容量單位轉換
+ *
+ * @param number num 多少byte
+ * @param number tounit  轉換到甚麼單位
+ * @return number
+ *
+ */
 function global_convert_from_bytenum(num,tounit){
 	
 	var tounitnum=0;	
@@ -524,6 +714,16 @@ function global_convert_from_bytenum(num,tounit){
 	
 	return tounitnum;
 }
+
+/**
+ * 
+ * 返回指定長度的數字字串，不足長度的，向左補0
+ *
+ * @param number num 要處理的數字
+ * @param number digits_count 指定的長度
+ * @return string
+ *
+ */
 function global_add_zero(num,digits_count){
 	var return_string='00';
 	if(digits_count===undefined){
@@ -542,6 +742,14 @@ function global_add_zero(num,digits_count){
 	return  return_string;
 }
 
+/**
+ * 
+ * 確保變數返回的資料是字串
+ *
+ * @param mixed checked_var 
+ * @return string
+ *
+ */
 function global_ensure_string(checked_var) {
 
 	var checked_var_type=global_typeof(checked_var);
@@ -557,6 +765,14 @@ function global_ensure_string(checked_var) {
 
 }
 
+/**
+ * 
+ * 為數字加千分位
+ *
+ * @param number num 
+ * @return string
+ *
+ */
 function global_add_thousand_separator_to(num){
     var n = num.toString(), p = n.indexOf('.');
     return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, function($0, i){
@@ -564,6 +780,21 @@ function global_add_thousand_separator_to(num){
     });
 }
 
+/**
+ * 
+ * 若字串結尾有出現特定字串則移除掉
+ *
+ * @param string source_string 要處理的來源字串
+ * @param string end_string 該特定字串
+ * @return string 返回一個處理過後的新字串
+ *
+ * 舉例:
+ * var the_string='a80235_data_row_id';
+ * var the_result_string=global_remove_start_string(the_string,'_data_row_id');
+ * console.log(the_result_string);
+ * output為 a80235
+ *
+ */
 function global_remove_end_string(source_string,end_string)
 {
 	if(global_typeof(source_string)!=='string'){
@@ -587,12 +818,18 @@ function global_remove_end_string(source_string,end_string)
 	
 }
 
+/**
+ * 
+ * 偵測網頁瀏覽者之環境
+ *
+ * @return array
+ */
 function global_parse_http_user_agent() {
 	//若device不為空字串 代表裝置是手機
 	var return_data={
-		'device':'PC',
-		'browser_type':'',
-		'browser_version':''
+		'device':'',//若為有長度的字串 代表裝置是非電腦(可能是平板或手機或...)
+		'browser_type':'',//瀏覽器類型
+		'browser_version':'' //瀏覽器版本
 	};
 	
 	if(navigator.userAgent.search(/iPod/i)!==-1){
@@ -667,6 +904,11 @@ function global_parse_http_user_agent() {
 	return return_data;
 }
 
+/**
+ * 
+ * 驗證用的物件式陣列，索引為驗證器名稱，值為驗證器內容
+ * 
+ */
 var global_regexp_items={
 	'required':'^[\\s\\S]+$',	
 	'rname':'^[\\s\\S]+$',
@@ -737,6 +979,12 @@ var global_regexp_items={
 	'rlatlng':'^[0-9.\\,]+$',
 	'olatlng':'^[0-9.\\,]*$'
 };
+
+/**
+ * 
+ * 驗證用的物件式陣列，索引為驗證器名稱，值為驗證器的提示輸入內容
+ * 
+ */
 var global_regexp_tips={
 	'required':'~輸入格式~<br/>1.必填',	
 	'rname':'~輸入格式~<br/>1.不得為空值',
@@ -797,9 +1045,19 @@ var global_regexp_tips={
 	'olatlng':'~輸入格式~<br/>1.可為空值<br/>2.格式為 緯度,經度'
 };
 
-function global_easy_validate_string(test_rule,source_string){
-	if(global_typeof(test_rule)!=='string'){
-		alert('test_rule必須為字串');
+/**
+ * 
+ * 驗證字串
+ *
+ * @param validator_name 驗證器名稱
+ * @param string source_string 要驗證的字串
+ * @return bool
+ *
+ *
+ */
+function global_easy_validate_string(validator_name,source_string){
+	if(global_typeof(validator_name)!=='string'){
+		alert('validator_name必須為字串');
 		return false;
 	}
 	if(global_typeof(source_string)!=='string'){
@@ -808,10 +1066,10 @@ function global_easy_validate_string(test_rule,source_string){
 	}
 	
 	var temp_reg=null;
-	if(global_regexp_items[test_rule]===undefined){
-		 temp_reg =new RegExp(test_rule);
+	if(global_regexp_items[validator_name]===undefined){
+		 temp_reg =new RegExp(validator_name);
 	}else{
-		 temp_reg = new RegExp(global_regexp_items[test_rule]);
+		 temp_reg = new RegExp(global_regexp_items[validator_name]);
 	}
 	if(temp_reg.test(source_string)){
 		return true;
