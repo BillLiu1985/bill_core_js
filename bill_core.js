@@ -1,4 +1,14 @@
-﻿//引用該檔案前，需先引用jquery元件
+/**
+ * 建置網站常會用到的js函式庫
+ * 引用該檔案前，需先引用jquery元件
+ */
+
+
+/**
+ * 明確地將變數資料型態分類
+ * @param checked_var mixed 要檢測的變數
+ * @return string 資料型態名稱
+ */
 function global_typeof(checked_var) {
 	if(typeof(checked_var)==='number'){
 		if(checked_var===NaN){
@@ -24,9 +34,9 @@ function global_typeof(checked_var) {
 		if(checked_var===null){
 			return 'null';
 		}else if(checked_var.length!==undefined){
-			return 'array';
+			return 'array';//json []
 		}else{
-			return 'object';
+			return 'object';//json {}
 		}
 	}else if(typeof(checked_var)==='function'){
 		return 'function';
