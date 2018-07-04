@@ -329,7 +329,307 @@ function global_datebigint_parse(the_datebigint)
 			's':the_parsed_second
 		};
 	}
-} 
+}
+
+/**
+ * 
+ * 將目前的日期時間以datebigint表示
+ *
+ * @param bool hour_is_zero 小時是否為0
+ * @param bool minute_is_zero 分鐘是否為0
+ * @param bool second_is_zero 秒數是否為0
+ * @return string
+ */
+function global_datebigint_now(hour_is_zero,minute_is_zero,second_is_zero){
+	var now_datetime=new Date(),
+	now_datetime_Y=now_datetime.getFullYear(),
+	now_datetime_m=global_add_zero(now_datetime.getMonth()+1,2),
+	now_datetime_d=global_add_zero(now_datetime.getDate(),2);
+	
+	if(hour_is_zero){
+		now_datetime_H='00';
+	}else{
+		now_datetime_H=global_add_zero(now_datetime.getHours(),2);
+	}
+	
+	if(minute_is_zero){
+		now_datetime_i='00';
+	}else{
+		now_datetime_i=global_add_zero(now_datetime.getMinutes(),2);
+	}
+	if(second_is_zero){
+		now_datetime_s='00';
+	}else{
+		now_datetime_s=global_add_zero(now_datetime.getSeconds(),2);
+	}
+	
+	return now_datetime_Y+now_datetime_m+now_datetime_d+now_datetime_H+now_datetime_i+now_datetime_s;
+}
+
+/**
+ * 
+ * 將datebigint資料轉換成日期物件
+ *
+ * @param string source_datebigint 來源資料
+ * @return string_array
+ */
+function global_datebigint_to_Date(source_datebigint){	
+	var target_Date=null,
+	source_datebigint_info=global_datebigint_parse(source_datebigint)
+	;
+	target_Date=new Date(
+		parseInt(source_datebigint_info['Y'],10), 
+		parseInt(source_datebigint_info['m'],10)-1, 
+		parseInt(source_datebigint_info['d'],10), 
+		parseInt(source_datebigint_info['H'],10), 
+		parseInt(source_datebigint_info['i'],10), 
+		parseInt(source_datebigint_info['s'],10), 
+		0
+	);
+	
+	return target_Date;
+}
+
+/**
+ * 
+ * 將日期物件轉換成datebigint資料
+ *
+ * @param string_array source_Date 來源資料
+ * @return string
+ */
+function global_Date_to_datebigint(source_Date){
+	var target_datebigint='';
+	target_datebigint=
+			source_Date.getFullYear().toString()+
+			global_add_zero((source_Date.getMonth()+1),2)+
+			global_add_zero(source_Date.getDate(),2)+
+			global_add_zero(source_Date.getHours(),2)+
+			global_add_zero(source_Date.getMinutes(),2)+
+			global_add_zero(source_Date.getSeconds(),2);
+	return target_datebigint;
+}
+
+/**
+ * 
+ * 對datebigint資料作日期時間新增操作
+ *
+ * @param  string source_datebigint 來源資料
+ * @param number nums 單位數字
+ * @param string nums_unit 單位
+ * @return string
+ */
+function global_datebigint_add(source_datebigint, nums, nums_unit) {
+	var new_datebigint = '',
+
+	source_Date=global_datebigint_to_Date(source_datebigint);
+
+	switch (nums_unit) {
+		case 'year':
+			source_Date.setFullYear(source_Date.getFullYear()+nums);
+			break;
+		case 'month':
+			source_Date.setMonth(source_Date.getMonth()+nums);
+			break;
+		case 'day':
+			source_Date.setDate(source_Date.getDate()+nums);
+			break;
+		case 'hour':
+			source_Date.setHours(source_Date.getHours()+nums);
+			break;
+		case 'minute':
+			source_Date.setMinutes(source_Date.getMinutes()+nums);
+			break;
+		case 'second':
+			source_Date.setSeconds(source_Date.getSeconds()+nums);
+			break;
+		case 'millisecond':
+			source_Date.setMilliseconds(source_Date.getMilliseconds()+nums);
+			break;
+		default:	
+	}
+	new_datebigint=global_Date_to_datebigint(source_Date);
+	return new_datebigint;
+}
+
+/**
+ * 
+ * datebigint資料之間的差距,a-b 回傳milliseconds
+ *
+ * @param string a_datebigint
+ * @param string b_datebigint
+ * @return number
+ */
+function global_datebigint_diff(a_datebigint,b_datebigint) {
+	var datebigint_diff = '';
+	var a_Date=global_datebigint_to_Date(a_datebigint);
+	var b_Date=global_datebigint_to_Date(b_datebigint);
+	datebigint_diff=a_Date-b_Date;
+	return datebigint_diff;
+}
+
+/**
+ * 
+ * parse 23 hour to am,pm hour
+ *
+ * @param number the_hour
+ * @return number_array
+ */
+function global_23_hour_parse(the_hour) {
+	if(global_typeof(the_hour)!=='number'){
+		the_hour=0;
+	}
+	var return_array=[];
+	if(the_hour>=12){
+		return_array.push('pm');
+	}else{
+		return_array.push('am');
+	}
+	if(the_hour==0){
+		return_array.push(12);
+	}else if(the_hour<=12){
+		return_array.push(the_hour);
+	}else{
+		return_array.push(the_hour-12);
+	}
+	return return_array;
+}
+
+/**
+ * 
+ * parse am,pm hour to 23 hour
+ *
+ * @param string hour_type
+ * @param number hour_number
+ * @return number
+ */
+function global_get_23_hour(hour_type,hour_number) {
+	if(global_typeof(hour_type)!=='string'){
+		hour_type='am';
+	}
+	if(global_typeof(hour_number)!=='number'){
+		hour_number=1;
+	}
+	var return_hour=0;
+	if(hour_number==12){
+		if(hour_type=='am'){
+			return_hour=0;
+		}else if(hour_type=='pm'){
+			return_hour=12;
+		}
+	}else{
+		if(hour_type=='am'){
+			return_hour=hour_number;
+		}else if(hour_type=='pm'){
+			return_hour=hour_number+12;
+		}
+	}
+	return return_hour;
+}
+
+/**
+ * 
+ * 取得日期the_datebigint所屬禮拜的第一天datebigint
+ *
+ * @param string the_datebigint
+ * @return string
+ */
+function global_week_start_datebigint(the_datebigint) {
+	var return_datebigint;	
+	var op_datebigint;
+	var op_date;
+	if(global_is_solid_string(the_datebigint)){
+		op_datebigint=global_datebigint_trim_time(the_datebigint);
+		op_date=global_datebigint_to_Date(op_datebigint);
+	}else{
+		op_datebigint=global_datebigint_now(true,true,true);
+		op_date=global_datebigint_to_Date(op_datebigint);
+	}
+	
+	return_datebigint=global_datebigint_add(op_datebigint, -1*((op_date.getDay()-0)/1), 'day');
+	
+	return return_datebigint;
+}
+
+/**
+ * 
+ * 去掉the_datebigint的時間部分
+ *
+ * @param string the_datebigint
+ * @return string
+ */
+function global_datebigint_trim_time(the_datebigint) {
+
+	var op_datebigint;
+	if(global_is_solid_string(the_datebigint)){}else{
+		op_datebigint=global_datebigint_now(true,true,true);
+		return op_datebigint;
+	}
+	var temp_array=global_datebigint_parse(the_datebigint);
+	op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+'000000';
+	return op_datebigint;
+}
+
+/**
+ * 
+ * 去掉the_datebigint的分鐘秒數部分
+ *
+ * @param string the_datebigint
+ * @return string
+ */
+function global_datebigint_trim_minute_second(the_datebigint) {
+
+	var op_datebigint;
+	if(global_is_solid_string(the_datebigint)){}else{
+		op_datebigint=global_datebigint_now(false,true,true);
+		return op_datebigint;
+	}
+	var temp_array=global_datebigint_parse(the_datebigint);
+	op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+temp_array['H']+'0000';
+	return op_datebigint;
+}
+
+/**
+ * 
+ * datebigint資料之間的差距,a-b 回傳hours
+ *
+ * @param string a_datebigint
+ * @param string b_datebigint
+ * @return number
+ */
+function global_datebigint_hours_diff(a_datebigint,b_datebigint) {
+	var datebigint_diff = 0;
+	if(
+		a_datebigint === undefined || 
+		b_datebigint === undefined
+	){
+		return datebigint_diff;
+	}
+	datebigint_diff=global_datebigint_diff(a_datebigint,b_datebigint);
+	datebigint_diff=datebigint_diff/1000/60/60;
+	return datebigint_diff;
+}
+
+/**
+ * 
+ * datebigint資料之間的差距,a-b 回傳days
+ *
+ * @param string a_datebigint
+ * @param string b_datebigint
+ * @return number
+ */
+function global_datebigint_days_diff(a_datebigint,b_datebigint) {
+	var datebigint_diff = 0;
+	if(
+		a_datebigint === undefined || 
+		b_datebigint === undefined
+	){
+		return datebigint_diff;
+	}
+	datebigint_diff=global_datebigint_diff(a_datebigint,b_datebigint);
+	datebigint_diff=datebigint_diff/1000/60/60/24;
+	return datebigint_diff;
+}
+ 
 
 /**
  * 
