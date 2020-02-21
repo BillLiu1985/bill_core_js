@@ -12,7 +12,7 @@ var bill_core={
 	 *
 	 * 而新規劃的資料型態，如下述
 	 * Number.NaN(錯誤數字，計算失敗),Number.POSITIVE_INFINITY(錯誤數字，超過數字最大值),Number.NEGATIVE_INFINITY(錯誤數字，小於數字最小值),number(數字),
-	 * string(字串),boolean(布林),null(null),number_array(數字型陣列),string_array(字串型陣列),function(函式),undefined(未定義),unknown(未知)
+	 * string(字串),boolean(布林),null(null),object,function(函式),undefined(未定義),unknown(未知)
 	 * 
 	 * @param checked_var mixed 要檢測的變數
 	 * @return string 資料型態名稱
@@ -35,10 +35,8 @@ var bill_core={
 		}else if(typeof(checked_var)==='object'){
 			if(checked_var===null){
 				return 'null';
-			}else if(checked_var.length!==undefined){
-				return 'number_array';//json []
 			}else{
-				return 'string_array';//json {}
+				return 'object';
 			}
 		}else if(typeof(checked_var)==='function'){
 			return 'function';
@@ -50,11 +48,158 @@ var bill_core={
 	},
 
 	/**
+	 * 
+	 * 檢查輸入的變數是否為空
+	 *
+	 * @param mixed checked_var
+	 * @return bool
+	 */
+	'global_is_empty':function(checked_var){
+		if(checked_var===undefined || checked_var===null || checked_var===''){
+			return true;
+		}else{
+			return false;
+		}
+	},
+	
+	/**
+	 * 
+	 * 取得object的詳細內容
+	 *
+	 * @param object obj 要觀察的object
+	 * @return string
+	 */
+	'global_objToString':function(obj) {
+		var out = '';
+		for (var i in obj)
+		{
+			
+			out += i + ": " + obj[i] + "\n";
+			
+		}
+		return out;
+	},
+	
+	/**
+	 * 
+	 * 根據參數及樣板字串 轉換成字串
+	 *
+	 * @param string template_string 
+	 * @param object params 物件
+	 * @return string
+	 *
+	 */
+	 'global_parse_template_string':function(template_string,params){
+		if(this.global_typeof(template_string)!=='string'){
+			alert('template_string argument error');
+			return;
+		}
+		if(this.global_typeof(params)!=='object'){
+			alert('params argument error');
+			return;
+		}
+		
+		return template_string.replace(
+			/!!!(.+?)!!!/g, 
+			function (match, capture) { 
+				return params[capture];
+			}
+		); // "gold ring|string"
+		
+	},
+	
+	/**
+	 * 
+	 * 偵測網頁瀏覽者之環境
+	 *
+	 * @return object
+	 */
+	'global_parse_http_user_agent':function() {
+		//若device不為空字串 代表裝置是手機
+		var return_data={
+			'device':'',//若為有長度的字串 代表裝置是非電腦(可能是平板或手機或...)
+			'browser_type':'',//瀏覽器類型
+			'browser_version':'' //瀏覽器版本
+		};
+		
+		if(navigator.userAgent.search(/iPod/i)!==-1){
+			return_data['device']='iPod';
+		}else if(navigator.userAgent.search(/iPhone/i)!==-1){
+			return_data['device']='iPhone';
+		}else if(navigator.userAgent.search(/iPad/i)!==-1){
+			return_data['device']='iPad';
+		}else if(navigator.userAgent.search(/iPad/i)!==-1){
+			return_data['device']='iPad';
+		}else if(navigator.userAgent.search(/Android/i)!==-1){
+			if(navigator.userAgent.search(/mobile/i)!==-1){
+				return_data['device']='Android Mobile';
+			}else{
+				return_data['device']='Android Tablet';
+			}
+		}else if(navigator.userAgent.search(/webOS/i)!==-1){
+			return_data['device']='webOS';
+		}else if(navigator.userAgent.search(/BlackBerry/i)!==-1){
+			return_data['device']='BlackBerry';
+		}else if(navigator.userAgent.search(/RIM Tablet/i)!==-1){
+			return_data['device']='RIM Tablet';
+		}
+		
+		if(navigator.userAgent.search(/MSIE/i)!==-1){
+			
+			return_data['browser_type']='MSIE';
+			var temp_array=navigator.userAgent.split('; ');
+			for(var kindex in temp_array){
+				var temp_string=temp_array[kindex];
+				if(this.string_is_start_with('MSIE ',temp_string)){
+					return_data['browser_version']=this.lobal_fetch_specific_string(temp_string,'MSIE ','');	
+					break;
+				}
+			}
+		}else if(navigator.userAgent.search(/Firefox/i)!==-1){	
+			return_data['browser_type']='Firefox';
+			
+			var temp_array=navigator.userAgent.split(' ');
+			for(var kindex in temp_array){
+				var temp_string=temp_array[kindex];
+				if(this.string_is_start_with('Firefox/',temp_string)){
+					return_data['browser_version']=this.string_fetch_specific(temp_string,'Firefox/','');	
+					break;
+				}
+			}
+		}else if(navigator.userAgent.search(/Chrome/i)!==-1){		
+			return_data['browser_type']='Chrome';
+			var temp_array=navigator.userAgent.split(' ');
+			for(var kindex in temp_array){
+				var temp_string=temp_array[kindex];
+				if(this.string_is_start_with('Chrome/',temp_string)){
+					return_data['browser_version']=this.string_fetch_specific(temp_string,'Chrome/','');	
+					break;
+				}
+			}
+		}else if(navigator.userAgent.search(/Safari/i)!==-1){	
+			return_data['browser_type']='Safari';
+			var temp_array=navigator.userAgent.split(' ');
+			for(var kindex in temp_array){
+				var temp_string=temp_array[kindex];
+				if(this.string_is_start_with('Safari/',temp_string)){
+					return_data['browser_version']=this.string_fetch_specific(temp_string,'Safari/','');	
+					break;
+				}
+			}
+		}else if(navigator.userAgent.search(/Opera/i)!==-1){
+			//Opera的user_agent比較詭異 版本不好判斷
+			return_data['browser_type']='Opera';	
+		}
+		
+		return return_data;
+	},
+	
+	/**
 	 * 檢查輸入的變數是否為有長度字串 
 	 * @param checked_var mixed 要檢測的變數
 	 * @return bool
 	 */
-	'global_is_solid_string':function(checked_var){
+	'string_is_solid':function(checked_var){
 		if(this.global_typeof(checked_var)!=='string'){
 			return false;
 		}
@@ -72,8 +217,8 @@ var bill_core={
 	 * @param string testword 被檢查的字串
 	 * @return bool
 	 */
-	'global_is_start_with':function(subword,testword) {
-		if(this.global_is_solid_string(subword) &&  this.global_is_solid_string(testword)){
+	'string_is_start_with':function(subword,testword) {
+		if(this.string_is_solid(subword) &&  this.string_is_solid(testword)){
 		
 		}else{
 			return false;
@@ -94,8 +239,8 @@ var bill_core={
 	 * @param string testword 被檢查的字串
 	 * @return bool
 	 */
-	'global_is_end_with':function(subword,testword) {
-		if(this.global_is_solid_string(subword) &&  this.global_is_solid_string(testword)){
+	'string_is_end_with':function(subword,testword) {
+		if(this.string_is_solid(subword) &&  this.string_is_solid(testword)){
 		
 		}else{
 			return false;
@@ -110,55 +255,149 @@ var bill_core={
 
 	/**
 	 * 
-	 * 讓js的執行停頓x秒
+	 * 將特定字首字串及特定字尾字串的方式，去取得中間的字串
 	 *
-	 * @param number seconds 
-	 * @return bool
+	 * @param string source_string 要處理的來源字串
+	 * @param string start_string 特定字首字串
+	 * @param string end_string 特定字尾字串
+	 * @return string 中間的字串
+	 *
+	 * 舉例:
+	 * var the_string='data_row_a80235_id';
+	 * var the_fetch_string=bill_core.string_fetch_specific(the_string,'data_row_1','_id');
+	 * console.log(the_fetch_string);
+	 * output為 a80235
+	 *
 	 */
-	'global_sleep':function(seconds) {
-		if(this.global_typeof(seconds)==='number'){
-		
-		}else{
-			alert('seconds參數資料型態錯誤');
+	 'string_fetch_specific':function(source_string,start_string,end_string){
+		if(this.global_typeof(source_string)!=='string'){
+			alert('source_string argument error');
 			return;
 		}
-		var milliseconds=seconds*1000;
-		var start = new Date().getTime();
-		for (var i = 0; i < 1e7; i++) {
-			if ((new Date().getTime() - start) >= milliseconds){
-			break;
-			}
+		if(this.global_typeof(start_string)!=='string'){
+			alert('start_string argument error');
+			return;
 		}
-	},
+		if(this.global_typeof(end_string)!=='string'){
+			alert('end_string argument error');
+			return;
+		}
+		
+		start_string=this.regexp_escape(start_string);
+		end_string=this.regexp_escape(end_string);
 
-	/**
-	 * 
-	 * 去得知某年的某月有多少天
-	 *
-	 * @param number iYear
-	 * @param number iMonth
-	 * @return number 天數
-	 */
-	'global_daysInMonth':function(iYear,iMonth)
-	{
-		return 32 - new Date(iYear, iMonth-1, 32).getDate();
-	},
-
-	/**
-	 * 
-	 * 檢查輸入的變數是否為空
-	 *
-	 * @param mixed checked_var
-	 * @return bool
-	 */
-	'global_is_empty':function(checked_var){
-		if(checked_var===undefined || checked_var===null || checked_var===''){
-			return true;
+		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]+)'+end_string+'$');
+		var temp_result=temp_reg.exec(source_string);
+		if(temp_result===null){
+			return '';
 		}else{
-			return false;
+			return temp_result[1];
 		}
+		
+	},
+	
+	/**
+	 * 
+	 * 返回指定長度的數字字串，不足長度的，向左補0
+	 *
+	 * @param number num 要處理的數字
+	 * @param number digits_count 指定的長度
+	 * @return string
+	 *
+	 */
+	'string_add_zero':function(num,digits_count){
+		var return_string='00';
+		if(digits_count===undefined){
+			digits_count=2;
+		}
+		if(this.global_typeof(num)!=='number'){
+			return return_string;
+		}else{
+			return_string=num.toString();
+		}
+		if(num<Math.pow(10, digits_count-1)){
+			for(var zero_counts=digits_count-1;zero_counts>0;zero_counts=zero_counts-1){
+				return_string='0'+return_string;
+			}
+		}	
+		return  return_string;
 	},
 
+	/**
+	 * 
+	 * 確保變數返回的資料是字串
+	 *
+	 * @param mixed checked_var 
+	 * @return string
+	 *
+	 */
+	'string_ensure':function(checked_var) {
+
+		var checked_var_type=this.global_typeof(checked_var);
+		if(checked_var_type=='number'){
+			return checked_var.toString();
+		}else if(checked_var_type=='boolean'){
+			return checked_var.toString();
+		}else if(checked_var_type=='string'){
+			return checked_var;
+		}else{
+			return '';
+		}
+
+	},
+
+	/**
+	 * 
+	 * 為數字加千分位
+	 *
+	 * @param number num 
+	 * @return string
+	 *
+	 */
+	'string_add_thousand_separator_to':function(num){
+		var n = num.toString(), p = n.indexOf('.');
+		return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, function($0, i){
+			return p<0 || i<p ? ($0+',') : $0;
+		});
+	},
+
+	/**
+	 * 
+	 * 若字串結尾有出現特定字串則移除掉
+	 *
+	 * @param string source_string 要處理的來源字串
+	 * @param string end_string 該特定字串
+	 * @return string 返回一個處理過後的新字串
+	 *
+	 * 舉例:
+	 * var the_string='a80235_data_row_id';
+	 * var the_result_string=bill_core.global_remove_start_string(the_string,'_data_row_id');
+	 * console.log(the_result_string);
+	 * output為 a80235
+	 *
+	 */
+	'string_remove_end':function(source_string,end_string){
+		if(this.global_typeof(source_string)!=='string'){
+			alert('source_string argument error');
+			return;
+		}
+
+		if(this.global_typeof(end_string)!=='string'){
+			alert('end_string argument error');
+			return;
+		}
+
+		end_string=this.regexp_escape(end_string);
+		var temp_reg=new RegExp('^([\\s\\S]+)'+end_string+'$');
+		var temp_result=temp_reg.exec(source_string);
+		if(temp_result===null){
+			return '';
+		}else{
+			return temp_result[1];
+		}
+		
+	},
+		
 	/**
 	 * 
 	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
@@ -167,17 +406,17 @@ var bill_core={
 	 * @param string the_datebigint 日期
 	 * @return string
 	 */
-	'global_datebigint_toFormattedString':function(the_format,the_datebigint){
-		if(this.global_is_solid_string(the_datebigint)){
+	'datebigint_toFormattedString':function(the_format,the_datebigint){
+		if(this.string_is_solid(the_datebigint)){
 		}else{
 			var now_datetime=new Date();
 			the_datebigint=
 				now_datetime.getFullYear().toString()+
-				this.global_add_zero((now_datetime.getMonth()+1),2)+
-				this.global_add_zero(now_datetime.getDate(),2)+
-				this.global_add_zero(now_datetime.getHours(),2)+
-				this.global_add_zero(now_datetime.getMinutes(),2)+
-				this.global_add_zero(now_datetime.getSeconds(),2);
+				this.string_add_zero((now_datetime.getMonth()+1),2)+
+				this.string_add_zero(now_datetime.getDate(),2)+
+				this.string_add_zero(now_datetime.getHours(),2)+
+				this.string_add_zero(now_datetime.getMinutes(),2)+
+				this.string_add_zero(now_datetime.getSeconds(),2);
 		}
 		
 		var the_match_result=the_datebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
@@ -246,19 +485,19 @@ var bill_core={
 	 * 剖析日期 返回 相關資訊
 	 *
 	 * @param string the_datebigint 日期
-	 * @return string_array
+	 * @return object
 	 */
-	'global_datebigint_parse':function(the_datebigint){
-		if(this.global_is_solid_string(the_datebigint)){
+	'datebigint_parse':function(the_datebigint){
+		if(this.string_is_solid(the_datebigint)){
 		}else{
 			var now_datetime=new Date();
 			the_datebigint=
 				now_datetime.getFullYear().toString()+
-				this.global_add_zero((now_datetime.getMonth()+1),2)+
-				this.global_add_zero(now_datetime.getDate(),2)+
-				this.global_add_zero(now_datetime.getHours(),2)+
-				this.global_add_zero(now_datetime.getMinutes(),2)+
-				this.global_add_zero(now_datetime.getSeconds(),2);
+				this.string_add_zero((now_datetime.getMonth()+1),2)+
+				this.string_add_zero(now_datetime.getDate(),2)+
+				this.string_add_zero(now_datetime.getHours(),2)+
+				this.string_add_zero(now_datetime.getMinutes(),2)+
+				this.string_add_zero(now_datetime.getSeconds(),2);
 		}
 		
 		var the_match_result=the_datebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
@@ -333,27 +572,27 @@ var bill_core={
 	 * @param bool second_is_zero 秒數是否為0
 	 * @return string
 	 */
-	'global_datebigint_now':function(hour_is_zero,minute_is_zero,second_is_zero){
+	'datebigint_now':function(hour_is_zero,minute_is_zero,second_is_zero){
 		var now_datetime=new Date(),
 		now_datetime_Y=now_datetime.getFullYear(),
-		now_datetime_m=this.global_add_zero(now_datetime.getMonth()+1,2),
-		now_datetime_d=this.global_add_zero(now_datetime.getDate(),2);
+		now_datetime_m=this.string_add_zero(now_datetime.getMonth()+1,2),
+		now_datetime_d=this.string_add_zero(now_datetime.getDate(),2);
 		
 		if(hour_is_zero){
 			now_datetime_H='00';
 		}else{
-			now_datetime_H=this.global_add_zero(now_datetime.getHours(),2);
+			now_datetime_H=this.string_add_zero(now_datetime.getHours(),2);
 		}
 		
 		if(minute_is_zero){
 			now_datetime_i='00';
 		}else{
-			now_datetime_i=this.global_add_zero(now_datetime.getMinutes(),2);
+			now_datetime_i=this.string_add_zero(now_datetime.getMinutes(),2);
 		}
 		if(second_is_zero){
 			now_datetime_s='00';
 		}else{
-			now_datetime_s=this.global_add_zero(now_datetime.getSeconds(),2);
+			now_datetime_s=this.string_add_zero(now_datetime.getSeconds(),2);
 		}
 		
 		return now_datetime_Y+now_datetime_m+now_datetime_d+now_datetime_H+now_datetime_i+now_datetime_s;
@@ -364,11 +603,11 @@ var bill_core={
 	 * 將datebigint資料轉換成日期物件
 	 *
 	 * @param string source_datebigint 來源資料
-	 * @return string_array
+	 * @return object
 	 */
-	'global_datebigint_to_Date':function(source_datebigint){
+	'datebigint_to_Date':function(source_datebigint){
 		var target_Date=null,
-		source_datebigint_info=this.global_datebigint_parse(source_datebigint)
+		source_datebigint_info=this.datebigint_parse(source_datebigint)
 		;
 		target_Date=new Date(
 			parseInt(source_datebigint_info['Y'],10), 
@@ -383,25 +622,7 @@ var bill_core={
 		return target_Date;
 	},
 
-	/**
-	 * 
-	 * 將日期物件轉換成datebigint資料
-	 *
-	 * @param string_array source_Date 來源資料
-	 * @return string
-	 */
-	'global_Date_to_datebigint':function(source_Date){
-		var target_datebigint='';
-		target_datebigint=
-				source_Date.getFullYear().toString()+
-				this.global_add_zero((source_Date.getMonth()+1),2)+
-				this.global_add_zero(source_Date.getDate(),2)+
-				this.global_add_zero(source_Date.getHours(),2)+
-				this.global_add_zero(source_Date.getMinutes(),2)+
-				this.global_add_zero(source_Date.getSeconds(),2);
-		return target_datebigint;
-	},
-
+	
 	/**
 	 * 
 	 * 對datebigint資料作日期時間新增操作
@@ -411,10 +632,10 @@ var bill_core={
 	 * @param string nums_unit 單位
 	 * @return string
 	 */
-	'global_datebigint_add':function(source_datebigint, nums, nums_unit) {
+	'datebigint_add':function(source_datebigint, nums, nums_unit) {
 		var new_datebigint = '',
 
-		source_Date=this.global_datebigint_to_Date(source_datebigint);
+		source_Date=this.datebigint_to_Date(source_datebigint);
 
 		switch (nums_unit) {
 			case 'year':
@@ -440,7 +661,7 @@ var bill_core={
 				break;
 			default:	
 		}
-		new_datebigint=this.global_Date_to_datebigint(source_Date);
+		new_datebigint=this.Date_to_datebigint(source_Date);
 		return new_datebigint;
 	},
 
@@ -452,12 +673,173 @@ var bill_core={
 	 * @param string b_datebigint
 	 * @return number
 	 */
-	'global_datebigint_diff':function(a_datebigint,b_datebigint) {
+	'datebigint_diff':function(a_datebigint,b_datebigint) {
 		var datebigint_diff = '';
-		var a_Date=this.global_datebigint_to_Date(a_datebigint);
-		var b_Date=this.global_datebigint_to_Date(b_datebigint);
+		var a_Date=this.datebigint_to_Date(a_datebigint);
+		var b_Date=this.datebigint_to_Date(b_datebigint);
 		datebigint_diff=a_Date-b_Date;
 		return datebigint_diff;
+	},
+
+	
+	/**
+	 * 
+	 * 取得日期the_datebigint所屬禮拜的第一天datebigint
+	 *
+	 * @param string the_datebigint
+	 * @return string
+	 */
+	'datebigint_week_start':function(the_datebigint) {
+		var return_datebigint;	
+		var op_datebigint;
+		var op_date;
+		if(this.string_is_solid(the_datebigint)){
+			op_datebigint=this.datebigint_trim_time(the_datebigint);
+			op_date=this.datebigint_to_Date(op_datebigint);
+		}else{
+			op_datebigint=this.datebigint_now(true,true,true);
+			op_date=this.datebigint_to_Date(op_datebigint);
+		}
+		
+		return_datebigint=this.datebigint_add(op_datebigint, -1*((op_date.getDay()-0)/1), 'day');
+		
+		return return_datebigint;
+	},
+
+	/**
+	 * 
+	 * 去掉the_datebigint的時間部分
+	 *
+	 * @param string the_datebigint
+	 * @return string
+	 */
+	'datebigint_trim_time':function(the_datebigint) {
+
+		var op_datebigint;
+		if(this.string_is_solid(the_datebigint)){}else{
+			op_datebigint=this.datebigint_now(true,true,true);
+			return op_datebigint;
+		}
+		var temp_array=this.datebigint_parse(the_datebigint);
+		op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+'000000';
+		return op_datebigint;
+	},
+
+	/**
+	 * 
+	 * 去掉the_datebigint的分鐘秒數部分
+	 *
+	 * @param string the_datebigint
+	 * @return string
+	 */
+	'datebigint_trim_minute_second':function(the_datebigint) {
+
+		var op_datebigint;
+		if(this.string_is_solid(the_datebigint)){}else{
+			op_datebigint=this.datebigint_now(false,true,true);
+			return op_datebigint;
+		}
+		var temp_array=this.datebigint_parse(the_datebigint);
+		op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+temp_array['H']+'0000';
+		return op_datebigint;
+	},
+
+	/**
+	 * 
+	 * datebigint資料之間的差距,a-b 回傳hours
+	 *
+	 * @param string a_datebigint
+	 * @param string b_datebigint
+	 * @return number
+	 */
+	'datebigint_hours_diff':function(a_datebigint,b_datebigint) {
+		var datebigint_diff = 0;
+		if(
+			a_datebigint === undefined || 
+			b_datebigint === undefined
+		){
+			return datebigint_diff;
+		}
+		datebigint_diff=this.datebigint_diff(a_datebigint,b_datebigint);
+		datebigint_diff=datebigint_diff/1000/60/60;
+		return datebigint_diff;
+	},
+
+	/**
+	 * 
+	 * datebigint資料之間的差距,a-b 回傳days
+	 *
+	 * @param string a_datebigint
+	 * @param string b_datebigint
+	 * @return number
+	 */
+	'datebigint_days_diff':function(a_datebigint,b_datebigint) {
+		var datebigint_diff = 0;
+		if(
+			a_datebigint === undefined || 
+			b_datebigint === undefined
+		){
+			return datebigint_diff;
+		}
+		datebigint_diff=this.datebigint_diff(a_datebigint,b_datebigint);
+		datebigint_diff=datebigint_diff/1000/60/60/24;
+		return datebigint_diff;
+	},
+	
+	/**
+	 * 
+	 * 去得知某年的某月有多少天
+	 *
+	 * @param number iYear
+	 * @param number iMonth
+	 * @return number 天數
+	 */
+	'Date_daysInMonth':function(iYear,iMonth)
+	{
+		return 32 - new Date(iYear, iMonth-1, 32).getDate();
+	},
+
+	
+	/**
+	 * 
+	 * 將日期物件轉換成datebigint資料
+	 *
+	 * @param object source_Date 來源資料
+	 * @return string
+	 */
+	'Date_to_datebigint':function(source_Date){
+		var target_datebigint='';
+		target_datebigint=
+				source_Date.getFullYear().toString()+
+				this.string_add_zero((source_Date.getMonth()+1),2)+
+				this.string_add_zero(source_Date.getDate(),2)+
+				this.string_add_zero(source_Date.getHours(),2)+
+				this.string_add_zero(source_Date.getMinutes(),2)+
+				this.string_add_zero(source_Date.getSeconds(),2);
+		return target_datebigint;
+	},
+
+	/**
+	 * 
+	 * 讓js的執行停頓x秒
+	 *
+	 * @param number seconds 
+	 * @return bool
+	 */
+	'time_sleep':function(seconds) {
+		if(this.global_typeof(seconds)==='number'){
+		
+		}else{
+			alert('seconds參數資料型態錯誤');
+			return;
+		}
+		var milliseconds=seconds*1000;
+		var start = new Date().getTime();
+		for (var i = 0; i < 1e7; i++) {
+			if ((new Date().getTime() - start) >= milliseconds){
+			break;
+			}
+		}
 	},
 
 	/**
@@ -465,9 +847,9 @@ var bill_core={
 	 * parse 23 hour to am,pm hour
 	 *
 	 * @param number the_hour
-	 * @return number_array
+	 * @return object
 	 */
-	'global_23_hour_parse':function(the_hour) {
+	'time_23_hour_parse':function(the_hour) {
 		if(this.global_typeof(the_hour)!=='number'){
 			the_hour=0;
 		}
@@ -495,7 +877,7 @@ var bill_core={
 	 * @param number hour_number
 	 * @return number
 	 */
-	 'global_get_23_hour':function(hour_type,hour_number) {
+	'time_get_23_hour':function(hour_type,hour_number) {
 		if(this.global_typeof(hour_type)!=='string'){
 			hour_type='am';
 		}
@@ -521,170 +903,18 @@ var bill_core={
 
 	/**
 	 * 
-	 * 取得日期the_datebigint所屬禮拜的第一天datebigint
-	 *
-	 * @param string the_datebigint
-	 * @return string
-	 */
-	'global_week_start_datebigint':function(the_datebigint) {
-		var return_datebigint;	
-		var op_datebigint;
-		var op_date;
-		if(this.global_is_solid_string(the_datebigint)){
-			op_datebigint=this.global_datebigint_trim_time(the_datebigint);
-			op_date=this.global_datebigint_to_Date(op_datebigint);
-		}else{
-			op_datebigint=this.global_datebigint_now(true,true,true);
-			op_date=this.global_datebigint_to_Date(op_datebigint);
-		}
-		
-		return_datebigint=this.global_datebigint_add(op_datebigint, -1*((op_date.getDay()-0)/1), 'day');
-		
-		return return_datebigint;
-	},
-
-	/**
-	 * 
-	 * 去掉the_datebigint的時間部分
-	 *
-	 * @param string the_datebigint
-	 * @return string
-	 */
-	'global_datebigint_trim_time':function(the_datebigint) {
-
-		var op_datebigint;
-		if(this.global_is_solid_string(the_datebigint)){}else{
-			op_datebigint=this.global_datebigint_now(true,true,true);
-			return op_datebigint;
-		}
-		var temp_array=this.global_datebigint_parse(the_datebigint);
-		op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+'000000';
-		return op_datebigint;
-	},
-
-	/**
-	 * 
-	 * 去掉the_datebigint的分鐘秒數部分
-	 *
-	 * @param string the_datebigint
-	 * @return string
-	 */
-	'global_datebigint_trim_minute_second':function(the_datebigint) {
-
-		var op_datebigint;
-		if(this.global_is_solid_string(the_datebigint)){}else{
-			op_datebigint=this.global_datebigint_now(false,true,true);
-			return op_datebigint;
-		}
-		var temp_array=this.global_datebigint_parse(the_datebigint);
-		op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+temp_array['H']+'0000';
-		return op_datebigint;
-	},
-
-	/**
-	 * 
-	 * datebigint資料之間的差距,a-b 回傳hours
-	 *
-	 * @param string a_datebigint
-	 * @param string b_datebigint
-	 * @return number
-	 */
-	'global_datebigint_hours_diff':function(a_datebigint,b_datebigint) {
-		var datebigint_diff = 0;
-		if(
-			a_datebigint === undefined || 
-			b_datebigint === undefined
-		){
-			return datebigint_diff;
-		}
-		datebigint_diff=this.global_datebigint_diff(a_datebigint,b_datebigint);
-		datebigint_diff=datebigint_diff/1000/60/60;
-		return datebigint_diff;
-	},
-
-	/**
-	 * 
-	 * datebigint資料之間的差距,a-b 回傳days
-	 *
-	 * @param string a_datebigint
-	 * @param string b_datebigint
-	 * @return number
-	 */
-	'global_datebigint_days_diff':function(a_datebigint,b_datebigint) {
-		var datebigint_diff = 0;
-		if(
-			a_datebigint === undefined || 
-			b_datebigint === undefined
-		){
-			return datebigint_diff;
-		}
-		datebigint_diff=this.global_datebigint_diff(a_datebigint,b_datebigint);
-		datebigint_diff=datebigint_diff/1000/60/60/24;
-		return datebigint_diff;
-	},
-	 
-
-	/**
-	 * 
-	 * 取得string_array的詳細內容
-	 *
-	 * @param string_array obj 要觀察的string_array
-	 * @return string
-	 */
-	'global_objToString':function(obj) {
-		var out = '';
-		for (var i in obj)
-		{
-			
-			out += i + ": " + obj[i] + "\n";
-			
-		}
-		return out;
-	},
-
-	/**
-	 * 
-	 * 檢查輸入的值是否為 有元素的陣列 或 有屬性的物件
-	 *
-	 * @param mixed checked_var 要檢查的變數
-	 * @return bool
-	 */
-	'global_is_solid_array':function(checked_var) {
-		if(this.global_typeof(checked_var)!=='string_array' && this.global_typeof(checked_var)!=='number_array'){
-			return false;
-		}
-
-		if(checked_var.length===undefined){
-			var temp_size=0;
-			for(var tempkey in checked_var){
-				temp_size++;
-				break;
-			}
-			if(temp_size===0){
-				return false;
-			}
-		}else{
-			if(checked_var.length===0){
-				return false;
-			}
-		}
-		return true;
-	},
-
-	/**
-	 * 
 	 * 取得檔案的附檔名
 	 *
 	 * @param string filename
 	 * @return string
 	 */
-	'global_fetch_file_extension':function(filename){
-		if(this.global_is_solid_string(filename)){
+	'file_fetch_extension':function(filename){
+		if(this.string_is_solid(filename)){
 			var file_extension=/[.](.+?)$/.exec(filename);
 			if(file_extension===null){
 				return '';
 			}
-			if(this.global_is_solid_string(file_extension[1])){
+			if(this.string_is_solid(file_extension[1])){
 				return file_extension[1].toLowerCase();
 			}else{
 				return '';
@@ -701,13 +931,13 @@ var bill_core={
 	 * @param string filename
 	 * @return string
 	 */
-	'global_fetch_file_mainname':function(filename){
-		if(this.global_is_solid_string(filename)){
+	'file_fetch_mainname':function(filename){
+		if(this.string_is_solid(filename)){
 			var file_mainname=/\/{0,1}(.+?)[.]{0,1}.*?$/.exec(filename);
 			if(file_mainname===null){
 				return '';
 			}
-			if(this.global_is_solid_string(file_mainname[1])){
+			if(this.string_is_solid(file_mainname[1])){
 				return file_mainname[1];
 			}else{
 				return '';
@@ -717,24 +947,23 @@ var bill_core={
 		}
 	},
 
-
 	/**
 	 * 
 	 * 變更url的query參數部分
 	 * @param string the_url 
-	 * @param array updated_params
+	 * @param object updated_params
 	 * @return string
 	 *
 	 * 舉例:
 	 * var the_url='http://www.xxxx.com.tw/index.php?a=1&b=2&c=3';
-	 * var the_new_url=bill_core.global_set_url_params(the_url,{'a':'4','b':'5','c':'6'});
+	 * var the_new_url=bill_core.url_set_params(the_url,{'a':'4','b':'5','c':'6'});
 	 * echo the_new_url;
 	 * output為 http://www.xxxx.com.tw/index.php?a=4&b=5&c=6
 	 *
 	 */
-	 'global_set_url_params':function(the_url,updated_params){
+	 'url_set_params':function(the_url,updated_params){
 		var result_string='';
-		if(this.global_is_solid_string(the_url) && this.global_typeof(updated_params)==='string_array'){
+		if(this.string_is_solid(the_url) && this.global_typeof(updated_params)==='object'){
 		
 		}else{
 			return result_string;
@@ -797,6 +1026,19 @@ var bill_core={
 			return result_string;
 		}
 	},
+	
+	/**
+	 * 
+	 * 用js的方式去模擬典擊連結
+	 *
+	 * @param string href
+	 * @param string href_target_is_blank 
+	 * @return 
+	 *
+	 */
+	'url_custom_href_process':function(href,href_target_is_blank){
+		window.open(href,(href_target_is_blank=='1'?'_blank':'_self'));
+	},
 
 	/**
 	 * 
@@ -807,9 +1049,9 @@ var bill_core={
 	 * @return string
 	 *
 	 */
-	'global_get_url_param':function(the_url,param_name){
+	'url_get_param':function(the_url,param_name){
 		var result_string='';
-		if(this.global_is_solid_string(the_url)){
+		if(this.string_is_solid(the_url)){
 		
 		}else{
 			return result_string;
@@ -845,110 +1087,7 @@ var bill_core={
 			return result_string;
 		}
 	},
-
-	/**
-	 * 
-	 * 根據參數及樣板字串 轉換成字串
-	 *
-	 * @param string template_string 
-	 * @param string_array params 參數陣列
-	 * @return string
-	 *
-	 */
-	 'global_parse_template_string':function(template_string,params){
-		if(this.global_typeof(template_string)!=='string'){
-			alert('template_string argument error');
-			return;
-		}
-		if(this.global_typeof(params)!=='string_array'){
-			alert('params argument error');
-			return;
-		}
-		
-		return template_string.replace(
-			/!!!(.+?)!!!/g, 
-			function (match, capture) { 
-				return params[capture];
-			}
-		); // "gold ring|string"
-		
-	},
-
-	/**
-	 * 
-	 * 將特定字首字串及特定字尾字串的方式，去取得中間的字串
-	 *
-	 * @param string source_string 要處理的來源字串
-	 * @param string start_string 特定字首字串
-	 * @param string end_string 特定字尾字串
-	 * @return string 中間的字串
-	 *
-	 * 舉例:
-	 * var the_string='data_row_a80235_id';
-	 * var the_fetch_string=bill_core.global_fetch_specific_string(the_string,'data_row_1','_id');
-	 * console.log(the_fetch_string);
-	 * output為 a80235
-	 *
-	 */
-	 'global_fetch_specific_string':function(source_string,start_string,end_string){
-		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
-			return;
-		}
-		if(this.global_typeof(start_string)!=='string'){
-			alert('start_string argument error');
-			return;
-		}
-		if(this.global_typeof(end_string)!=='string'){
-			alert('end_string argument error');
-			return;
-		}
-		
-		start_string=this.global_escape_for_regexp(start_string);
-		end_string=this.global_escape_for_regexp(end_string);
-
-		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]+)'+end_string+'$');
-		var temp_result=temp_reg.exec(source_string);
-		if(temp_result===null){
-			return '';
-		}else{
-			return temp_result[1];
-		}
-		
-	},
-
-	/**
-	 * 
-	 * 將正規表示法的特殊字元escape成一般字元
-	 *
-	 * @param string source_string 要處理的來源字串
-	 * @return string 中間的字串
-	 *
-	 */
-	 'global_escape_for_regexp':function(source_string){
-		var return_string='';
-		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
-			return return_string;
-		}
-		return_string=source_string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g,'\\$1');
-		
-		return return_string;
-	},
-
-	/**
-	 * 
-	 * 用js的方式去模擬典擊連結
-	 *
-	 * @param string href
-	 * @param string href_target_is_blank 
-	 * @return 
-	 *
-	 */
-	'global_custom_href_process':function(href,href_target_is_blank){
-		window.open(href,(href_target_is_blank=='1'?'_blank':'_self'));
-	},
-
+	
 	/**
 	 * 
 	 * 將num四捨五入取到小數點第pos位
@@ -958,7 +1097,7 @@ var bill_core={
 	 * @return 
 	 *
 	 */
-	'global_round':function(num,pos){
+	'math_round':function(num,pos){
 		var size = Math.pow(10, pos);
 		return Math.round(num * size) / size;
 	},
@@ -972,16 +1111,16 @@ var bill_core={
 	 * @return number
 	 *
 	 */
-	'global_convert_from_bytenum':function(num,tounit){
+	'math_convert_from_bytenum':function(num,tounit){
 		
 		var tounitnum=0;	
 		if(tounit=='KB'){
-			tounitnum=this.global_round(num/1024,2);
+			tounitnum=this.math_round(num/1024,2);
 		}else if(tounit=='MB'){	
-			tounitnum=this.global_round(num/1024/1024,2);
+			tounitnum=this.math_round(num/1024/1024,2);
 			
 		}else if(tounit=='GB'){
-			tounitnum=this.global_round(num/1024/1024/1024,2);
+			tounitnum=this.math_round(num/1024/1024/1024,2);
 		}else{
 			tounitnum=num;
 		}
@@ -991,190 +1130,21 @@ var bill_core={
 
 	/**
 	 * 
-	 * 返回指定長度的數字字串，不足長度的，向左補0
-	 *
-	 * @param number num 要處理的數字
-	 * @param number digits_count 指定的長度
-	 * @return string
-	 *
-	 */
-	'global_add_zero':function(num,digits_count){
-		var return_string='00';
-		if(digits_count===undefined){
-			digits_count=2;
-		}
-		if(this.global_typeof(num)!=='number'){
-			return return_string;
-		}else{
-			return_string=num.toString();
-		}
-		if(num<Math.pow(10, digits_count-1)){
-			for(var zero_counts=digits_count-1;zero_counts>0;zero_counts=zero_counts-1){
-				return_string='0'+return_string;
-			}
-		}	
-		return  return_string;
-	},
-
-	/**
-	 * 
-	 * 確保變數返回的資料是字串
-	 *
-	 * @param mixed checked_var 
-	 * @return string
-	 *
-	 */
-	'global_ensure_string':function(checked_var) {
-
-		var checked_var_type=this.global_typeof(checked_var);
-		if(checked_var_type=='number'){
-			return checked_var.toString();
-		}else if(checked_var_type=='boolean'){
-			return checked_var.toString();
-		}else if(checked_var_type=='string'){
-			return checked_var;
-		}else{
-			return '';
-		}
-
-	},
-
-	/**
-	 * 
-	 * 為數字加千分位
-	 *
-	 * @param number num 
-	 * @return string
-	 *
-	 */
-	'global_add_thousand_separator_to':function(num){
-		var n = num.toString(), p = n.indexOf('.');
-		return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, function($0, i){
-			return p<0 || i<p ? ($0+',') : $0;
-		});
-	},
-
-	/**
-	 * 
-	 * 若字串結尾有出現特定字串則移除掉
+	 * 將正規表示法的特殊字元escape成一般字元
 	 *
 	 * @param string source_string 要處理的來源字串
-	 * @param string end_string 該特定字串
-	 * @return string 返回一個處理過後的新字串
-	 *
-	 * 舉例:
-	 * var the_string='a80235_data_row_id';
-	 * var the_result_string=bill_core.global_remove_start_string(the_string,'_data_row_id');
-	 * console.log(the_result_string);
-	 * output為 a80235
+	 * @return string 中間的字串
 	 *
 	 */
-	'global_remove_end_string':function(source_string,end_string){
+	 'validate_regexp_escape':function(source_string){
+		var return_string='';
 		if(this.global_typeof(source_string)!=='string'){
 			alert('source_string argument error');
-			return;
+			return return_string;
 		}
-
-		if(this.global_typeof(end_string)!=='string'){
-			alert('end_string argument error');
-			return;
-		}
-
-		end_string=this.global_escape_for_regexp(end_string);
-		var temp_reg=new RegExp('^([\\s\\S]+)'+end_string+'$');
-		var temp_result=temp_reg.exec(source_string);
-		if(temp_result===null){
-			return '';
-		}else{
-			return temp_result[1];
-		}
+		return_string=source_string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g,'\\$1');
 		
-	},
-
-	/**
-	 * 
-	 * 偵測網頁瀏覽者之環境
-	 *
-	 * @return array
-	 */
-	'global_parse_http_user_agent':function() {
-		//若device不為空字串 代表裝置是手機
-		var return_data={
-			'device':'',//若為有長度的字串 代表裝置是非電腦(可能是平板或手機或...)
-			'browser_type':'',//瀏覽器類型
-			'browser_version':'' //瀏覽器版本
-		};
-		
-		if(navigator.userAgent.search(/iPod/i)!==-1){
-			return_data['device']='iPod';
-		}else if(navigator.userAgent.search(/iPhone/i)!==-1){
-			return_data['device']='iPhone';
-		}else if(navigator.userAgent.search(/iPad/i)!==-1){
-			return_data['device']='iPad';
-		}else if(navigator.userAgent.search(/iPad/i)!==-1){
-			return_data['device']='iPad';
-		}else if(navigator.userAgent.search(/Android/i)!==-1){
-			if(navigator.userAgent.search(/mobile/i)!==-1){
-				return_data['device']='Android Mobile';
-			}else{
-				return_data['device']='Android Tablet';
-			}
-		}else if(navigator.userAgent.search(/webOS/i)!==-1){
-			return_data['device']='webOS';
-		}else if(navigator.userAgent.search(/BlackBerry/i)!==-1){
-			return_data['device']='BlackBerry';
-		}else if(navigator.userAgent.search(/RIM Tablet/i)!==-1){
-			return_data['device']='RIM Tablet';
-		}
-		
-		if(navigator.userAgent.search(/MSIE/i)!==-1){
-			
-			return_data['browser_type']='MSIE';
-			var temp_array=navigator.userAgent.split('; ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.global_is_start_with('MSIE ',temp_string)){
-					return_data['browser_version']=this.lobal_fetch_specific_string(temp_string,'MSIE ','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Firefox/i)!==-1){	
-			return_data['browser_type']='Firefox';
-			
-			var temp_array=navigator.userAgent.split(' ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.global_is_start_with('Firefox/',temp_string)){
-					return_data['browser_version']=this.global_fetch_specific_string(temp_string,'Firefox/','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Chrome/i)!==-1){		
-			return_data['browser_type']='Chrome';
-			var temp_array=navigator.userAgent.split(' ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.global_is_start_with('Chrome/',temp_string)){
-					return_data['browser_version']=this.global_fetch_specific_string(temp_string,'Chrome/','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Safari/i)!==-1){	
-			return_data['browser_type']='Safari';
-			var temp_array=navigator.userAgent.split(' ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.global_is_start_with('Safari/',temp_string)){
-					return_data['browser_version']=this.global_fetch_specific_string(temp_string,'Safari/','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Opera/i)!==-1){
-			//Opera的user_agent比較詭異 版本不好判斷
-			return_data['browser_type']='Opera';	
-		}
-		
-		return return_data;
+		return return_string;
 	},
 
 	/**
@@ -1182,7 +1152,7 @@ var bill_core={
 	 * 驗證用的物件式陣列，索引為驗證器名稱，值為驗證器內容
 	 * 
 	 */
-	'global_regexp_items':{
+	'validate_regexp_items':{
 		'required':'^[\\s\\S]+$',	
 		'rname':'^[\\s\\S]+$',
 		'oname':'^[\\s\\S]*$',
@@ -1258,7 +1228,7 @@ var bill_core={
 	 * 驗證用的物件式陣列，索引為驗證器名稱，值為驗證器的提示輸入內容
 	 * 
 	 */
-	'global_regexp_tips':{
+	'validate_regexp_tips':{
 		'required':'~輸入格式~<br/>1.必填',	
 		'rname':'~輸入格式~<br/>1.不得為空值',
 		'oname':'~輸入格式~<br/>1.可為空值',
@@ -1328,7 +1298,7 @@ var bill_core={
 	 *
 	 *
 	 */
-	 'global_easy_validate_string':function(validator_name,source_string){
+	 'validate_string':function(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
 			alert('validator_name必須為字串');
 			return false;
@@ -1339,16 +1309,48 @@ var bill_core={
 		}
 		
 		var temp_reg=null;
-		if(this.global_regexp_items[validator_name]===undefined){
+		if(this.validate_regexp_items[validator_name]===undefined){
 			 temp_reg =new RegExp(validator_name);
 		}else{
-			 temp_reg = new RegExp(this.global_regexp_items[validator_name]);
+			 temp_reg = new RegExp(this.validate_regexp_items[validator_name]);
 		}
 		if(temp_reg.test(source_string)){
 			return true;
 		}else{
 			return false;
 		}
-	}
+	},
+	
+	'form_simulate_send':function(param1,param2,param3,param4){
+		//data
+		//data、url
+		//data、url、action
+		//data、url、action、encodetype
+	},
+	
+	'debug_console':function(param1,param2){
+		//message
+		//message、level(嚴重性等級)：info、warn、error
+		if(arguments.length==0){
+			console.error('bill_core.'+arguments.callee.name+' params error!');
+			return;
+		}else if(arguments.length==1){
+			console.info(param1);
+		}else if(arguments.length==2){
+			if(param2=='info'){
+				console.info(param1);
+			}else if(param2=='warn'){
+				console.warn(param1);
+			}else if(param2=='error'){
+				console.error(param1);
+			}else{
+				console.error('bill_core.'+arguments.callee.name+' params error!');
+			}
+			return;
+		}else{
+			console.error('bill_core.'+arguments.callee.name+' params error!');
+			return;
+		}
+	},
 	
 }
