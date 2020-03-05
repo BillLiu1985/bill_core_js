@@ -2,6 +2,10 @@
  * 建置網站常會用到的js函式庫
  * 引用該檔案前，需先引用jquery元件
  */
+if(window.jQuery===undefined){
+	console.error('jquery never used');
+}
+
 
 var bill_core={
 	/**
@@ -20,7 +24,7 @@ var bill_core={
 	'global_typeof':function(checked_var){
 		if(typeof(checked_var)==='number'){
 			if(checked_var===Number.NaN){
-				return 'Number.NaN'
+				return 'Number.NaN';
 			}else if(checked_var===Number.POSITIVE_INFINITY){
 				return 'Number.POSITIVE_INFINITY';
 			}else if(checked_var===Number.NEGATIVE_INFINITY){
@@ -1353,4 +1357,53 @@ var bill_core={
 		}
 	},
 	
+	'ajax_post':function(param1,param2,param3,param4,param5,param6){
+		//destination_url、post_data、request_success_handler、request_fail_handler
+		//destination_url、post_data、request_success_handler、request_fail_handler、is_sync
+		//destination_url、post_data、request_success_handler、request_fail_handler、is_sync、context
+		if(arguments.length<4){
+			console.error('bill_core.'+arguments.callee.name+' params error!');
+			return;
+		}
+		
+		if(
+			this.global_typeof(param1)=='string' && 
+			this.global_typeof(param2)=='object' && 
+			this.global_typeof(param3)=='function' &&
+			this.global_typeof(param4)=='function'
+		){	
+		}else{
+			console.error('bill_core.'+arguments.callee.name+' params error!');
+			return;
+		}
+		var is_sync=true;
+		var context=null;
+		if(arguments.length==5 && this.global_typeof(param5)=='boolean'){
+			is_sync=param5;
+		}
+		if(arguments.length==6 && this.global_typeof(param6)=='object'){
+			context=param6;
+		}
+		
+		var ajax_settings={
+		   type: "post",
+		   url: param1,
+		   dataType:'json',
+		   data:param2,
+		   success: param3,
+		   error:param4
+		};	
+		
+		if(is_sync){
+			ajax_settings['async']=false;
+		}else{
+			ajax_settings['async']=true;
+		}
+		
+		if(this.global_typeof(context)=='object'){
+			ajax_settings['context']=context;
+		}
+		jQuery.ajax(ajax_settings);
+		
+	}
 }
