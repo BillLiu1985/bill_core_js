@@ -1,3 +1,4 @@
+
 /**
  * 建置網站常會用到的js函式庫
  * 引用該檔案前，需先引用jquery元件
@@ -56,13 +57,13 @@ var bill_core={
 	 * 檢查輸入的變數是否為空
 	 *
 	 * @param mixed checked_var
-	 * @return bool
+	 * @return string
 	 */
 	'global_is_empty':function(checked_var){
 		if(checked_var===undefined || checked_var===null || checked_var===''){
-			return true;
+			return '1';
 		}else{
-			return false;
+			return '0';
 		}
 	},
 	
@@ -154,7 +155,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split('; ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('MSIE ',temp_string)){
+				if(this.string_is_start_with('MSIE ',temp_string)==='1'){
 					return_data['browser_version']=this.lobal_fetch_specific_string(temp_string,'MSIE ','');	
 					break;
 				}
@@ -165,7 +166,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split(' ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('Firefox/',temp_string)){
+				if(this.string_is_start_with('Firefox/',temp_string)==='1'){
 					return_data['browser_version']=this.string_fetch_specific(temp_string,'Firefox/','');	
 					break;
 				}
@@ -175,7 +176,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split(' ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('Chrome/',temp_string)){
+				if(this.string_is_start_with('Chrome/',temp_string)==='1'){
 					return_data['browser_version']=this.string_fetch_specific(temp_string,'Chrome/','');	
 					break;
 				}
@@ -185,7 +186,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split(' ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('Safari/',temp_string)){
+				if(this.string_is_start_with('Safari/',temp_string)==='1'){
 					return_data['browser_version']=this.string_fetch_specific(temp_string,'Safari/','');	
 					break;
 				}
@@ -201,16 +202,16 @@ var bill_core={
 	/**
 	 * 檢查輸入的變數是否為有長度字串 
 	 * @param checked_var mixed 要檢測的變數
-	 * @return bool
+	 * @return string
 	 */
 	'string_is_solid':function(checked_var){
 		if(this.global_typeof(checked_var)!=='string'){
-			return false;
+			return '0';
 		}
 		if(checked_var===''){
-			return false;
+			return '0';
 		}
-		return true;//若變數的資料型態是string且不為空，則返回true
+		return '1';//若變數的資料型態是string且不為空，則返回'1'
 	},
 
 	/**
@@ -219,19 +220,19 @@ var bill_core={
 	 *
 	 * @param string subword 該特定字串
 	 * @param string testword 被檢查的字串
-	 * @return bool
+	 * @return string
 	 */
 	'string_is_start_with':function(subword,testword) {
-		if(this.string_is_solid(subword) &&  this.string_is_solid(testword)){
+		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
 		
 		}else{
-			return false;
+			return '0';
 		}
 		var the_reg_pattern=new RegExp("^"+subword, '')
 		if(the_reg_pattern.test(testword)){
-			return true;
+			return '1';
 		}else{
-			return false;
+			return '0';
 		}
 	},
 
@@ -241,19 +242,19 @@ var bill_core={
 	 *
 	 * @param string subword 該特定字串
 	 * @param string testword 被檢查的字串
-	 * @return bool
+	 * @return string
 	 */
 	'string_is_end_with':function(subword,testword) {
-		if(this.string_is_solid(subword) &&  this.string_is_solid(testword)){
+		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
 		
 		}else{
-			return false;
+			return '0';
 		}
 		var the_reg_pattern=new RegExp(subword+'$', '')
 		if(the_reg_pattern.test(testword)){
-			return true;
+			return '1';
 		}else{
-			return false;
+			return '0';
 		}
 	},
 
@@ -411,7 +412,7 @@ var bill_core={
 	 * @return string
 	 */
 	'datebigint_toFormattedString':function(the_format,the_datebigint){
-		if(this.string_is_solid(the_datebigint)){
+		if(this.string_is_solid(the_datebigint)==='1'){
 		}else{
 			var now_datetime=new Date();
 			the_datebigint=
@@ -492,7 +493,7 @@ var bill_core={
 	 * @return object
 	 */
 	'datebigint_parse':function(the_datebigint){
-		if(this.string_is_solid(the_datebigint)){
+		if(this.string_is_solid(the_datebigint)==='1'){
 		}else{
 			var now_datetime=new Date();
 			the_datebigint=
@@ -582,18 +583,18 @@ var bill_core={
 		now_datetime_m=this.string_add_zero(now_datetime.getMonth()+1,2),
 		now_datetime_d=this.string_add_zero(now_datetime.getDate(),2);
 		
-		if(hour_is_zero){
+		if(hour_is_zero==='1'){
 			now_datetime_H='00';
 		}else{
 			now_datetime_H=this.string_add_zero(now_datetime.getHours(),2);
 		}
 		
-		if(minute_is_zero){
+		if(minute_is_zero==='1'){
 			now_datetime_i='00';
 		}else{
 			now_datetime_i=this.string_add_zero(now_datetime.getMinutes(),2);
 		}
-		if(second_is_zero){
+		if(second_is_zero==='1'){
 			now_datetime_s='00';
 		}else{
 			now_datetime_s=this.string_add_zero(now_datetime.getSeconds(),2);
@@ -697,11 +698,11 @@ var bill_core={
 		var return_datebigint;	
 		var op_datebigint;
 		var op_date;
-		if(this.string_is_solid(the_datebigint)){
+		if(this.string_is_solid(the_datebigint)==='1'){
 			op_datebigint=this.datebigint_trim_time(the_datebigint);
 			op_date=this.datebigint_to_Date(op_datebigint);
 		}else{
-			op_datebigint=this.datebigint_now(true,true,true);
+			op_datebigint=this.datebigint_now('1','1','1');
 			op_date=this.datebigint_to_Date(op_datebigint);
 		}
 		
@@ -720,8 +721,8 @@ var bill_core={
 	'datebigint_trim_time':function(the_datebigint) {
 
 		var op_datebigint;
-		if(this.string_is_solid(the_datebigint)){}else{
-			op_datebigint=this.datebigint_now(true,true,true);
+		if(this.string_is_solid(the_datebigint)==='1'){}else{
+			op_datebigint=this.datebigint_now('1','1','1');
 			return op_datebigint;
 		}
 		var temp_array=this.datebigint_parse(the_datebigint);
@@ -739,8 +740,8 @@ var bill_core={
 	'datebigint_trim_minute_second':function(the_datebigint) {
 
 		var op_datebigint;
-		if(this.string_is_solid(the_datebigint)){}else{
-			op_datebigint=this.datebigint_now(false,true,true);
+		if(this.string_is_solid(the_datebigint)==='1'){}else{
+			op_datebigint=this.datebigint_now('0','1','1');
 			return op_datebigint;
 		}
 		var temp_array=this.datebigint_parse(the_datebigint);
@@ -913,12 +914,12 @@ var bill_core={
 	 * @return string
 	 */
 	'file_fetch_extension':function(filename){
-		if(this.string_is_solid(filename)){
+		if(this.string_is_solid(filename)==='1'){
 			var file_extension=/[.](.+?)$/.exec(filename);
 			if(file_extension===null){
 				return '';
 			}
-			if(this.string_is_solid(file_extension[1])){
+			if(this.string_is_solid(file_extension[1])==='1'){
 				return file_extension[1].toLowerCase();
 			}else{
 				return '';
@@ -936,12 +937,12 @@ var bill_core={
 	 * @return string
 	 */
 	'file_fetch_mainname':function(filename){
-		if(this.string_is_solid(filename)){
+		if(this.string_is_solid(filename)==='1'){
 			var file_mainname=/\/{0,1}(.+?)[.]{0,1}.*?$/.exec(filename);
 			if(file_mainname===null){
 				return '';
 			}
-			if(this.string_is_solid(file_mainname[1])){
+			if(this.string_is_solid(file_mainname[1])==='1'){
 				return file_mainname[1];
 			}else{
 				return '';
@@ -967,7 +968,7 @@ var bill_core={
 	 */
 	 'url_set_params':function(the_url,updated_params){
 		var result_string='';
-		if(this.string_is_solid(the_url) && this.global_typeof(updated_params)==='object'){
+		if(this.string_is_solid(the_url)==='1' && this.global_typeof(updated_params)==='object'){
 		
 		}else{
 			return result_string;
@@ -1041,7 +1042,7 @@ var bill_core={
 	 *
 	 */
 	'url_custom_href_process':function(href,href_target_is_blank){
-		window.open(href,(href_target_is_blank=='1'?'_blank':'_self'));
+		window.open(href,(href_target_is_blank==='1'?'_blank':'_self'));
 	},
 
 	/**
@@ -1055,7 +1056,7 @@ var bill_core={
 	 */
 	'url_get_param':function(the_url,param_name){
 		var result_string='';
-		if(this.string_is_solid(the_url)){
+		if(this.string_is_solid(the_url)==='1'){
 		
 		}else{
 			return result_string;
@@ -1305,11 +1306,11 @@ var bill_core={
 	 'validate_string':function(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
 			alert('validator_name必須為字串');
-			return false;
+			return '0';
 		}
 		if(this.global_typeof(source_string)!=='string'){
 			alert('source_string必須為字串');
-			return false;
+			return '0';
 		}
 		
 		var temp_reg=null;
@@ -1319,9 +1320,9 @@ var bill_core={
 			 temp_reg = new RegExp(this.validate_regexp_items[validator_name]);
 		}
 		if(temp_reg.test(source_string)){
-			return true;
+			return '1';
 		}else{
-			return false;
+			return '0';
 		}
 	},
 	
@@ -1356,7 +1357,24 @@ var bill_core={
 			return;
 		}
 	},
-	
+	'debug_object':function(param1){
+		//object
+		//若為陣列物件，則其內建的屬性不會顯示出來
+		if(this.global_typeof(param1)!=='object'){
+			this.debug_console('bill_core.'+arguments.callee.name+' params1 error!','error');
+			return;
+		}
+		
+		for( var obj_attr_name in param1 ){
+			var obj_attr_value=param1[obj_attr_name];
+			bill_core.debug_console(
+				'attr_name:'+obj_attr_name+','+
+				'attr_name_type:'+this.global_typeof(obj_attr_name)+','+
+				'attr_value:'+obj_attr_value
+			);
+		}
+		
+	},
 	'ajax_post':function(param1,param2,param3,param4,param5,param6){
 		//destination_url、post_data、request_success_handler、request_fail_handler
 		//destination_url、post_data、request_success_handler、request_fail_handler、is_sync
@@ -1376,9 +1394,9 @@ var bill_core={
 			console.error('bill_core.'+arguments.callee.name+' params error!');
 			return;
 		}
-		var is_sync=true;
+		var is_sync='1';
 		var context=null;
-		if(arguments.length==5 && this.global_typeof(param5)=='boolean'){
+		if(arguments.length==5 && (param5==='0' || param5==='1')){
 			is_sync=param5;
 		}
 		if(arguments.length==6 && this.global_typeof(param6)=='object'){
@@ -1394,7 +1412,7 @@ var bill_core={
 		   error:param4
 		};	
 		
-		if(is_sync){
+		if(is_sync==='1'){
 			ajax_settings['async']=false;
 		}else{
 			ajax_settings['async']=true;
