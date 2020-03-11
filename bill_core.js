@@ -198,7 +198,101 @@ var bill_core={
 		
 		return return_data;
 	},
-	
+	/**
+	 * 取得某個區域下或符合特定條件下的輸入資料
+	 * @param jquery_expression 
+	 * @param fetch_way meets_the(符合條件)、under_the(某個區域下)
+	 * @return object
+	 */
+	'global_collect_inputs_data':function(jquery_expression,fetch_way) {
+		//抓不到資料 返回null
+		if(this.global_typeof(jquery_expression)!=='string'){
+			this.debug_console('jquery_expression error','error')
+			return;
+		}
+		if(this.global_typeof(fetch_way)!=='string'){
+			this.debug_console('fetch_way error','error')
+			return;
+		}
+		if( fetch_way==='meets_the' && fetch_way!=='under_the' ){
+			this.debug_console('fetch_way error','error')
+			return;
+		
+		}
+		var return_data={};
+		var fetch_input_jquery_expression=
+			'input[type="text"][name],'+
+			'input[type="radio"][name]:checked,'+
+			'input[type="checkbox"][name]:checked,'+
+			'input[type="hidden"][name],'+
+			'textarea[name],'+
+			'select[name]>option:selected';
+		var fetch_function=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name='';
+			if( the_input_jqobject.is('option') ){
+				the_input_name=the_input_jqobject.parent().attr('name');
+			}else{
+				the_input_name=the_input_jqobject.attr('name');
+			}
+			if( bill_core.string_is_solid(the_input_name)!=='1' ){
+				return;
+			}
+			
+			if( the_input_jqobject.is('input[type="checkbox"]') ){
+				var the_input_value=the_input_jqobject.attr('value');
+				if( return_data.hasOwnProperty(the_input_name)===false ){
+					return_data[the_input_name]=[];
+				}
+				return_data[the_input_name].push(the_input_value);
+			}
+			else if( the_input_jqobject.is('option') ){
+				var the_input_value=the_input_jqobject.attr('value');
+				if( return_data.hasOwnProperty(the_input_name)===false ){
+					if( the_input_jqobject.parent().is('[multiple]') ){
+						return_data[the_input_name]=[];
+					}else{
+						return_data[the_input_name]='';
+					}
+				}
+				if( the_input_jqobject.parent().is('[multiple]') ){
+					return_data[the_input_name].push(the_input_value);
+				}else{
+					return_data[the_input_name]=the_input_value;
+				}
+			}
+			else if( the_input_jqobject.is('textarea') ){
+				var the_input_value=the_input_jqobject.val();
+				if( return_data.hasOwnProperty(the_input_name)===false ){
+					return_data[the_input_name]='';	
+				}
+				return_data[the_input_name]=the_input_value;
+			}
+			else{
+				var the_input_value=the_input_jqobject.attr('value');
+				if( return_data.hasOwnProperty(the_input_name)===false ){
+					return_data[the_input_name]='';	
+				}
+				return_data[the_input_name]=the_input_value;
+			}
+		}
+		if(fetch_way==='meets_the'){
+			jQuery(jquery_expression).filter(fetch_input_jquery_expression).each(
+				fetch_function
+			)
+		}
+		else if(fetch_way==='under_the'){
+			jQuery(jquery_expression).find(fetch_input_jquery_expression).each(
+				fetch_function
+			)
+		}
+		
+		if( Object.keys(return_data).length==0 ){
+			return null
+		}
+		
+		return return_data;
+	},
 	/**
 	 * 檢查輸入的變數是否為有長度字串 
 	 * @param checked_var mixed 要檢測的變數
@@ -1357,23 +1451,38 @@ var bill_core={
 			return;
 		}
 	},
-	'debug_object':function(param1){
-		//object
+	'debug_object':function(param1,param2){
+		//object,string
+		//param1 要debug的物件,param2 資訊的種類 name_and_value,json
 		//若為陣列物件，則其內建的屬性不會顯示出來
 		if(this.global_typeof(param1)!=='object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' params1 error!','error');
 			return;
 		}
-		
-		for( var obj_attr_name in param1 ){
-			var obj_attr_value=param1[obj_attr_name];
+		if(this.global_typeof(param2)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' params2 error!','error');
+			return;
+		}
+		if( param2!=='name_and_value' && param2!=='json' ){
+			this.debug_console('bill_core.'+arguments.callee.name+' params2 error!','error');
+			return;
+		}
+		if(param2==='name_and_value'){
+			for( var obj_attr_name in param1 ){
+				var obj_attr_value=param1[obj_attr_name];
+				bill_core.debug_console(
+					'attr_name:'+obj_attr_name+','+
+					'attr_name_data_type:'+this.global_typeof(obj_attr_name)+';'+
+					'attr_value:'+obj_attr_value+','+
+					'attr_value_data_type:'+this.global_typeof(obj_attr_value)
+				);
+			}
+		}
+		else if(param2==='json'){
 			bill_core.debug_console(
-				'attr_name:'+obj_attr_name+','+
-				'attr_name_type:'+this.global_typeof(obj_attr_name)+','+
-				'attr_value:'+obj_attr_value
+				JSON.stringify(param1,null,'\t')
 			);
 		}
-		
 	},
 	'ajax_post':function(param1,param2,param3,param4,param5,param6){
 		//destination_url、post_data、request_success_handler、request_fail_handler
