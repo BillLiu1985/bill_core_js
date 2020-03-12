@@ -219,7 +219,16 @@ var bill_core={
 			return;
 		
 		}
-		var return_data={};
+		var return_data={
+			'values':{},
+			'human_read_names':{},
+			'reg_1s':{},
+			'error_msg_1s':{}
+		};
+		var values=return_data['values'];
+		var human_read_names=return_data['human_read_names'];
+		var reg_1s=return_data['reg_1s'];
+		var error_msg_1s=return_data['error_msg_1s'];
 		var fetch_input_jquery_expression=
 			'input[type="text"][name],'+
 			'input[type="radio"][name]:checked,'+
@@ -229,10 +238,25 @@ var bill_core={
 			'select[name]>option:selected';
 		var fetch_function=function(){
 			var the_input_jqobject=jQuery(this);
-			var the_input_name='';
+			var the_input_name;
+			var the_input_human_read_name;
+			var the_input_reg_1;
+			var the_input_error_msg_1;
+			
 			if( the_input_jqobject.is('option') ){
-				the_input_name=the_input_jqobject.parent().attr('name');
-			}else{
+				var temp_select_jqobject=the_input_jqobject.parent();
+				the_input_name=temp_select_jqobject.attr('name');
+				the_input_human_read_name=temp_select_jqobject.attr('human_read_name');
+				the_input_reg_1=temp_select_jqobject.attr('reg_1');
+				the_input_error_msg_1=temp_select_jqobject.attr('error_msg_1');
+			}
+			else if(the_input_jqobject.is('input[type="text"],textarea')){
+				the_input_name=the_input_jqobject.attr('name');
+				the_input_human_read_name=the_input_jqobject.attr('human_read_name');
+				the_input_reg_1=the_input_jqobject.attr('reg_1');
+				the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
+			}
+			else{
 				the_input_name=the_input_jqobject.attr('name');
 			}
 			if( bill_core.string_is_solid(the_input_name)!=='1' ){
@@ -241,39 +265,102 @@ var bill_core={
 			
 			if( the_input_jqobject.is('input[type="checkbox"]') ){
 				var the_input_value=the_input_jqobject.attr('value');
-				if( return_data.hasOwnProperty(the_input_name)===false ){
-					return_data[the_input_name]=[];
+				
+				if( values.hasOwnProperty(the_input_name)===false ){
+					values[the_input_name]=[];
 				}
-				return_data[the_input_name].push(the_input_value);
+				values[the_input_name].push(the_input_value);
 			}
 			else if( the_input_jqobject.is('option') ){
 				var the_input_value=the_input_jqobject.attr('value');
-				if( return_data.hasOwnProperty(the_input_name)===false ){
+				if( values.hasOwnProperty(the_input_name)===false ){
 					if( the_input_jqobject.parent().is('[multiple]') ){
-						return_data[the_input_name]=[];
+						values[the_input_name]=[];
 					}else{
-						return_data[the_input_name]='';
+						values[the_input_name]='';
 					}
 				}
 				if( the_input_jqobject.parent().is('[multiple]') ){
-					return_data[the_input_name].push(the_input_value);
+					values[the_input_name].push(the_input_value);
 				}else{
-					return_data[the_input_name]=the_input_value;
+					values[the_input_name]=the_input_value;
+				}
+				
+				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+					if( human_read_names.hasOwnProperty(the_input_name)===false ){
+						human_read_names[the_input_name]='';
+					}
+					human_read_names[the_input_name]=the_input_human_read_name;
+				}
+				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+					if( reg_1s.hasOwnProperty(the_input_name)===false ){
+						reg_1s[the_input_name]='';
+					}
+					reg_1s[the_input_name]=the_input_reg_1;
+				}
+				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+					if( error_msg_1s.hasOwnProperty(the_input_name)===false ){
+						error_msg_1s[the_input_name]='';
+					}
+					error_msg_1s[the_input_name]=the_input_error_msg_1;
 				}
 			}
 			else if( the_input_jqobject.is('textarea') ){
 				var the_input_value=the_input_jqobject.val();
-				if( return_data.hasOwnProperty(the_input_name)===false ){
-					return_data[the_input_name]='';	
+				if( values.hasOwnProperty(the_input_name)===false ){
+					values[the_input_name]='';	
 				}
-				return_data[the_input_name]=the_input_value;
+				values[the_input_name]=the_input_value;
+				
+				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+					if( human_read_names.hasOwnProperty(the_input_name)===false ){
+						human_read_names[the_input_name]='';
+					}
+					human_read_names[the_input_name]=the_input_human_read_name;
+				}
+				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+					if( reg_1s.hasOwnProperty(the_input_name)===false ){
+						reg_1s[the_input_name]='';
+					}
+					reg_1s[the_input_name]=the_input_reg_1;
+				}
+				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+					if( error_msg_1s.hasOwnProperty(the_input_name)===false ){
+						error_msg_1s[the_input_name]='';
+					}
+					error_msg_1s[the_input_name]=the_input_error_msg_1;
+				}
+			}
+			else if( the_input_jqobject.is('input[type="text"]') ){
+				var the_input_value=the_input_jqobject.attr('value');
+				if( values.hasOwnProperty(the_input_name)===false ){
+					values[the_input_name]='';	
+				}
+				values[the_input_name]=the_input_value;
+				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+					if( human_read_names.hasOwnProperty(the_input_name)===false ){
+						human_read_names[the_input_name]='';
+					}
+					human_read_names[the_input_name]=the_input_human_read_name;
+				}
+				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+					if( reg_1s.hasOwnProperty(the_input_name)===false ){
+						reg_1s[the_input_name]='';
+					}
+					reg_1s[the_input_name]=the_input_reg_1;
+				}
+				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+					if( error_msg_1s.hasOwnProperty(the_input_name)===false ){
+						error_msg_1s[the_input_name]='';
+					}
+					error_msg_1s[the_input_name]=the_input_error_msg_1;
+				}
 			}
 			else{
 				var the_input_value=the_input_jqobject.attr('value');
-				if( return_data.hasOwnProperty(the_input_name)===false ){
-					return_data[the_input_name]='';	
+				if( values.hasOwnProperty(the_input_name)===false ){
+					values[the_input_name]='';	
 				}
-				return_data[the_input_name]=the_input_value;
 			}
 		}
 		if(fetch_way==='meets_the'){
@@ -287,10 +374,18 @@ var bill_core={
 			)
 		}
 		
-		if( Object.keys(return_data).length==0 ){
-			return null
+		if( Object.keys(values).length==0 ){
+			return_data['values']=null;
 		}
-		
+		if( Object.keys(human_read_names).length==0 ){
+			return_data['human_read_names']=null;
+		}
+		if( Object.keys(reg_1s).length==0 ){
+			return_data['reg_1s']=null;
+		}
+		if( Object.keys(error_msg_1s).length==0 ){
+			return_data['error_msg_1s']=null;
+		}
 		return return_data;
 	},
 	/**
@@ -502,14 +597,14 @@ var bill_core={
 	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
 	 *
 	 * @param string the_format 格式
-	 * @param string the_datebigint 日期
+	 * @param string the_datetimebigint 日期
 	 * @return string
 	 */
-	'datebigint_toFormattedString':function(the_format,the_datebigint){
-		if(this.string_is_solid(the_datebigint)==='1'){
+	'datetimebigint_toFormattedString':function(the_format,the_datetimebigint){
+		if(this.string_is_solid(the_datetimebigint)==='1'){
 		}else{
 			var now_datetime=new Date();
-			the_datebigint=
+			the_datetimebigint=
 				now_datetime.getFullYear().toString()+
 				this.string_add_zero((now_datetime.getMonth()+1),2)+
 				this.string_add_zero(now_datetime.getDate(),2)+
@@ -518,7 +613,7 @@ var bill_core={
 				this.string_add_zero(now_datetime.getSeconds(),2);
 		}
 		
-		var the_match_result=the_datebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+		var the_match_result=the_datetimebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
 		if(the_match_result===null){
 			return '';
 		}else{
@@ -583,14 +678,14 @@ var bill_core={
 	 * 
 	 * 剖析日期 返回 相關資訊
 	 *
-	 * @param string the_datebigint 日期
+	 * @param string the_datetimebigint 日期
 	 * @return object
 	 */
-	'datebigint_parse':function(the_datebigint){
-		if(this.string_is_solid(the_datebigint)==='1'){
+	'datetimebigint_parse':function(the_datetimebigint){
+		if(this.string_is_solid(the_datetimebigint)==='1'){
 		}else{
 			var now_datetime=new Date();
-			the_datebigint=
+			the_datetimebigint=
 				now_datetime.getFullYear().toString()+
 				this.string_add_zero((now_datetime.getMonth()+1),2)+
 				this.string_add_zero(now_datetime.getDate(),2)+
@@ -599,7 +694,7 @@ var bill_core={
 				this.string_add_zero(now_datetime.getSeconds(),2);
 		}
 		
-		var the_match_result=the_datebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+		var the_match_result=the_datetimebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
 		if(the_match_result===null){
 			return '';
 		}else{
@@ -664,14 +759,14 @@ var bill_core={
 
 	/**
 	 * 
-	 * 將目前的日期時間以datebigint表示
+	 * 將目前的日期時間以datetimebigint表示
 	 *
 	 * @param bool hour_is_zero 小時是否為0
 	 * @param bool minute_is_zero 分鐘是否為0
 	 * @param bool second_is_zero 秒數是否為0
 	 * @return string
 	 */
-	'datebigint_now':function(hour_is_zero,minute_is_zero,second_is_zero){
+	'datetimebigint_now':function(hour_is_zero,minute_is_zero,second_is_zero){
 		var now_datetime=new Date(),
 		now_datetime_Y=now_datetime.getFullYear(),
 		now_datetime_m=this.string_add_zero(now_datetime.getMonth()+1,2),
@@ -699,22 +794,22 @@ var bill_core={
 
 	/**
 	 * 
-	 * 將datebigint資料轉換成日期物件
+	 * 將datetimebigint資料轉換成日期物件
 	 *
-	 * @param string source_datebigint 來源資料
+	 * @param string source_datetimebigint 來源資料
 	 * @return object
 	 */
-	'datebigint_to_Date':function(source_datebigint){
+	'datetimebigint_to_Date':function(source_datetimebigint){
 		var target_Date=null,
-		source_datebigint_info=this.datebigint_parse(source_datebigint)
+		source_datetimebigint_info=this.datetimebigint_parse(source_datetimebigint)
 		;
 		target_Date=new Date(
-			parseInt(source_datebigint_info['Y'],10), 
-			parseInt(source_datebigint_info['m'],10)-1, 
-			parseInt(source_datebigint_info['d'],10), 
-			parseInt(source_datebigint_info['H'],10), 
-			parseInt(source_datebigint_info['i'],10), 
-			parseInt(source_datebigint_info['s'],10), 
+			parseInt(source_datetimebigint_info['Y'],10), 
+			parseInt(source_datetimebigint_info['m'],10)-1, 
+			parseInt(source_datetimebigint_info['d'],10), 
+			parseInt(source_datetimebigint_info['H'],10), 
+			parseInt(source_datetimebigint_info['i'],10), 
+			parseInt(source_datetimebigint_info['s'],10), 
 			0
 		);
 		
@@ -724,17 +819,17 @@ var bill_core={
 	
 	/**
 	 * 
-	 * 對datebigint資料作日期時間新增操作
+	 * 對datetimebigint資料作日期時間新增操作
 	 *
-	 * @param  string source_datebigint 來源資料
+	 * @param  string source_datetimebigint 來源資料
 	 * @param number nums 單位數字
 	 * @param string nums_unit 單位
 	 * @return string
 	 */
-	'datebigint_add':function(source_datebigint, nums, nums_unit) {
-		var new_datebigint = '',
+	'datetimebigint_add':function(source_datetimebigint, nums, nums_unit) {
+		var new_datetimebigint = '',
 
-		source_Date=this.datebigint_to_Date(source_datebigint);
+		source_Date=this.datetimebigint_to_Date(source_datetimebigint);
 
 		switch (nums_unit) {
 			case 'year':
@@ -760,129 +855,129 @@ var bill_core={
 				break;
 			default:	
 		}
-		new_datebigint=this.Date_to_datebigint(source_Date);
-		return new_datebigint;
+		new_datetimebigint=this.Date_to_datetimebigint(source_Date);
+		return new_datetimebigint;
 	},
 
 	/**
 	 * 
-	 * datebigint資料之間的差距,a-b 回傳milliseconds
+	 * datetimebigint資料之間的差距,a-b 回傳milliseconds
 	 *
-	 * @param string a_datebigint
-	 * @param string b_datebigint
+	 * @param string a_datetimebigint
+	 * @param string b_datetimebigint
 	 * @return number
 	 */
-	'datebigint_diff':function(a_datebigint,b_datebigint) {
-		var datebigint_diff = '';
-		var a_Date=this.datebigint_to_Date(a_datebigint);
-		var b_Date=this.datebigint_to_Date(b_datebigint);
-		datebigint_diff=a_Date-b_Date;
-		return datebigint_diff;
+	'datetimebigint_diff':function(a_datetimebigint,b_datetimebigint) {
+		var datetimebigint_diff = '';
+		var a_Date=this.datetimebigint_to_Date(a_datetimebigint);
+		var b_Date=this.datetimebigint_to_Date(b_datetimebigint);
+		datetimebigint_diff=a_Date-b_Date;
+		return datetimebigint_diff;
 	},
 
 	
 	/**
 	 * 
-	 * 取得日期the_datebigint所屬禮拜的第一天datebigint
+	 * 取得日期the_datetimebigint所屬禮拜的第一天datetimebigint
 	 *
-	 * @param string the_datebigint
+	 * @param string the_datetimebigint
 	 * @return string
 	 */
-	'datebigint_week_start':function(the_datebigint) {
-		var return_datebigint;	
-		var op_datebigint;
+	'datetimebigint_week_start':function(the_datetimebigint) {
+		var return_datetimebigint;	
+		var op_datetimebigint;
 		var op_date;
-		if(this.string_is_solid(the_datebigint)==='1'){
-			op_datebigint=this.datebigint_trim_time(the_datebigint);
-			op_date=this.datebigint_to_Date(op_datebigint);
+		if(this.string_is_solid(the_datetimebigint)==='1'){
+			op_datetimebigint=this.datetimebigint_trim_time(the_datetimebigint);
+			op_date=this.datetimebigint_to_Date(op_datetimebigint);
 		}else{
-			op_datebigint=this.datebigint_now('1','1','1');
-			op_date=this.datebigint_to_Date(op_datebigint);
+			op_datetimebigint=this.datetimebigint_now('1','1','1');
+			op_date=this.datetimebigint_to_Date(op_datetimebigint);
 		}
 		
-		return_datebigint=this.datebigint_add(op_datebigint, -1*((op_date.getDay()-0)/1), 'day');
+		return_datetimebigint=this.datetimebigint_add(op_datetimebigint, -1*((op_date.getDay()-0)/1), 'day');
 		
-		return return_datebigint;
+		return return_datetimebigint;
 	},
 
 	/**
 	 * 
-	 * 去掉the_datebigint的時間部分
+	 * 去掉the_datetimebigint的時間部分
 	 *
-	 * @param string the_datebigint
+	 * @param string the_datetimebigint
 	 * @return string
 	 */
-	'datebigint_trim_time':function(the_datebigint) {
+	'datetimebigint_trim_time':function(the_datetimebigint) {
 
-		var op_datebigint;
-		if(this.string_is_solid(the_datebigint)==='1'){}else{
-			op_datebigint=this.datebigint_now('1','1','1');
-			return op_datebigint;
+		var op_datetimebigint;
+		if(this.string_is_solid(the_datetimebigint)==='1'){}else{
+			op_datetimebigint=this.datetimebigint_now('1','1','1');
+			return op_datetimebigint;
 		}
-		var temp_array=this.datebigint_parse(the_datebigint);
-		op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+'000000';
-		return op_datebigint;
+		var temp_array=this.datetimebigint_parse(the_datetimebigint);
+		op_datetimebigint=temp_array['Y']+temp_array['m']+temp_array['d']+'000000';
+		return op_datetimebigint;
 	},
 
 	/**
 	 * 
-	 * 去掉the_datebigint的分鐘秒數部分
+	 * 去掉the_datetimebigint的分鐘秒數部分
 	 *
-	 * @param string the_datebigint
+	 * @param string the_datetimebigint
 	 * @return string
 	 */
-	'datebigint_trim_minute_second':function(the_datebigint) {
+	'datetimebigint_trim_minute_second':function(the_datetimebigint) {
 
-		var op_datebigint;
-		if(this.string_is_solid(the_datebigint)==='1'){}else{
-			op_datebigint=this.datebigint_now('0','1','1');
-			return op_datebigint;
+		var op_datetimebigint;
+		if(this.string_is_solid(the_datetimebigint)==='1'){}else{
+			op_datetimebigint=this.datetimebigint_now('0','1','1');
+			return op_datetimebigint;
 		}
-		var temp_array=this.datebigint_parse(the_datebigint);
-		op_datebigint=temp_array['Y']+temp_array['m']+temp_array['d']+temp_array['H']+'0000';
-		return op_datebigint;
+		var temp_array=this.datetimebigint_parse(the_datetimebigint);
+		op_datetimebigint=temp_array['Y']+temp_array['m']+temp_array['d']+temp_array['H']+'0000';
+		return op_datetimebigint;
 	},
 
 	/**
 	 * 
-	 * datebigint資料之間的差距,a-b 回傳hours
+	 * datetimebigint資料之間的差距,a-b 回傳hours
 	 *
-	 * @param string a_datebigint
-	 * @param string b_datebigint
+	 * @param string a_datetimebigint
+	 * @param string b_datetimebigint
 	 * @return number
 	 */
-	'datebigint_hours_diff':function(a_datebigint,b_datebigint) {
-		var datebigint_diff = 0;
+	'datetimebigint_hours_diff':function(a_datetimebigint,b_datetimebigint) {
+		var datetimebigint_diff = 0;
 		if(
-			a_datebigint === undefined || 
-			b_datebigint === undefined
+			a_datetimebigint === undefined || 
+			b_datetimebigint === undefined
 		){
-			return datebigint_diff;
+			return datetimebigint_diff;
 		}
-		datebigint_diff=this.datebigint_diff(a_datebigint,b_datebigint);
-		datebigint_diff=datebigint_diff/1000/60/60;
-		return datebigint_diff;
+		datetimebigint_diff=this.datetimebigint_diff(a_datetimebigint,b_datetimebigint);
+		datetimebigint_diff=datetimebigint_diff/1000/60/60;
+		return datetimebigint_diff;
 	},
 
 	/**
 	 * 
-	 * datebigint資料之間的差距,a-b 回傳days
+	 * datetimebigint資料之間的差距,a-b 回傳days
 	 *
-	 * @param string a_datebigint
-	 * @param string b_datebigint
+	 * @param string a_datetimebigint
+	 * @param string b_datetimebigint
 	 * @return number
 	 */
-	'datebigint_days_diff':function(a_datebigint,b_datebigint) {
-		var datebigint_diff = 0;
+	'datetimebigint_days_diff':function(a_datetimebigint,b_datetimebigint) {
+		var datetimebigint_diff = 0;
 		if(
-			a_datebigint === undefined || 
-			b_datebigint === undefined
+			a_datetimebigint === undefined || 
+			b_datetimebigint === undefined
 		){
-			return datebigint_diff;
+			return datetimebigint_diff;
 		}
-		datebigint_diff=this.datebigint_diff(a_datebigint,b_datebigint);
-		datebigint_diff=datebigint_diff/1000/60/60/24;
-		return datebigint_diff;
+		datetimebigint_diff=this.datetimebigint_diff(a_datetimebigint,b_datetimebigint);
+		datetimebigint_diff=datetimebigint_diff/1000/60/60/24;
+		return datetimebigint_diff;
 	},
 	
 	/**
@@ -901,21 +996,21 @@ var bill_core={
 	
 	/**
 	 * 
-	 * 將日期物件轉換成datebigint資料
+	 * 將日期物件轉換成datetimebigint資料
 	 *
 	 * @param object source_Date 來源資料
 	 * @return string
 	 */
-	'Date_to_datebigint':function(source_Date){
-		var target_datebigint='';
-		target_datebigint=
+	'Date_to_datetimebigint':function(source_Date){
+		var target_datetimebigint='';
+		target_datetimebigint=
 				source_Date.getFullYear().toString()+
 				this.string_add_zero((source_Date.getMonth()+1),2)+
 				this.string_add_zero(source_Date.getDate(),2)+
 				this.string_add_zero(source_Date.getHours(),2)+
 				this.string_add_zero(source_Date.getMinutes(),2)+
 				this.string_add_zero(source_Date.getSeconds(),2);
-		return target_datebigint;
+		return target_datetimebigint;
 	},
 
 	/**
@@ -1419,7 +1514,101 @@ var bill_core={
 			return '0';
 		}
 	},
-	
+	'validate_inputs_data':function(inputs_data){
+		var return_result={
+			'code':'1',
+			'fails':{}
+		};
+		if(this.global_typeof(inputs_data)!=='object'){
+			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
+			return_result['code']='0';
+			return_result['fails']=null;
+			return return_result;
+		}
+		if( 
+			this.global_typeof(inputs_data['reg_1s'])!=='object' &&
+			this.global_typeof(inputs_data['reg_1s'])!=='null'
+		
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
+			return_result['code']='0';
+			return_result['fails']=null;
+			return return_result;
+		}
+		
+		var reg_1s=inputs_data['reg_1s'];
+		var values=inputs_data['values'];
+		var human_read_names=inputs_data['human_read_names'];
+		var error_msg_1s=inputs_data['error_msg_1s'];
+		
+		if( this.global_typeof(reg_1s)==='null' ){
+			return return_result;
+		}
+		if(this.global_typeof(values)!=='object'){
+			inputs_data['values']={};
+			values=inputs_data['values'];
+		}
+		if(this.global_typeof(human_read_names)!=='object'){
+			inputs_data['human_read_names']={};
+			human_read_names=inputs_data['human_read_names'];
+		}
+		if(this.global_typeof(error_msg_1s)!=='object'){
+			inputs_data['error_msg_1s']={};
+			error_msg_1s=inputs_data['error_msg_1s'];
+		}
+		
+		for(var the_input_name in reg_1s ){
+			var the_reg_1=reg_1s[the_input_name];
+			var the_value=values[the_input_name];
+			var the_human_read_name=human_read_names[the_input_name];
+			var the_error_msg_1=error_msg_1s[the_input_name];
+			if(this.global_typeof(the_value)!=='string'){
+				this.debug_console('bill_core.'+arguments.callee.name+' input '+the_input_name+' error!','error');
+				return_result['code']='0';
+				return_result['fails']=null;
+				break;
+			}
+			var temp_reg_tip=this.validate_regexp_tips[the_reg_1];
+			if(temp_reg_tip===undefined){
+				temp_reg_tip='請輸入正確的格式';
+			}
+			var temp_reg_1_obj=null
+			if(this.validate_regexp_items[the_reg_1]===undefined){
+				temp_reg_1_obj =new RegExp(the_reg_1);
+			}else{
+				temp_reg_1_obj = new RegExp(this.validate_regexp_items[the_reg_1]);
+			}
+
+			if(temp_reg_1_obj.test(the_value)){
+			}
+			else{
+				if( return_result.fails.hasOwnProperty(the_input_name)===false ){
+					return_result.fails[the_input_name]={
+						'value':null,
+						'human_read_name':null,
+						'error_msg_1':null,
+					};
+				}
+				return_result.fails[the_input_name]['value']=the_value;
+				if(this.global_typeof(the_human_read_name)==='string'){
+					return_result.fails[the_input_name]['human_read_name']=the_human_read_name;
+				}
+				if(this.global_typeof(the_error_msg_1)==='string'){
+					return_result.fails[the_input_name]['error_msg_1']=the_error_msg_1;
+				}
+				else{
+					return_result.fails[the_input_name]['error_msg_1']=temp_reg_tip;
+				}
+			}
+		}
+		if( Object.keys(return_result.fails).length==0 ){
+			return_result['fails']=null;
+		}else{
+			return_result['code']='0';
+		}
+		
+		return return_result;
+	},
 	'form_simulate_send':function(param1,param2,param3,param4){
 		//data
 		//data、url
