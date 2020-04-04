@@ -9,6 +9,7 @@ if(window.jQuery===undefined){
 
 
 var bill_core={
+	'base_url':'https://localhost/sitemaker/',
 	/**
 	 * 對原生JS變數資料型態再做更詳細更具體的分類
 	 *
@@ -155,7 +156,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split('; ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('MSIE ',temp_string)==='1'){
+				if(this.string_is_start_with(temp_string,'MSIE ')==='1'){
 					return_data['browser_version']=this.lobal_fetch_specific_string(temp_string,'MSIE ','');	
 					break;
 				}
@@ -176,7 +177,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split(' ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('Chrome/',temp_string)==='1'){
+				if(this.string_is_start_with(temp_string,'Chrome/')==='1'){
 					return_data['browser_version']=this.string_fetch_specific(temp_string,'Chrome/','');	
 					break;
 				}
@@ -186,7 +187,7 @@ var bill_core={
 			var temp_array=navigator.userAgent.split(' ');
 			for(var kindex in temp_array){
 				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('Safari/',temp_string)==='1'){
+				if(this.string_is_start_with(temp_string,'Safari/')==='1'){
 					return_data['browser_version']=this.string_fetch_specific(temp_string,'Safari/','');	
 					break;
 				}
@@ -229,28 +230,21 @@ var bill_core={
 		var human_read_names=return_data['human_read_names'];
 		var reg_1s=return_data['reg_1s'];
 		var error_msg_1s=return_data['error_msg_1s'];
-		var fetch_input_jquery_expression=
+		var fetch_input_jquery_expression_1=
 			'input[type="text"][name],'+
 			'input[type="radio"][name]:checked,'+
-			'input[type="checkbox"][name]:checked,'+
 			'input[type="hidden"][name],'+
-			'textarea[name],'+
-			'select[name]>option:selected';
-		var fetch_function=function(){
+			'input[type="password"][name],'+
+			'input[type="file"][name],'+
+			'textarea[name]'
+		var fetch_function_1=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
 			var the_input_human_read_name;
 			var the_input_reg_1;
 			var the_input_error_msg_1;
 			
-			if( the_input_jqobject.is('option') ){
-				var temp_select_jqobject=the_input_jqobject.parent();
-				the_input_name=temp_select_jqobject.attr('name');
-				the_input_human_read_name=temp_select_jqobject.attr('human_read_name');
-				the_input_reg_1=temp_select_jqobject.attr('reg_1');
-				the_input_error_msg_1=temp_select_jqobject.attr('error_msg_1');
-			}
-			else if(the_input_jqobject.is('input[type="text"],textarea')){
+			if(the_input_jqobject.is('input[type="text"],input[type="hidden"],input[type="password"],input[type="file"],textarea')){
 				the_input_name=the_input_jqobject.attr('name');
 				the_input_human_read_name=the_input_jqobject.attr('human_read_name');
 				the_input_reg_1=the_input_jqobject.attr('reg_1');
@@ -263,115 +257,179 @@ var bill_core={
 				return;
 			}
 			
-			if( the_input_jqobject.is('input[type="checkbox"]') ){
-				var the_input_value=the_input_jqobject.attr('value');
-				
-				if( values.hasOwnProperty(the_input_name)===false ){
-					values[the_input_name]=[];
-				}
-				values[the_input_name].push(the_input_value);
-			}
-			else if( the_input_jqobject.is('option') ){
-				var the_input_value=the_input_jqobject.attr('value');
-				if( values.hasOwnProperty(the_input_name)===false ){
-					if( the_input_jqobject.parent().is('[multiple]') ){
-						values[the_input_name]=[];
-					}else{
-						values[the_input_name]='';
-					}
-				}
-				if( the_input_jqobject.parent().is('[multiple]') ){
-					values[the_input_name].push(the_input_value);
+			if( the_input_jqobject.is('textarea') ){
+				if( the_input_jqobject.is('[component_type="ckeditor"]') ){
+					var the_input_value=jQuery.bill_bridge_ckeditor.real_objs[the_input_jqobject.attr('id')].getData();
 				}else{
-					values[the_input_name]=the_input_value;
+					var the_input_value=the_input_jqobject.val();
 				}
 				
-				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					if( human_read_names.hasOwnProperty(the_input_name)===false ){
-						human_read_names[the_input_name]='';
-					}
-					human_read_names[the_input_name]=the_input_human_read_name;
-				}
-				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-					if( reg_1s.hasOwnProperty(the_input_name)===false ){
-						reg_1s[the_input_name]='';
-					}
-					reg_1s[the_input_name]=the_input_reg_1;
-				}
-				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					if( error_msg_1s.hasOwnProperty(the_input_name)===false ){
-						error_msg_1s[the_input_name]='';
-					}
-					error_msg_1s[the_input_name]=the_input_error_msg_1;
-				}
-			}
-			else if( the_input_jqobject.is('textarea') ){
-				var the_input_value=the_input_jqobject.val();
-				if( values.hasOwnProperty(the_input_name)===false ){
-					values[the_input_name]='';	
-				}
 				values[the_input_name]=the_input_value;
 				
 				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					if( human_read_names.hasOwnProperty(the_input_name)===false ){
-						human_read_names[the_input_name]='';
-					}
+					
 					human_read_names[the_input_name]=the_input_human_read_name;
 				}
 				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-					if( reg_1s.hasOwnProperty(the_input_name)===false ){
-						reg_1s[the_input_name]='';
-					}
+					
 					reg_1s[the_input_name]=the_input_reg_1;
 				}
 				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					if( error_msg_1s.hasOwnProperty(the_input_name)===false ){
-						error_msg_1s[the_input_name]='';
-					}
+					
 					error_msg_1s[the_input_name]=the_input_error_msg_1;
 				}
 			}
 			else if( the_input_jqobject.is('input[type="text"]') ){
-				var the_input_value=the_input_jqobject.attr('value');
-				if( values.hasOwnProperty(the_input_name)===false ){
-					values[the_input_name]='';	
-				}
+				var the_input_value=the_input_jqobject.val();
+				
 				values[the_input_name]=the_input_value;
 				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					if( human_read_names.hasOwnProperty(the_input_name)===false ){
-						human_read_names[the_input_name]='';
-					}
+					
 					human_read_names[the_input_name]=the_input_human_read_name;
 				}
 				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-					if( reg_1s.hasOwnProperty(the_input_name)===false ){
-						reg_1s[the_input_name]='';
-					}
+				
 					reg_1s[the_input_name]=the_input_reg_1;
 				}
 				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					if( error_msg_1s.hasOwnProperty(the_input_name)===false ){
-						error_msg_1s[the_input_name]='';
-					}
+					
+					error_msg_1s[the_input_name]=the_input_error_msg_1;
+				}
+			}
+			else if( the_input_jqobject.is('input[type="file"]') ){
+				var the_input_value=the_input_jqobject.val();
+				
+				values[the_input_name]=the_input_value;
+				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+					
+					human_read_names[the_input_name]=the_input_human_read_name;
+				}
+				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+					
+					reg_1s[the_input_name]=the_input_reg_1;
+				}
+				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+					
 					error_msg_1s[the_input_name]=the_input_error_msg_1;
 				}
 			}
 			else{
-				var the_input_value=the_input_jqobject.attr('value');
-				if( values.hasOwnProperty(the_input_name)===false ){
-					values[the_input_name]='';	
+				var the_input_value=the_input_jqobject.val();
+				
+				values[the_input_name]=the_input_value;
+				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+					
+					human_read_names[the_input_name]=the_input_human_read_name;
+				}
+				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+					
+					reg_1s[the_input_name]=the_input_reg_1;
+				}
+				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+					
+					error_msg_1s[the_input_name]=the_input_error_msg_1;
 				}
 			}
 		}
-		if(fetch_way==='meets_the'){
-			jQuery(jquery_expression).filter(fetch_input_jquery_expression).each(
-				fetch_function
+		
+		var checkbox_values={};
+		var fetch_input_jquery_expression_2=
+			'input[type="checkbox"][name]:checked';
+		var fetch_function_2=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name;			
+			the_input_name=the_input_jqobject.attr('name');
+			
+			if( bill_core.string_is_solid(the_input_name)!=='1' ){
+				return;
+			}
+			var the_input_value=the_input_jqobject.attr('value');
+			
+			if( checkbox_values.hasOwnProperty(the_input_name)===false ){
+				checkbox_values[the_input_name]=[];
+			}
+			checkbox_values[the_input_name].push(the_input_value);
+		}
+		
+		var select_values={};
+		var fetch_input_jquery_expression_3=
+			'select[name]';
+		var fetch_function_3=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name;
+			var the_input_human_read_name;
+			var the_input_reg_1;
+			var the_input_error_msg_1;
+			
+			the_input_name=the_input_jqobject.attr('name');
+			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
+			the_input_reg_1=the_input_jqobject.attr('reg_1');
+			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
+		
+			if( bill_core.string_is_solid(the_input_name)!=='1' ){
+				return;
+			}
+			
+			if( select_values.hasOwnProperty(the_input_name)===false ){
+				select_values[the_input_name]=[];
+			}
+			the_input_jqobject.find('option:selected').each(
+				function(){
+					select_values[the_input_name].push($(this).attr('value'));
+				}
 			)
+			
+			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+			
+				human_read_names[the_input_name]=the_input_human_read_name;
+			}
+			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+				
+				reg_1s[the_input_name]=the_input_reg_1;
+			}
+			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+			
+				error_msg_1s[the_input_name]=the_input_error_msg_1;
+			}
+			
+		}
+		if(fetch_way==='meets_the'){
+			jQuery(jquery_expression).filter(fetch_input_jquery_expression_1).each(
+				fetch_function_1
+			);
+			jQuery(jquery_expression).filter(fetch_input_jquery_expression_2).each(
+				fetch_function_2
+			);
+			for(var input_name in checkbox_values){
+				values[input_name]=checkbox_values[input_name].join(',,,');
+			}
+			
+			jQuery(jquery_expression).filter(fetch_input_jquery_expression_3).each(
+				fetch_function_3
+			);
+			
+			for(var input_name in select_values){
+				values[input_name]=select_values[input_name].join(',,,');
+			}
+			
 		}
 		else if(fetch_way==='under_the'){
-			jQuery(jquery_expression).find(fetch_input_jquery_expression).each(
-				fetch_function
-			)
+			jQuery(jquery_expression).find(fetch_input_jquery_expression_1).each(
+				fetch_function_1
+			);
+			jQuery(jquery_expression).find(fetch_input_jquery_expression_2).each(
+				fetch_function_2
+			);
+			for(var input_name in checkbox_values){
+				values[input_name]=checkbox_values[input_name].join(',,,');
+			}
+			
+			jQuery(jquery_expression).find(fetch_input_jquery_expression_3).each(
+				fetch_function_3
+			);
+			for(var input_name in select_values){
+				values[input_name]=select_values[input_name].join(',,,');
+			}
 		}
 		
 		if( Object.keys(values).length==0 ){
@@ -407,17 +465,17 @@ var bill_core={
 	 * 
 	 * 檢查輸入的字串是否以特定字串開頭
 	 *
-	 * @param string subword 該特定字串
 	 * @param string testword 被檢查的字串
+	 * @param string subword 該特定字串
 	 * @return string
 	 */
-	'string_is_start_with':function(subword,testword) {
+	'string_is_start_with':function(testword,subword) {
 		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
 		
 		}else{
 			return '0';
 		}
-		var the_reg_pattern=new RegExp("^"+subword, '')
+		var the_reg_pattern=new RegExp("^"+this.validate_regexp_escape(subword), '')
 		if(the_reg_pattern.test(testword)){
 			return '1';
 		}else{
@@ -429,17 +487,17 @@ var bill_core={
 	 * 
 	 * 檢查輸入的字串是否以特定字串結尾
 	 *
-	 * @param string subword 該特定字串
 	 * @param string testword 被檢查的字串
+	 * @param string subword 該特定字串
 	 * @return string
 	 */
-	'string_is_end_with':function(subword,testword) {
+	'string_is_end_with':function(testword,subword) {
 		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
 		
 		}else{
 			return '0';
 		}
-		var the_reg_pattern=new RegExp(subword+'$', '')
+		var the_reg_pattern=new RegExp(this.validate_regexp_escape(subword)+'$', '')
 		if(the_reg_pattern.test(testword)){
 			return '1';
 		}else{
@@ -477,8 +535,8 @@ var bill_core={
 			return;
 		}
 		
-		start_string=this.regexp_escape(start_string);
-		end_string=this.regexp_escape(end_string);
+		start_string=this.validate_regexp_escape(start_string);
+		end_string=this.validate_regexp_escape(end_string);
 
 		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]+)'+end_string+'$');
 		var temp_result=temp_reg.exec(source_string);
@@ -581,7 +639,7 @@ var bill_core={
 			return;
 		}
 
-		end_string=this.regexp_escape(end_string);
+		end_string=this.validate_regexp_escape(end_string);
 		var temp_reg=new RegExp('^([\\s\\S]+)'+end_string+'$');
 		var temp_result=temp_reg.exec(source_string);
 		if(temp_result===null){
@@ -1281,7 +1339,38 @@ var bill_core={
 			return result_string;
 		}
 	},
-	
+	/**
+	 * 
+	 * 取得url的完整路徑
+	 * Ex: http://localhost/index.php
+	 *
+	 * @param string the_url 
+	 * @return string
+	 *
+	 */
+	'url_get_full':function(the_url){
+		var result_string='';
+		if(this.string_is_solid(the_url)==='1'){
+		
+		}else{
+			this.debug_console('bill_core.'+arguments.callee.name+' the_url error!','error');
+			return return_string;
+		}
+		if( this.string_is_start_with(the_url,'/')==='1' ){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_url format not support!','error');
+			return return_string;
+		}
+		if(
+			this.string_is_start_with(the_url,'http://')==='1' || 
+			this.string_is_start_with(the_url,'https://')==='1'
+		){
+			return_string=the_url;
+		}
+		else{
+			return_string=this.base_url+the_url;
+		}
+		return return_string;
+	},
 	/**
 	 * 
 	 * 將num四捨五入取到小數點第pos位
@@ -1347,43 +1436,45 @@ var bill_core={
 	 * 
 	 */
 	'validate_regexp_items':{
-		'required':'^[\\s\\S]+$',	
+		'rrequired':'^[\\s\\S]+$',
+		'orequired':'(^[\\s\\S]+$)|(^$)',
 		'rname':'^[\\s\\S]+$',
-		'oname':'^[\\s\\S]*$',
+		'oname':'(^[\\s\\S]+$)|(^$)',
 		'rchineseword':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d]+$',
 		'ochineseword':'(^[\\u4e00-\\u9fa5\\uf900-\\ufa2d]+$)|(^$)',
 		'rid':'^[a-zA-Z]{1}[\\s\\S]*$',
 		'oid':'(^[a-zA-Z]{1}[\\s\\S]*$)|(^$)',
-		'rrelativeurl':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d0-9a-zA-Z_\\/.?=&\\- %]+$',
-		'orelativeurl':'(^[\\u4e00-\\u9fa5\\uf900-\\ufa2d0-9a-zA-Z_\\/.?=&\\- %]+$)|(^$)',
+		'rrelativeurl':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d\\w\\/.?=&\\- %]+$',
+		'orelativeurl':'(^[\\u4e00-\\u9fa5\\uf900-\\ufa2d\\w\\/.?=&\\- %]+$)|(^$)',
 		'rsubject':'^[\\s\\S]+$',
-		'osubject':'^[\\s\\S]*$',
-		'raccount':'^[A-Za-z0-9_]+$',
-		'oaccount':'^[A-Za-z0-9_]*$',
-		'rpassword':'^[A-Za-z0-9_]{6,12}$',
-		'opassword':'(^[A-Za-z0-9_]{6,12}$)|(^$)',
-		'rpname':'^[A-Za-z0-9\\u4e00-\\u9fa5\\- \\/]+$',
-		'opname':'(^[A-Za-z0-9\\u4e00-\\u9fa5\\- \\/]+$)|(^$)',
-		'rnumber':'^\\d+$',
-		'onumber':'^\\d*$',
-		'rsnumber':'^[0-9\\+\\-]+$',
-		'osnumber':'^[0-9\\+\\-]*$',
-		'rfloat':'^[0-9.]+$',
-		'ofloat':'^[0-9.]*$',
-		'rgrpertimes':'^\\d{1,3}$',
-		'rgrprice':'^\\d{1,5}$',
-		'ogrprice':'^\\d{0,5}$',
-		'rtel':'^(\\(\\d+\\)){0,1}[\\d\\-\\+ #]+$',
-		'otel':'(^(\\(\\d+\\)){0,1}[\\d\\-\\+ #]+$)|(^$)',
-		'remail':'^[_0-9a-zA-Z.\\-]+@[0-9a-zA-Z\\-_]+(\\.[a-z]+)+$',
-		'oemail':'(^[_0-9a-zA-Z.\\-]+@[0-9a-zA-Z\\-_]+(\\.[a-z]+)+$)|(^$)',
-		'rdatetime':'(^\\d{4}-\\d{2}-\\d{2} [0-1][0-9]:[0-5][0-9]:[0-5][0-9]$)|(^\\d{4}-\\d{2}-\\d{2} [2][0-3]:[0-5][0-9]:[0-5][0-9]$)',
-		'odatetime':'(^\\d{4}-\\d{2}-\\d{2} [0-1][0-9]:[0-5][0-9]:[0-5][0-9]$)|(^\\d{4}-\\d{2}-\\d{2} [2][0-3]:[0-5][0-9]:[0-5][0-9]$)|(^$)',
-		'rdate':'^\\d{4}\\-\\d{2}\\-\\d{2}$',
-		'odate':'(^\\d{4}\\-\\d{2}\\-\\d{2}$)|(^$)',
-		'rtime':'(^[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$)|(^[2][0-3]:[0-5][0-9]:[0-5][0-9]$)',
-		'otime':'(^[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$)|(^[2][0-3]:[0-5][0-9]:[0-5][0-9]$)|(^$)',
-		
+		'osubject':'(^[\\s\\S]+$)|(^$)',
+		'raccount':'^[\\w]+$',
+		'oaccount':'(^[\\w]+$)|(^$)',
+		'rpassword':'^[\\w@]{6,30}$',
+		'opassword':'(^[\\w@]{6,30}$)|(^$)',
+		'rpname':'^[\\w\\u4e00-\\u9fa5\\- \\/]+$',
+		'opname':'(^[\\w\\u4e00-\\u9fa5\\- \\/]+$)|(^$)',
+		'rnumber':'^[\\d]+$',
+		'onumber':'(^[\\d]+$)|(^$)',
+		'inumber':'[^\\d]',
+		'rsnumber':'^[\\d\\+\\-]+$',
+		'osnumber':'(^[\\d\\+\\-]+$)|(^$)',
+		'rfloat':'^[\\d.]+$',
+		'ofloat':'(^[\\d.]+$)|(^$)',
+		'rgrpertimes':'^[\\d]{1,3}$',
+		'rgrprice':'^[\\d]{1,5}$',
+		'ogrprice':'(^[\\d]{1,5}$)|(^$)',
+		'rtel':'^(\\([\\d]+\\)){0,1}[\\d\\-\\+ #]+$',
+		'otel':'(^(\\([\\d]+\\)){0,1}[\\d\\-\\+ #]+$)|(^$)',
+		'remail':'^[_\\w\\.\\-]+@[\\w\\-]+(\\.[a-z]+)+$',
+		'oemail':'(^[_\\w\\.\\-]+@[\\w\\-]+(\\.[a-z]+)+$)|(^$)',
+		'iemail':'[^_0-9a-zA-Z\\.\\-@]',
+		'rdatetime':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[\\d]{4}-[\\d]{2}-[\\d]{2} [2][0-3]:[0-5][\\d]:[0-5][\\d]$)',
+		'odatetime':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[\\d]{4}-[\\d]{2}-[\\d]{2} [2][0-3]:[0-5][\\d]:[0-5][\\d]$)|(^$)',
+		'rdate':'^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$',
+		'odate':'(^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$)|(^$)',
+		'rtime':'(^[0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[2][0-3]:[0-5][\\d]:[0-5][\\d]$)',
+		'otime':'(^[0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[2][0-3]:[0-5][\\d]:[0-5][\\d]$)|(^$)',
 		'rmvfile':'(\\.[wW][mM]$)|(\\.[mM][pP][gG]$)|(\\.[mM][pP][eE][gG]$)|(\\.[wW][mM][vV]$)|(\\.[mM][pP]4$)|(\\.[aA][vV][iI]$)',
 		'omvfile':'(\\.[wW][mM]$)|(\\.[mM][pP][gG]$)|(\\.[mM][pP][eE][gG]$)|(\\.[wW][mM][vV]$)|(\\.[mM][pP]4$)|(\\.[aA][vV][iI]$)|(^$)',
 		'rflvfile':'(\\.[sS][wW][fF]$)|(\\.[fF][lL][vV]$)',
@@ -1397,24 +1488,23 @@ var bill_core={
 		'rdocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)',
 		'odocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)|(^$)',
 		'rpicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)',
-		'opicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)|(^$)',
-		'rvideofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)',
-		'ovideofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)|(^$)',
+		'opicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)|(^$)',		
+		'rhtml5videofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)',
+		'ohtml5videofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)|(^$)',
 		'rnormalfile':'(\\..+$)',
 		'onormalfile':'(\\..+$)|(^$)',
 		'rlegalfile':'[\\w.]+',
 		'olegalfile':'([\\w.]+)|(^$)',
-		
 		'rcontent':'^[\\s\\S]+$',
-		'ocontent':'^[\\s\\S]*$',
+		'ocontent':'(^[\\s\\S]+$)|(^$)',
 		'rwebsite':'^(http:\\/\\/|https:\\/\\/).+$',
 		'owebsite':'(^(http:\\/\\/|https:\\/\\/).+$)|(^$)',
-		'rmoneycode':'^[0-9]{3}\\-[0-9]{12,14}$',
-		'omoneycode':'(^[0-9]{3}\\-[0-9]{12,14}$)|(^$)',
+		'rmoneycode':'^[\\d]{3}\\-[\\d]{12,14}$',
+		'omoneycode':'(^[\\d]{3}\\-[\\d]{12,14}$)|(^$)',
 		'rnotadminurl':'^(?!admin\\/).+',
 		'onotadminurl':'(^(?!admin\\/).+)|(^$)',
-		'rlatlng':'^[0-9.\\,]+$',
-		'olatlng':'^[0-9.\\,]*$'
+		'rlatlng':'^[\\d.\\,]+$',
+		'olatlng':'(^[\\d.\\,]+$)|(^$)'
 	},
 
 	/**
@@ -1423,63 +1513,64 @@ var bill_core={
 	 * 
 	 */
 	'validate_regexp_tips':{
-		'required':'~輸入格式~<br/>1.必填',	
-		'rname':'~輸入格式~<br/>1.不得為空值',
-		'oname':'~輸入格式~<br/>1.可為空值',
-		'rchineseword':'~輸入格式~<br/>1.不得為空值<br/>2.需為中文字',
-		'ochineseword':'~輸入格式~<br/>1.可為空值<br/>2.需為中文字',
-		'rid':'~輸入格式~<br/>1.不得為空值<br/>2.第一個字元必須為英文字',
-		'oid':'~輸入格式~<br/>1.可為空值<br/>2.第一個字元必須為英文字',
-		'rrelativeurl':'~輸入格式~<br/>1.不得為空值<br/>2.大小寫英文字母或數字',
-		'orelativeurl':'~輸入格式~<br/>1.可為空值<br/>2.大小寫英文字母或數字',
-		'rsubject':'~輸入格式~<br/>1.不得為空值<br/>2.不得輸入單引號或雙引號',
-		'osubject':'~輸入格式~<br/>1.可為空值<br/>2.不得輸入單引號或雙引號',
-		'raccount':'~輸入格式~<br/>1.不得為空值<br/>2.大小寫英文字母或數字或底線',
-		'oaccount':'~輸入格式~<br/>1.可為空值<br/>2.大小寫英文字母或數字或底線',
-		'rpassword':'~輸入格式~<br/>1.不得為空值<br/>2.大小寫英文字母或數字或底線,6~12碼<br/>',
-		'opassword':'~輸入格式~<br/>1.可為空值<br/>2.大小寫英文字母或數字或底線,6~12碼<br/>',
-		'rpname':'~輸入格式~<br/>1.不得為空值<br/>2.大小寫英文字母或數字或中文字',
-		'opname':'~輸入格式~<br/>1.可為空值<br/>2.大小寫英文字母或數字或中文字',
-		'rnumber':'~輸入格式~<br/>1.不得為空值<br/>2.需為數字',
-		'onumber':'~輸入格式~<br/>1.可為空值<br/>2.需為數字',
-		'rwebsite':'~輸入格式~<br/>1.不得為空值<br/>2.開頭必須為http://或https://',
-		'owebsite':'~輸入格式~<br/>1.可為空值<br/>2.開頭必須為http://或https://',
-		'rtel':'~輸入格式~<br/>1.不得為空值<br/>2.數字及符號-()# <br />',
-		'otel':'~輸入格式~<br/>1.可為空值<br/>2.數字及符號-()# <br />',
-		'remail':'~輸入格式~<br/>1.不得為空值<br/>2.xxx@xxx.xxx',
-		'oemail':'~輸入格式~<br/>1.可為空值<br/>2.xxx@xxx.xxx',
-		'rdatetime':'~輸入格式~<br/>1.不得為空值<br/>2.xxxx-xx-xx xx:xx:xx',
-		'odatetime':'~輸入格式~<br/>1.可為為空值<br/>2.xxxx-xx-xx xx:xx:xx',
-		'rdate':'~輸入格式~<br/>1.不得為空值<br/>2.xxxx-xx-xx',
-		'odate':'~輸入格式~<br/>1.可為空值<br/>2.xxxx-xx-xx xx:xx:xx',
-		'rmvfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為wm或mpg或mpeg或wmv或mp4或avi',
-		'omvfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為wm或mpg或mpeg或wmv或mp4或avi',
-		'rflvfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為flv或swf',
-		'oflvfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為flv或swf',
-		'rdocfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為doc或docx或pdf或xls或xlsx',
-		'odocfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為doc或docx或pdf或xls或xlsx',
-		'rtxtfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為txt',
-		'otxtfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為txt',
-		'rcsvfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為csv',
-		'ocsvfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為csv',
-		'rxlsfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為xls',
-		'oxlsfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為xls',
-		'rpicfile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為jpg或jpeg或png或gif',
-		'opicfile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為jpg或jpeg或png或gif',
-		'rvideofile':'~輸入格式~<br/>1.不得為空值<br/>2.副檔名需為mp4或webm或ogv',
-		'ovideofile':'~輸入格式~<br/>1.可為空值<br/>2.副檔名需為mp4或webm或ogv',
-		'rnormalfile':'~輸入格式~<br/>1.不得為空值',
-		'onormalfile':'~輸入格式~<br/>1.可為空值',
-		'rcontent':'~輸入格式~<br/>1.不得為空值',
-		'ocontent':'~輸入格式~<br/>1.可為空值',
-		'rlegalfile':'~輸入格式~<br/>1.不得為空值<br/>2.大小寫英文字母或數字或_或.',
-		'olegalfile':'~輸入格式~<br/>1.可為空值<br/>2.大小寫英文字母或數字或_或.',
-		'rmoneycode':'~輸入格式~<br/>1.不得為空值<br/>2.接為數字，前三碼代表行號，其後12碼或14碼為帳號',
-		'omoneycode':'~輸入格式~<br/>1.可為空值<br/>2.接為數字，前三碼代表行號，其後12碼或14碼為帳號',
-		'rnotadminurl':'~輸入格式~<br/>1.不得為空值<br/>2.開頭不得為admin/',
-		'onotadminurl':'~輸入格式~<br/>1.可為空值<br/>2.開頭不得為admin/',
-		'rlatlng':'~輸入格式~<br/>1.不得為空值<br/>2.格式為 緯度,經度',
-		'olatlng':'~輸入格式~<br/>1.可為空值<br/>2.格式為 緯度,經度'
+		'rrequired':'~輸入格式~<br />1.必填',
+		'orequired':'~輸入格式~<br />1.非必填',	
+		'rname':'~輸入格式~<br />1.不得為空值',
+		'oname':'~輸入格式~<br />1.可為空值',
+		'rchineseword':'~輸入格式~<br />1.不得為空值<br />2.需為中文字',
+		'ochineseword':'~輸入格式~<br />1.可為空值<br />2.需為中文字',
+		'rid':'~輸入格式~<br />1.不得為空值<br />2.第一個字元必須為英文字',
+		'oid':'~輸入格式~<br />1.可為空值<br />2.第一個字元必須為英文字',
+		'rrelativeurl':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字',
+		'orelativeurl':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字',
+		'rsubject':'~輸入格式~<br />1.不得為空值<br />2.不得輸入單引號或雙引號',
+		'osubject':'~輸入格式~<br />1.可為空值<br />2.不得輸入單引號或雙引號',
+		'raccount':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或底線',
+		'oaccount':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或底線',
+		'rpassword':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或底線或@,6~30碼',
+		'opassword':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或底線或@,6~30碼',
+		'rpname':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或中文字',
+		'opname':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或中文字',
+		'rnumber':'~輸入格式~<br />1.不得為空值<br />2.需為數字',
+		'onumber':'~輸入格式~<br />1.可為空值<br />2.需為數字',
+		'rwebsite':'~輸入格式~<br />1.不得為空值<br />2.開頭必須為http://或https://',
+		'owebsite':'~輸入格式~<br />1.可為空值<br />2.開頭必須為http://或https://',
+		'rtel':'~輸入格式~<br />1.不得為空值<br />2.數字及符號-()# ',
+		'otel':'~輸入格式~<br />1.可為空值<br />2.數字及符號-()# ',
+		'remail':'~輸入格式~<br />1.不得為空值<br />2.xxx@xxx.xxx',
+		'oemail':'~輸入格式~<br />1.可為空值<br />2.xxx@xxx.xxx',
+		'rdatetime':'~輸入格式~<br />1.不得為空值<br />2.xxxx-xx-xx xx:xx:xx',
+		'odatetime':'~輸入格式~<br />1.可為為空值<br />2.xxxx-xx-xx xx:xx:xx',
+		'rdate':'~輸入格式~<br />1.不得為空值<br />2.xxxx-xx-xx',
+		'odate':'~輸入格式~<br />1.可為空值<br />2.xxxx-xx-xx xx:xx:xx',
+		'rmvfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為wm或mpg或mpeg或wmv或mp4或avi',
+		'omvfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為wm或mpg或mpeg或wmv或mp4或avi',
+		'rflvfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為flv或swf',
+		'oflvfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為flv或swf',
+		'rdocfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為doc或docx或pdf或xls或xlsx',
+		'odocfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為doc或docx或pdf或xls或xlsx',
+		'rtxtfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為txt',
+		'otxtfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為txt',
+		'rcsvfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為csv',
+		'ocsvfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為csv',
+		'rxlsfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為xls',
+		'oxlsfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為xls',
+		'rpicfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為jpg或jpeg或png或gif',
+		'opicfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為jpg或jpeg或png或gif',
+		'rhtml5videofile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為mp4或webm或ogv',
+		'ohtml5videofile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為mp4或webm或ogv',
+		'rnormalfile':'~輸入格式~<br />1.不得為空值',
+		'onormalfile':'~輸入格式~<br />1.可為空值',
+		'rcontent':'~輸入格式~<br />1.不得為空值',
+		'ocontent':'~輸入格式~<br />1.可為空值',
+		'rlegalfile':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或_或.',
+		'olegalfile':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或_或.',
+		'rmoneycode':'~輸入格式~<br />1.不得為空值<br />2.接為數字，前三碼代表行號，其後12碼或14碼為帳號',
+		'omoneycode':'~輸入格式~<br />1.可為空值<br />2.接為數字，前三碼代表行號，其後12碼或14碼為帳號',
+		'rnotadminurl':'~輸入格式~<br />1.不得為空值<br />2.開頭不得為admin/',
+		'onotadminurl':'~輸入格式~<br />1.可為空值<br />2.開頭不得為admin/',
+		'rlatlng':'~輸入格式~<br />1.不得為空值<br />2.格式為 緯度,經度',
+		'olatlng':'~輸入格式~<br />1.可為空值<br />2.格式為 緯度,經度'
 	},
 
 	/**
@@ -1492,7 +1583,7 @@ var bill_core={
 	 *
 	 *
 	 */
-	 'validate_string':function(validator_name,source_string){
+	'validate_string':function(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
 			alert('validator_name必須為字串');
 			return '0';
@@ -1513,6 +1604,24 @@ var bill_core={
 		}else{
 			return '0';
 		}
+	},
+	'validate_remove_illegal':function(validator_name,source_string){
+		if(this.global_typeof(validator_name)!=='string'){
+			alert('validator_name必須為字串');
+			return '0';
+		}
+		if(this.global_typeof(source_string)!=='string'){
+			alert('source_string必須為字串');
+			return '0';
+		}
+		
+		var temp_reg=null;
+		if(this.validate_regexp_items[validator_name]===undefined){
+			 temp_reg =new RegExp(validator_name,'g');
+		}else{
+			 temp_reg = new RegExp(this.validate_regexp_items[validator_name],'g');
+		}
+		return source_string.replace(temp_reg,'');
 	},
 	'validate_inputs_data':function(inputs_data){
 		var return_result={
@@ -1540,8 +1649,9 @@ var bill_core={
 		var values=inputs_data['values'];
 		var human_read_names=inputs_data['human_read_names'];
 		var error_msg_1s=inputs_data['error_msg_1s'];
-		
+	
 		if( this.global_typeof(reg_1s)==='null' ){
+			return_result['fails']=null;
 			return return_result;
 		}
 		if(this.global_typeof(values)!=='object'){
@@ -1572,7 +1682,8 @@ var bill_core={
 			if(temp_reg_tip===undefined){
 				temp_reg_tip='請輸入正確的格式';
 			}
-			var temp_reg_1_obj=null
+			var temp_reg_1_obj=null;
+			
 			if(this.validate_regexp_items[the_reg_1]===undefined){
 				temp_reg_1_obj =new RegExp(the_reg_1);
 			}else{
@@ -1593,6 +1704,9 @@ var bill_core={
 				if(this.global_typeof(the_human_read_name)==='string'){
 					return_result.fails[the_input_name]['human_read_name']=the_human_read_name;
 				}
+				else{
+					return_result.fails[the_input_name]['human_read_name']=the_input_name;
+				}
 				if(this.global_typeof(the_error_msg_1)==='string'){
 					return_result.fails[the_input_name]['error_msg_1']=the_error_msg_1;
 				}
@@ -1608,6 +1722,40 @@ var bill_core={
 		}
 		
 		return return_result;
+	},
+	'array_keep_solid_string_value':function(the_array){
+		if(this.global_typeof(the_array)!=='object'){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_array error!','error');
+			return;
+		}
+		for(var the_element_index in the_array){
+			var the_element_value=the_array[the_element_index];
+			if( this.string_is_solid(the_element_value)=='1' ){
+					
+			}
+			else{
+				the_array.splice(parseInt(the_element_index,10),1);
+			}
+		}
+		
+		return;
+	},
+	'object_keep_solid_string_value':function(the_object){
+		if(this.global_typeof(the_object)!=='object'){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_object error!','error');
+			return;
+		}
+		for(var the_attr_name in the_object){
+			var the_attr_value=the_object[the_attr_name];
+			if( this.string_is_solid(the_attr_value)=='1' ){
+					
+			}
+			else{
+				delete the_object[the_attr_name];
+			}
+		}
+		
+		return;
 	},
 	'form_simulate_send':function(param1,param2,param3,param4){
 		//data
@@ -1652,7 +1800,7 @@ var bill_core={
 			this.debug_console('bill_core.'+arguments.callee.name+' params2 error!','error');
 			return;
 		}
-		if( param2!=='name_and_value' && param2!=='json' ){
+		if( param2!=='name_and_value' && param2!=='json' && param2!=='dom' ){
 			this.debug_console('bill_core.'+arguments.callee.name+' params2 error!','error');
 			return;
 		}
@@ -1670,6 +1818,26 @@ var bill_core={
 		else if(param2==='json'){
 			bill_core.debug_console(
 				JSON.stringify(param1,null,'\t')
+			);
+		}
+		else if(param2==='dom'){
+			var temp_string = '{\n',
+				values = [],
+				counter = 0;
+			jQuery.each(param1, function(key, value) {
+			  if (value && value.nodeName) {
+				var domnode = '<' + value.nodeName.toLowerCase();
+				domnode += value.className ? ' class="' + value.className + '"' : '';
+				domnode += value.id ? ' id="' + value.id + '"' : '';
+				domnode += '>';
+				value = domnode;
+			  }
+			  values[counter++] = key + ': ' + value;
+			});
+			temp_string += values.join(',\n');
+			temp_string += '\n}';
+			bill_core.debug_console(
+				temp_string
 			);
 		}
 	},
@@ -1721,5 +1889,12 @@ var bill_core={
 		}
 		jQuery.ajax(ajax_settings);
 		
-	}
+	},
+	'number_is_solid':function(checked_var){
+		if(this.global_typeof(checked_var)!=='number'){
+			return '0';
+		}
+		
+		return '1';//若變數的資料型態是number，則返回'1'
+	},
 }
