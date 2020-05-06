@@ -1,8 +1,5 @@
 ﻿(function(jQuery,bill_core){
-	if(bill_core===undefined){
-		console.error('bill_core元件未啟動');
-		return;
-	}
+	
 	
 	//設定屬於bill_checkboxs_group專屬的元件函式或元件設定預設值
 	jQuery.bill_checkboxs_group={

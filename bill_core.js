@@ -557,21 +557,30 @@ var bill_core={
 	 * @return string
 	 *
 	 */
-	'string_add_zero':function(num,digits_count){
-		var return_string='00';
+	'string_add_zero':function(num,digits_count,radix){
+		var return_string='';
 		if(digits_count===undefined){
 			digits_count=2;
 		}
-		if(this.global_typeof(num)!=='number'){
-			return return_string;
-		}else{
-			return_string=num.toString();
+		if(radix===undefined){
+			radix=10;
 		}
-		if(num<Math.pow(10, digits_count-1)){
-			for(var zero_counts=digits_count-1;zero_counts>0;zero_counts=zero_counts-1){
-				return_string='0'+return_string;
+		if(this.global_typeof(num)!=='number'){
+			this.debug_console('bill_core.'+arguments.callee.name+' num error!','error');
+			return;
+		}else{
+			return_string=num.toString(radix);
+			if(digits_count<return_string.length){
+				this.debug_console('bill_core.'+arguments.callee.name+' num error!','error');
+				return;
 			}
-		}	
+		}
+		var zero_counts=digits_count-return_string.length;
+		
+		for( var temp_counts=1;temp_counts<=zero_counts;temp_counts++ ){
+			return_string='0'+return_string;
+		}
+			
 		return  return_string;
 	},
 
@@ -615,6 +624,43 @@ var bill_core={
 
 	/**
 	 * 
+	 * 若字串開始有出現特定字串則移除掉
+	 *
+	 * @param string source_string 要處理的來源字串
+	 * @param string start_string 該特定字串
+	 * @return string 返回一個處理過後的新字串
+	 *
+	 * 舉例:
+	 * var the_string='data_row_id_a80235';
+	 * var the_result_string=bill_core.string_remove_start(the_string,'data_row_id_');
+	 * console.log(the_result_string);
+	 * output為 a80235
+	 *
+	 */
+	'string_remove_start':function(source_string,start_string){
+		if(this.global_typeof(source_string)!=='string'){
+			alert('source_string argument error');
+			return;
+		}
+
+		if(this.global_typeof(start_string)!=='string'){
+			alert('start_string argument error');
+			return;
+		}
+
+		start_string=this.validate_regexp_escape(start_string);
+		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]+)$');
+		var temp_result=temp_reg.exec(source_string);
+		if(temp_result===null){
+			return '';
+		}else{
+			return temp_result[1];
+		}
+		
+	},
+	
+	/**
+	 * 
 	 * 若字串結尾有出現特定字串則移除掉
 	 *
 	 * @param string source_string 要處理的來源字串
@@ -623,7 +669,7 @@ var bill_core={
 	 *
 	 * 舉例:
 	 * var the_string='a80235_data_row_id';
-	 * var the_result_string=bill_core.global_remove_start_string(the_string,'_data_row_id');
+	 * var the_result_string=bill_core.string_remove_end(the_string,'_data_row_id');
 	 * console.log(the_result_string);
 	 * output為 a80235
 	 *
@@ -654,11 +700,11 @@ var bill_core={
 	 * 
 	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
 	 *
-	 * @param string the_format 格式
 	 * @param string the_datetimebigint 日期
+	 * @param string the_format 格式
 	 * @return string
 	 */
-	'datetimebigint_toFormattedString':function(the_format,the_datetimebigint){
+	'datetimebigint_toFormattedString':function(the_datetimebigint,the_format){
 		if(this.string_is_solid(the_datetimebigint)==='1'){
 		}else{
 			var now_datetime=new Date();
@@ -1371,6 +1417,17 @@ var bill_core={
 		}
 		return return_string;
 	},
+	'url_get_now_dir':function(){
+		var return_string='';
+		var temp_path=window.location.origin+window.location.pathname;
+		if( this.string_is_end_with(temp_path,'/')==='1' ){
+			return_string=temp_path;
+		}else{
+			var be_searched_index=temp_path.lastIndexOf('/');
+			return_string=temp_path.substring(0,be_searched_index+1);
+		}
+		return return_string;
+	},
 	/**
 	 * 
 	 * 將num四捨五入取到小數點第pos位
@@ -1485,8 +1542,8 @@ var bill_core={
 		'oxlsfile':'(\\.[xX][lL][sS]$)|(^$)',
 		'rtxtfile':'\\.[tT][xX][tT]$',
 		'otxtfile':'(\\.[tT][xX][tT]$)|(^$)',
-		'rdocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)',
-		'odocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)|(^$)',
+		'rdocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)|(\\.[cC][sS][vV]$)',
+		'odocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)|(\\.[cC][sS][vV]$)|(^$)',
 		'rpicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)',
 		'opicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)|(^$)',		
 		'rhtml5videofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)',
@@ -1547,8 +1604,8 @@ var bill_core={
 		'omvfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為wm或mpg或mpeg或wmv或mp4或avi',
 		'rflvfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為flv或swf',
 		'oflvfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為flv或swf',
-		'rdocfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為doc或docx或pdf或xls或xlsx',
-		'odocfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為doc或docx或pdf或xls或xlsx',
+		'rdocfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為doc或docx或pdf或xls或xlsx或csv',
+		'odocfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為doc或docx或pdf或xls或xlsx或csv',
 		'rtxtfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為txt',
 		'otxtfile':'~輸入格式~<br />1.可為空值<br />2.副檔名需為txt',
 		'rcsvfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為csv',
@@ -1862,10 +1919,10 @@ var bill_core={
 		}
 		var is_sync='1';
 		var context=null;
-		if(arguments.length==5 && (param5==='0' || param5==='1')){
+		if(arguments.length>=5 && (param5==='0' || param5==='1')){
 			is_sync=param5;
 		}
-		if(arguments.length==6 && this.global_typeof(param6)=='object'){
+		if(arguments.length>=6 && this.global_typeof(param6)=='object'){
 			context=param6;
 		}
 		
@@ -1876,11 +1933,13 @@ var bill_core={
 		   data:param2,
 		   success: param3,
 		   error:param4
-		};	
+		};
+	
 		
 		if(is_sync==='1'){
 			ajax_settings['async']=false;
 		}else{
+			
 			ajax_settings['async']=true;
 		}
 		
@@ -1897,4 +1956,28 @@ var bill_core={
 		
 		return '1';//若變數的資料型態是number，則返回'1'
 	},
+	'jquery_outer_html':function(jqobject){
+		return jQuery('<div></div>').append(jqobject.clone()).html();
+	},
+	'img_suitable_width':function(img_url,max_width){
+		var the_img_jqobject=jQuery("<img border='0' src='"+img_url+"' />");
+			
+		if(
+			bill_core.number_is_solid(max_width)==='1' &&
+			max_width>0
+		){
+		}else{
+			max_width=400;
+		}
+		var display_img_width=the_img_jqobject[0].naturalWidth;
+		alert(display_img_width);
+		if(display_img_width>max_width){
+			display_img_width=max_width;
+		}
+		if(display_img_width==0){
+			display_img_width=max_width;
+		}
+		
+		return display_img_width;
+	}
 }

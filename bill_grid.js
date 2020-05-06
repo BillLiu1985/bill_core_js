@@ -54,7 +54,8 @@
 				'sortby':'',
 				'nthpage':1,
 				'masterpage':''
-			}
+			},
+			'CSRF_TOKEN':''
 		}
 	};
 	

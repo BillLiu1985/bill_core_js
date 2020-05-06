@@ -13,7 +13,8 @@
 			//value1,,,value2,,,value3
 			'environment_data':'',
 			//value3
-			'default_value':''
+			'default_value':'',
+			'radio_extra_attrs':''
 		}
 	};
 	
@@ -130,7 +131,7 @@
 				
 				temp_html+=
 				(the_option_value==opts.default_value?'checked="checked" ':'')+
-				'value="'+the_option_value+'" />'+the_option_text+'&nbsp;';
+				'value="'+the_option_value+'" '+opts.radio_extra_attrs+' />'+the_option_text+'&nbsp;';
 				
 				if( kindex%opts.counts_width==(opts.counts_width-1) ){
 					temp_html+='</div>';

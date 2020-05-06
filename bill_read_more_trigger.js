@@ -20,7 +20,7 @@
 			if(
 				global_typeof(task_data)==='object' && 
 				global_typeof(task_data['element_id'])==='string' && 
-				global_is_solid_string(task_data['element_id']) &&
+				global_string_is_solid(task_data['element_id']) &&
 				global_typeof(task_data['content'])==='function' 
 			){
 				if(

@@ -48,10 +48,6 @@
 		
 		//若是呼叫物件方法
 		if(typeof(param1)=='string'){
-			if(bill_core.global_typeof(param2)!=='object'){
-				param2=[];
-			}
-			
 			if(
 				jqobject_scope_methods[param1]===undefined || 
 				typeof(jqobject_scope_methods[param1])!=='function'
@@ -60,7 +56,13 @@
 				return;
 			}
 			
-			return jqobject_scope_methods[param1].apply(get_jqobject,param2);
+			var temp_params=[];
+			for(var kindex in arguments){
+				if(kindex!=='0'){
+					temp_params.push(arguments[kindex]);
+				}
+			}
+			return jqobject_scope_methods[param1].apply(get_jqobject,temp_params);
 		}
 		
 		var want_set_opts={};
@@ -85,7 +87,7 @@
 			return;
 		}
 		if( jQuery.inArray(opts.file_type,['normal','pic','html5video','flash'])===-1 ){
-			bill_core.debug_console('bill_file_upload元件啟動失敗,input_name參數錯誤','error');
+			bill_core.debug_console('bill_file_upload元件啟動失敗,file_type參數錯誤','error');
 			return;
 		}
 		if( bill_core.global_typeof(opts.white_extensions)==='object' ){
@@ -102,9 +104,12 @@
 			if(opts.file_type=='normal'){
 				final_component_html+=
 				'<div id="'+component_id+'_preview">';
-				if( bill_core.string_is_solid(opts.process_download_url)==='1'){
+				if( 
+					bill_core.string_is_solid(opts.process_download_url)==='1' &&
+					bill_core.string_is_solid(opts.default_value)==='1'
+				){
 					final_component_html+=
-					'<a href="'+bill_core.base_url+opts.process_download_url+'">下載檔案</a>';
+					'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
 				}else{
 					final_component_html+=
 					'暫無檔案';
@@ -288,7 +293,7 @@
 				}
 			}
 			else{
-				final_component_html+='<input type="hidden"  name="'+opts.input_name+'_op" value="DO_ADD" />';	
+				final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
 			}
 			
 			
@@ -345,7 +350,20 @@
 					
 				}
 			);
-			
+			jQuery('#'+component_id+'_value').change(
+				function(){
+					if(bill_core.string_is_solid(opts.default_value)==='1'){
+						
+					}else{
+						
+						if($(this).val()===''){
+							jQuery("#"+component_id+'_op').val('DO_NO');
+						}else{
+							jQuery("#"+component_id+'_op').val('DO_ADD');
+						}
+					}
+				}
+			)
 			
 			jQuery('input:radio[name="'+opts.input_name+'_op"]:checked').change();
 			get_jqobject.attr('is_transformed_to_bill_file_upload','1');	
