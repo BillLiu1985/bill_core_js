@@ -303,7 +303,7 @@
 						opts.process_upload_url+'?ajax_func=delete_crop',
 						about_info,
 						function(about_info,textStatus,jqXHR){
-							if(about_info['code']=='1'){
+							if(about_info['code']==='1'){
 					
 								if(bill_core.string_is_solid(opts.default_value)==='1'){
 									jQuery("#"+component_id+'_op').val('DO_DELETE');
@@ -375,7 +375,7 @@
 						opts.process_upload_url+'?ajax_func=ok_crop',
 						about_info,
 						function(about_info,textStatus,jqXHR){
-							if(about_info['code']=='1'){
+							if(about_info['code']==='1'){
 								jQuery('#'+component_id+'_input').insertAfter(jQuery('#'+component_id+"_file_tip"));
 								jQuery('#'+component_id+'_input').removeAttr('name');
 								jQuery("#"+component_id+"_preview"+'>img').imgAreaSelect({remove:true});
@@ -464,7 +464,7 @@
 						opts.process_upload_url+'?ajax_func=cancel_crop',
 						about_info,
 						function(about_info,textStatus,jqXHR){
-							if(about_info['code']=='1'){
+							if(about_info['code']==='1'){
 								jQuery('#'+component_id+'_input').insertAfter(jQuery('#'+component_id+"_file_tip"));
 								jQuery('#'+component_id+'_input').removeAttr('name');
 								jQuery("#"+component_id+"_preview"+'>img').imgAreaSelect({remove:true});
@@ -553,7 +553,7 @@
 					bill_core.debug_console('about_info參數錯誤','error');
 					return;
 				}
-				if(about_info['code']=='1'){
+				if(about_info['code']==='1'){
 					var new_preview_html='';
 					var temp_style_string='';
 					temp_style_string+='width:'+opts.canvas_width+'px;';

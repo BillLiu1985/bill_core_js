@@ -443,7 +443,7 @@
 					bill_core.debug_console('about_info參數錯誤','error');
 					return;
 				}
-				if(about_info['code']=='1'){
+				if(about_info['code']==='1'){
 					
 					var new_preview_html='';
 					if(opts.file_type=='normal'){
