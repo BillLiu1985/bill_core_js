@@ -161,7 +161,7 @@
 				
 				if(the_component_type=='display_info'){
 					if(bill_core.global_typeof(temp_default_value)==='string'){
-						jQuery(this).text(temp_default_value);
+						jQuery(this).html(temp_default_value);
 					}
 				}
 				else if(the_component_type=='bill_checkboxs_group'){
@@ -362,7 +362,9 @@
 					
 					
 					temp_string=jQuery(this).attr('is_required');
-					temp_opts['is_required']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['is_required']=temp_string;
+					}
 					
 					
 					temp_string=jQuery(this).attr('white_extensions');
@@ -383,15 +385,22 @@
 					
 					
 					temp_string=jQuery(this).attr('file_tip');
-					temp_opts['file_tip']=temp_string;
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['file_tip']=temp_string;
+					}
 					
 					
 					temp_string=jQuery(this).attr('preview_width');
-					temp_opts['preview_width']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['preview_width']=parseInt(temp_string,10);
+					}
+					
 					
 					
 					temp_string=jQuery(this).attr('preview_height');
-					temp_opts['preview_height']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['preview_height']=parseInt(temp_string,10);
+					}
 					
 					
 					jQuery(this).bill_file_upload(
@@ -426,7 +435,6 @@
 					}
 					
 					temp_string=jQuery(this).attr('preview_width');
-					temp_opts['preview_width']=temp_string;
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['preview_width']=parseInt(temp_string,10);
 					}
@@ -434,25 +442,21 @@
 					
 					
 					temp_string=jQuery(this).attr('preview_height');
-					temp_opts['preview_height']=temp_string;
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['preview_height']=parseInt(temp_string,10);
 					}
 					
 					temp_string=jQuery(this).attr('output_width');
-					temp_opts['output_width']=temp_string;
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['output_width']=parseInt(temp_string,10);
 					}
 					
 					temp_string=jQuery(this).attr('output_height');
-					temp_opts['output_height']=temp_string;
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['output_height']=parseInt(temp_string,10);
 					}
 					
 					temp_string=jQuery(this).attr('is_required');
-					temp_opts['is_required']=temp_string;
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['is_required']=temp_string;
 					}
