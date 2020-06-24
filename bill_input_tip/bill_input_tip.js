@@ -6,7 +6,8 @@
 		'yOffset':20,
 		'input_jquery_expression':
 			'input[type="text"][tip][tip!=""],'+
-			'input[type="password"][tip][tip!=""]',
+			'input[type="password"][tip][tip!=""],'+
+			'textarea[tip][tip!=""]',
 		'attach':function(jquery_expression){
 			if(bill_core.global_typeof(jquery_expression)!=='string'){
 				bill_core.debug_console('jquery_expression error','error')

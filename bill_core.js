@@ -1507,6 +1507,8 @@ var bill_core={
 		'osubject':'(^[\\s\\S]+$)|(^$)',
 		'raccount':'^[\\w]+$',
 		'oaccount':'(^[\\w]+$)|(^$)',
+		'raccount_1':'^[\\w@]{8,}$',
+		'oaccount_1':'(^[\\w@]{8,}$)|(^$)',
 		'rpassword':'^[\\w@]{6,30}$',
 		'opassword':'(^[\\w@]{6,30}$)|(^$)',
 		'rpname':'^[\\w\\u4e00-\\u9fa5\\- \\/]+$',
@@ -1556,14 +1558,18 @@ var bill_core={
 		'olegalfile':'([\\w.]+)|(^$)',
 		'rcontent':'^[\\s\\S]+$',
 		'ocontent':'(^[\\s\\S]+$)|(^$)',
-		'rwebsite':'^(http:\\/\\/|https:\\/\\/).+$',
-		'owebsite':'(^(http:\\/\\/|https:\\/\\/).+$)|(^$)',
+		'rwebsite':'^(http://|https://).+$',
+		'owebsite':'(^(http://|https://).+$)|(^$)',
 		'rmoneycode':'^[\\d]{3}\\-[\\d]{12,14}$',
 		'omoneycode':'(^[\\d]{3}\\-[\\d]{12,14}$)|(^$)',
-		'rnotadminurl':'^(?!admin\\/).+',
-		'onotadminurl':'(^(?!admin\\/).+)|(^$)',
+		'rnotadminurl':'^(?!admin/).+',
+		'onotadminurl':'(^(?!admin/).+)|(^$)',
 		'rlatlng':'^[\\d.\\,]+$',
-		'olatlng':'(^[\\d.\\,]+$)|(^$)'
+		'olatlng':'(^[\\d.\\,]+$)|(^$)',
+		'rcolorcode':'^#[0-9A-F]{6}$',
+		'ocolorcode':'(^#[0-9A-F]{6}$)|(^$)',
+		'rtwvatnumber':'^[0-9]{8}$',
+		'otwvatnumber':'(^[0-9]{8}$)|(^$)'
 	},
 
 	/**
@@ -1586,12 +1592,16 @@ var bill_core={
 		'osubject':'~輸入格式~<br />1.可為空值<br />2.不得輸入單引號或雙引號',
 		'raccount':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或底線',
 		'oaccount':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或底線',
+		'raccount_1':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或底線或@,8碼以上',
+		'oaccount_1':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或底線或@,8碼以上',
 		'rpassword':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或底線或@,6~30碼',
 		'opassword':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或底線或@,6~30碼',
 		'rpname':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或中文字',
 		'opname':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或中文字',
 		'rnumber':'~輸入格式~<br />1.不得為空值<br />2.需為數字',
 		'onumber':'~輸入格式~<br />1.可為空值<br />2.需為數字',
+		'rfloat':'~輸入格式~<br />1.不得為空值<br />2.需為浮點數',
+		'ofloat':'~輸入格式~<br />1.可為空值<br />2.需為浮點數',
 		'rnumber_greater_than_0':'~輸入格式~<br />1.不得為空值<br />2.需為大於0的數字',
 		'onumber_greater_than_0':'~輸入格式~<br />1.可為空值<br />2.需為大於0的數字',
 		'rwebsite':'~輸入格式~<br />1.不得為空值<br />2.開頭必須為http://或https://',
@@ -1631,7 +1641,11 @@ var bill_core={
 		'rnotadminurl':'~輸入格式~<br />1.不得為空值<br />2.開頭不得為admin/',
 		'onotadminurl':'~輸入格式~<br />1.可為空值<br />2.開頭不得為admin/',
 		'rlatlng':'~輸入格式~<br />1.不得為空值<br />2.格式為 緯度,經度',
-		'olatlng':'~輸入格式~<br />1.可為空值<br />2.格式為 緯度,經度'
+		'olatlng':'~輸入格式~<br />1.可為空值<br />2.格式為 緯度,經度',
+		'rcolorcode':'~輸入格式~<br />1.不得為空值<br />2.開頭為#，之後固定6碼，A至F 0至9',
+		'ocolorcode':'~輸入格式~<br />1.可為空值<br />2.開頭為#，之後固定6碼，A至F 0至9',
+		'rtwvatnumber':'~輸入格式~<br />1.不得為空值<br />2.固定8碼，0至9',
+		'otwvatnumber':'~輸入格式~<br />1.可為空值<br />2.固定8碼，0至9'
 	},
 
 	/**
