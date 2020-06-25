@@ -9,7 +9,10 @@ if(window.jQuery===undefined){
 
 
 var bill_core={
-	'base_url':'https://localhost/sitemaker/',
+	/*
+		場景目錄，每個場景目錄都有自己的js資料夾
+	*/
+	'base_url':'',
 	/**
 	 * 對原生JS變數資料型態再做更詳細更具體的分類
 	 *
