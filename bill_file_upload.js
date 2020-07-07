@@ -4,6 +4,7 @@
 
 	jQuery.bill_file_upload={
 		'defaults':{
+			'preview_base_url':'',
 			'input_name':'',
 			//normal,pic,html5video,flash
 			'file_type':'pic',
@@ -129,12 +130,16 @@
 					){
 						temp_style_string+='width:'+opts.preview_width+'px;';
 					}
+					
+					
 					if( 
 						bill_core.number_is_solid(opts.preview_height)==='1' &&
 						opts.preview_height>0
 					){
 						temp_style_string+='height:'+opts.preview_height+'px;';
 					}
+					
+					
 					if(temp_style_string!=''){
 						temp_style_string='style="'+temp_style_string+'"';
 					}
@@ -142,7 +147,7 @@
 						
 						final_component_html+=
 						'<img border="0" '+temp_style_string+' src="'+
-						bill_core.url_get_full(opts.default_value)+'" />';
+						opts.preview_base_url+opts.default_value+'" />';
 					}
 					else{
 						final_component_html+=
@@ -161,12 +166,15 @@
 				){
 					temp_style_string+='width:'+opts.preview_width+'px;';
 				}
+				
+				
 				if( 
 					bill_core.number_is_solid(opts.preview_height)==='1' &&
 					opts.preview_height>0
 				){
 					temp_style_string+='height:'+opts.preview_height+'px;';
 				}
+				
 				if(temp_style_string!=''){
 					temp_style_string='style="'+temp_style_string+'"';
 				}
@@ -180,7 +188,7 @@
 					}
 					final_component_html+=
 					'<video '+temp_style_string+'  controls="controls">'+
-						'<source src="'+bill_core.url_get_full(opts.default_value)+'" type="'+temp_mime+'" />'+
+						'<source src="'+opts.preview_base_url+opts.default_value+'" type="'+temp_mime+'" />'+
 						'Your browser does not support the video tag.'+
 					'</video>';
 				}
@@ -207,21 +215,17 @@
 					){
 						temp_attrs_string+=' width="'+opts.preview_width+'" ';
 					}
-					else{
-						temp_attrs_string+=' width="600" ';
-					}
+					
 					if( 
 						bill_core.number_is_solid(opts.preview_height)==='1' &&
 						opts.preview_height>0
 					){
 						temp_attrs_string+=' height="'+opts.preview_height+'" ';
 					}
-					else{
-						temp_attrs_string+=' height="400" ';
-					}
+					
 					
 					final_component_html+=
-					'<embed src="'+bill_core.url_get_full(opts.default_value)+'" '+temp_attrs_string+'  ></embed>';
+					'<embed src="'+opts.preview_base_url+opts.default_value+'" '+temp_attrs_string+'  ></embed>';
 				
 				}
 				else{
