@@ -655,7 +655,7 @@ var bill_core={
 		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]+)$');
 		var temp_result=temp_reg.exec(source_string);
 		if(temp_result===null){
-			return '';
+			return source_string;
 		}else{
 			return temp_result[1];
 		}
@@ -692,7 +692,7 @@ var bill_core={
 		var temp_reg=new RegExp('^([\\s\\S]+)'+end_string+'$');
 		var temp_result=temp_reg.exec(source_string);
 		if(temp_result===null){
-			return '';
+			return source_string;
 		}else{
 			return temp_result[1];
 		}
@@ -772,9 +772,12 @@ var bill_core={
 			var the_parsed_second=the_match_result[6];
 		
 			return the_format.replace('Y',the_parsed_year).
+			replace('y',the_parsed_year.substr(-2)).
 			replace('m',the_parsed_month).
+			replace('n',this.string_remove_start(the_parsed_month,'0')).
 			replace('M',the_parsed_month_alias_1).
 			replace('d',the_parsed_day).
+			replace('j',this.string_remove_start(the_parsed_day,'0')).
 			replace('H',the_parsed_hour).
 			replace('i',the_parsed_minute).
 			replace('s',the_parsed_second);
@@ -1119,7 +1122,84 @@ var bill_core={
 				this.string_add_zero(source_Date.getSeconds(),2);
 		return target_datetimebigint;
 	},
-
+	
+	/**
+	 * 
+	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
+	 *
+	 * @param object source_Date 日期
+	 * @param string the_format 格式
+	 * @return string
+	 */
+	'Date_toFormattedString':function(source_Date,the_format){
+		if(source_Date instanceof Date){
+		}else{
+			source_Date=new Date();
+		}
+		
+		
+		var the_parsed_year=source_Date.getFullYear().toString();
+		var the_parsed_month=this.string_add_zero((source_Date.getMonth()+1),2);
+		var the_parsed_month_alias_1='';
+		switch(the_parsed_month) {
+			case '01':
+				the_parsed_month_alias_1='Jan';
+				break;
+			case '02':
+				the_parsed_month_alias_1='Feb';
+				break;
+			case '03':
+				the_parsed_month_alias_1='Mar';
+				break;
+			case '04':
+				the_parsed_month_alias_1='Apr';
+				break;
+			case '05':
+				the_parsed_month_alias_1='May';
+				break;
+			case '06':
+				the_parsed_month_alias_1='Jun';
+				break;
+			case '07':
+				the_parsed_month_alias_1='Jul';
+				break;
+			case '08':
+				the_parsed_month_alias_1='Aug';
+				break;
+			case '09':
+				the_parsed_month_alias_1='Sep';
+				break;
+			case '10':
+				the_parsed_month_alias_1='Oct';
+				break;
+			case '11':
+				the_parsed_month_alias_1='Nov';
+				break;
+			case '12':
+				the_parsed_month_alias_1='Dec';
+				break;				
+			default:
+		}
+		
+		
+		var the_parsed_day=this.string_add_zero(source_Date.getDate(),2);
+		var the_parsed_hour=this.string_add_zero(source_Date.getHours(),2);
+		var the_parsed_minute=this.string_add_zero(source_Date.getMinutes(),2);
+		var the_parsed_second=this.string_add_zero(source_Date.getSeconds(),2);
+	
+		return the_format.replace('Y',the_parsed_year).
+		replace('y',the_parsed_year.substr(-2)).
+		replace('m',the_parsed_month).
+		replace('n',this.string_remove_start(the_parsed_month,'0')).
+		replace('M',the_parsed_month_alias_1).
+		replace('d',the_parsed_day).
+		replace('j',this.string_remove_start(the_parsed_day,'0')).
+		replace('H',the_parsed_hour).
+		replace('i',the_parsed_minute).
+		replace('s',the_parsed_second);
+		
+	},
+	
 	/**
 	 * 
 	 * 讓js的執行停頓x秒
