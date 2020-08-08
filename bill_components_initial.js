@@ -356,6 +356,8 @@
 					var temp_string=jQuery(this).attr('file_type');
 					temp_opts['file_type']=temp_string;
 					
+					temp_string=jQuery(this).attr('preview_base_url');
+					temp_opts['preview_base_url']=temp_string;
 					
 					temp_string=jQuery(this).attr('process_download_url');
 					temp_opts['process_download_url']=temp_string;

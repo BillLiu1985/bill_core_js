@@ -9,7 +9,10 @@ if(window.jQuery===undefined){
 
 
 var bill_core={
-	'base_url':'https://localhost/sitemaker/',
+	/*
+		場景目錄，每個場景目錄都有自己的js資料夾
+	*/
+	'base_url':'',
 	/**
 	 * 對原生JS變數資料型態再做更詳細更具體的分類
 	 *
@@ -664,7 +667,7 @@ var bill_core={
 		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]+)$');
 		var temp_result=temp_reg.exec(source_string);
 		if(temp_result===null){
-			return '';
+			return source_string;
 		}else{
 			return temp_result[1];
 		}
@@ -701,7 +704,7 @@ var bill_core={
 		var temp_reg=new RegExp('^([\\s\\S]+)'+end_string+'$');
 		var temp_result=temp_reg.exec(source_string);
 		if(temp_result===null){
-			return '';
+			return source_string;
 		}else{
 			return temp_result[1];
 		}
@@ -781,9 +784,12 @@ var bill_core={
 			var the_parsed_second=the_match_result[6];
 		
 			return the_format.replace('Y',the_parsed_year).
+			replace('y',the_parsed_year.substr(-2)).
 			replace('m',the_parsed_month).
+			replace('n',this.string_remove_start(the_parsed_month,'0')).
 			replace('M',the_parsed_month_alias_1).
 			replace('d',the_parsed_day).
+			replace('j',this.string_remove_start(the_parsed_day,'0')).
 			replace('H',the_parsed_hour).
 			replace('i',the_parsed_minute).
 			replace('s',the_parsed_second);
@@ -1128,7 +1134,84 @@ var bill_core={
 				this.string_add_zero(source_Date.getSeconds(),2);
 		return target_datetimebigint;
 	},
-
+	
+	/**
+	 * 
+	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
+	 *
+	 * @param object source_Date 日期
+	 * @param string the_format 格式
+	 * @return string
+	 */
+	'Date_toFormattedString':function(source_Date,the_format){
+		if(source_Date instanceof Date){
+		}else{
+			source_Date=new Date();
+		}
+		
+		
+		var the_parsed_year=source_Date.getFullYear().toString();
+		var the_parsed_month=this.string_add_zero((source_Date.getMonth()+1),2);
+		var the_parsed_month_alias_1='';
+		switch(the_parsed_month) {
+			case '01':
+				the_parsed_month_alias_1='Jan';
+				break;
+			case '02':
+				the_parsed_month_alias_1='Feb';
+				break;
+			case '03':
+				the_parsed_month_alias_1='Mar';
+				break;
+			case '04':
+				the_parsed_month_alias_1='Apr';
+				break;
+			case '05':
+				the_parsed_month_alias_1='May';
+				break;
+			case '06':
+				the_parsed_month_alias_1='Jun';
+				break;
+			case '07':
+				the_parsed_month_alias_1='Jul';
+				break;
+			case '08':
+				the_parsed_month_alias_1='Aug';
+				break;
+			case '09':
+				the_parsed_month_alias_1='Sep';
+				break;
+			case '10':
+				the_parsed_month_alias_1='Oct';
+				break;
+			case '11':
+				the_parsed_month_alias_1='Nov';
+				break;
+			case '12':
+				the_parsed_month_alias_1='Dec';
+				break;				
+			default:
+		}
+		
+		
+		var the_parsed_day=this.string_add_zero(source_Date.getDate(),2);
+		var the_parsed_hour=this.string_add_zero(source_Date.getHours(),2);
+		var the_parsed_minute=this.string_add_zero(source_Date.getMinutes(),2);
+		var the_parsed_second=this.string_add_zero(source_Date.getSeconds(),2);
+	
+		return the_format.replace('Y',the_parsed_year).
+		replace('y',the_parsed_year.substr(-2)).
+		replace('m',the_parsed_month).
+		replace('n',this.string_remove_start(the_parsed_month,'0')).
+		replace('M',the_parsed_month_alias_1).
+		replace('d',the_parsed_day).
+		replace('j',this.string_remove_start(the_parsed_day,'0')).
+		replace('H',the_parsed_hour).
+		replace('i',the_parsed_minute).
+		replace('s',the_parsed_second);
+		
+	},
+	
 	/**
 	 * 
 	 * 讓js的執行停頓x秒
@@ -1525,25 +1608,31 @@ var bill_core={
 		'opassword':'(^[\\w@]{6,30}$)|(^$)',
 		'rpname':'^[\\w\\u4e00-\\u9fa5\\- \\/]+$',
 		'opname':'(^[\\w\\u4e00-\\u9fa5\\- \\/]+$)|(^$)',
+		'inumber':'[^\\d]',
 		'rnumber':'^[\\d]+$',
 		'onumber':'(^[\\d]+$)|(^$)',
 		'rnumber_greater_than_0':'^[1-9]{1}[\\d]*$',
 		'onumber_greater_than_0':'(^[1-9]{1}[\\d]*$)|(^$)',
-		'inumber':'[^\\d]',
 		'rsnumber':'^[\\d\\+\\-]+$',
 		'osnumber':'(^[\\d\\+\\-]+$)|(^$)',
 		'rfloat':'^[\\d.]+$',
 		'ofloat':'(^[\\d.]+$)|(^$)',
+		'rpositivenumber':'^[\\d]+$',
+		'opositivenumber':'(^[\\d]+$)|(^$)',
+		'rnegativenumber':'^-[\\d]+$',
+		'onegativenumber':'(^-[\\d]+$)|(^$)',
 		'rgrpertimes':'^[\\d]{1,3}$',
 		'rgrprice':'^[\\d]{1,5}$',
 		'ogrprice':'(^[\\d]{1,5}$)|(^$)',
 		'rtel':'^(\\([\\d]+\\)){0,1}[\\d\\-\\+ #]+$',
 		'otel':'(^(\\([\\d]+\\)){0,1}[\\d\\-\\+ #]+$)|(^$)',
+		'iemail':'[^_0-9a-zA-Z\\.\\-@]',
 		'remail':'^[_\\w\\.\\-]+@[\\w\\-]+(\\.[a-z]+)+$',
 		'oemail':'(^[_\\w\\.\\-]+@[\\w\\-]+(\\.[a-z]+)+$)|(^$)',
-		'iemail':'[^_0-9a-zA-Z\\.\\-@]',
 		'rdatetime':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[\\d]{4}-[\\d]{2}-[\\d]{2} [2][0-3]:[0-5][\\d]:[0-5][\\d]$)',
 		'odatetime':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[\\d]{4}-[\\d]{2}-[\\d]{2} [2][0-3]:[0-5][\\d]:[0-5][\\d]$)|(^$)',
+		'rdatetime_no_second':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]$)|(^[\\d]{4}-\\d{2}-\\d{2} [2][0-3]:[0-5][\\d]$)',
+		'odatetime_no_second':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]$)|(^[\\d]{4}-\\d{2}-\\d{2} [2][0-3]:[0-5][\\d]$)|(^$)',
 		'rdate':'^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$',
 		'odate':'(^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$)|(^$)',
 		'rtime':'(^[0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[2][0-3]:[0-5][\\d]:[0-5][\\d]$)',
@@ -1574,6 +1663,8 @@ var bill_core={
 		'owebsite':'(^(http://|https://).+$)|(^$)',
 		'rmoneycode':'^[\\d]{3}\\-[\\d]{12,14}$',
 		'omoneycode':'(^[\\d]{3}\\-[\\d]{12,14}$)|(^$)',
+		'ryoutubevideourl':'^http://www\\.youtube\\.com\\/watch[?]v=([\\w\\-]{11})',
+		'oyoutubevideourl':'(^http://www\\.youtube\\.com\\/watch[?]v=([\\w\\-]{11}))|(^$)',
 		'rnotadminurl':'^(?!admin/).+',
 		'onotadminurl':'(^(?!admin/).+)|(^$)',
 		'rlatlng':'^[\\d.\\,]+$',
@@ -1610,20 +1701,28 @@ var bill_core={
 		'opassword':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或底線或@,6~30碼',
 		'rpname':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或中文字',
 		'opname':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或中文字',
+		'inumber':'非數字',
 		'rnumber':'~輸入格式~<br />1.不得為空值<br />2.需為數字',
 		'onumber':'~輸入格式~<br />1.可為空值<br />2.需為數字',
+		'rsnumber':'~輸入格式~<br />1.不得為空值<br />2.需為數字,+,-',
+		'osnumber':'~輸入格式~<br />1.可為空值<br />2.需為數字,+,-',
 		'rfloat':'~輸入格式~<br />1.不得為空值<br />2.需為浮點數',
 		'ofloat':'~輸入格式~<br />1.可為空值<br />2.需為浮點數',
+		'rpositivenumber':'~輸入格式~<br />1.不得為空值<br />2.需為正整數',
+		'opositivenumber':'~輸入格式~<br />1.可為空值<br />2.需為正整數',
+		'rnegativenumber':'~輸入格式~<br />1.不得為空值<br />2.需為負整數',
+		'onegativenumber':'~輸入格式~<br />1.可為空值<br />2.需為負整數',
 		'rnumber_greater_than_0':'~輸入格式~<br />1.不得為空值<br />2.需為大於0的數字',
 		'onumber_greater_than_0':'~輸入格式~<br />1.可為空值<br />2.需為大於0的數字',
-		'rwebsite':'~輸入格式~<br />1.不得為空值<br />2.開頭必須為http://或https://',
-		'owebsite':'~輸入格式~<br />1.可為空值<br />2.開頭必須為http://或https://',
 		'rtel':'~輸入格式~<br />1.不得為空值<br />2.數字及符號-()# ',
 		'otel':'~輸入格式~<br />1.可為空值<br />2.數字及符號-()# ',
+		'iemail':'非email格式所允許的字元',
 		'remail':'~輸入格式~<br />1.不得為空值<br />2.xxx@xxx.xxx',
 		'oemail':'~輸入格式~<br />1.可為空值<br />2.xxx@xxx.xxx',
 		'rdatetime':'~輸入格式~<br />1.不得為空值<br />2.xxxx-xx-xx xx:xx:xx',
 		'odatetime':'~輸入格式~<br />1.可為為空值<br />2.xxxx-xx-xx xx:xx:xx',
+		'rdatetime_no_second':'~輸入格式~<br />1.不得為空值<br />2.xxxx-xx-xx xx:xx',
+		'odatetime_no_second':'~輸入格式~<br />1.可為為空值<br />2.xxxx-xx-xx xx:xx',
 		'rdate':'~輸入格式~<br />1.不得為空值<br />2.xxxx-xx-xx',
 		'odate':'~輸入格式~<br />1.可為空值<br />2.xxxx-xx-xx xx:xx:xx',
 		'rmvfile':'~輸入格式~<br />1.不得為空值<br />2.副檔名需為wm或mpg或mpeg或wmv或mp4或avi',
@@ -1646,10 +1745,14 @@ var bill_core={
 		'onormalfile':'~輸入格式~<br />1.可為空值',
 		'rcontent':'~輸入格式~<br />1.不得為空值',
 		'ocontent':'~輸入格式~<br />1.可為空值',
+		'rwebsite':'~輸入格式~<br />1.不得為空值<br />2.開頭必須為http://或https://',
+		'owebsite':'~輸入格式~<br />1.可為空值<br />2.開頭必須為http://或https://',
 		'rlegalfile':'~輸入格式~<br />1.不得為空值<br />2.大小寫英文字母或數字或_或.',
 		'olegalfile':'~輸入格式~<br />1.可為空值<br />2.大小寫英文字母或數字或_或.',
 		'rmoneycode':'~輸入格式~<br />1.不得為空值<br />2.接為數字，前三碼代表行號，其後12碼或14碼為帳號',
 		'omoneycode':'~輸入格式~<br />1.可為空值<br />2.接為數字，前三碼代表行號，其後12碼或14碼為帳號',
+		'ryoutubevideourl':'~輸入格式~<br />1.不得為空值<br />2.開頭為http://www.youtube.com/watch?',
+		'oyoutubevideourl':'~輸入格式~<br />1.可為空值<br />2.開頭為http://www.youtube.com/watch?',
 		'rnotadminurl':'~輸入格式~<br />1.不得為空值<br />2.開頭不得為admin/',
 		'onotadminurl':'~輸入格式~<br />1.可為空值<br />2.開頭不得為admin/',
 		'rlatlng':'~輸入格式~<br />1.不得為空值<br />2.格式為 緯度,經度',
