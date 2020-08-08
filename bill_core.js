@@ -224,7 +224,8 @@ var bill_core={
 			'values':{},
 			'human_read_names':{},
 			'reg_1s':{},
-			'error_msg_1s':{}
+			'error_msg_1s':{},
+			'all_inputs_jqobject':null
 		};
 		var values=return_data['values'];
 		var human_read_names=return_data['human_read_names'];
@@ -411,7 +412,12 @@ var bill_core={
 			for(var input_name in select_values){
 				values[input_name]=select_values[input_name].join(',,,');
 			}
-			
+			return_data['all_inputs_jqobject']=
+				jQuery(jquery_expression).filter(
+					fetch_input_jquery_expression_1+','+
+					fetch_input_jquery_expression_2+','+
+					fetch_input_jquery_expression_3
+				);
 		}
 		else if(fetch_way==='under_the'){
 			jQuery(jquery_expression).find(fetch_input_jquery_expression_1).each(
@@ -430,6 +436,12 @@ var bill_core={
 			for(var input_name in select_values){
 				values[input_name]=select_values[input_name].join(',,,');
 			}
+			return_data['all_inputs_jqobject']=
+				jQuery(jquery_expression).find(
+					fetch_input_jquery_expression_1+','+
+					fetch_input_jquery_expression_2+','+
+					fetch_input_jquery_expression_3
+				);
 		}
 		
 		if( Object.keys(values).length==0 ){
@@ -1742,6 +1754,7 @@ var bill_core={
 			error_msg_1s=inputs_data['error_msg_1s'];
 		}
 		
+		
 		for(var the_input_name in reg_1s ){
 			var the_reg_1=reg_1s[the_input_name];
 			var the_value=values[the_input_name];
@@ -1753,26 +1766,26 @@ var bill_core={
 				return_result['fails']=null;
 				break;
 			}
-			var temp_reg_tip=this.validate_regexp_tips[the_reg_1];
-			if(temp_reg_tip===undefined){
-				temp_reg_tip='請輸入正確的格式';
+			var the_reg_tip=this.validate_regexp_tips[the_reg_1];
+			if(the_reg_tip===undefined){
+				the_reg_tip='請輸入正確的格式';
 			}
-			var temp_reg_1_obj=null;
+			var the_reg_1_obj=null;
 			
 			if(this.validate_regexp_items[the_reg_1]===undefined){
-				temp_reg_1_obj =new RegExp(the_reg_1);
+				the_reg_1_obj =new RegExp(the_reg_1);
 			}else{
-				temp_reg_1_obj = new RegExp(this.validate_regexp_items[the_reg_1]);
+				the_reg_1_obj = new RegExp(this.validate_regexp_items[the_reg_1]);
 			}
 
-			if(temp_reg_1_obj.test(the_value)){
+			if(the_reg_1_obj.test(the_value)){
 			}
 			else{
 				if( return_result.fails.hasOwnProperty(the_input_name)===false ){
 					return_result.fails[the_input_name]={
 						'value':null,
 						'human_read_name':null,
-						'error_msg_1':null,
+						'validate_fail_message':null,
 					};
 				}
 				return_result.fails[the_input_name]['value']=the_value;
@@ -1783,17 +1796,23 @@ var bill_core={
 					return_result.fails[the_input_name]['human_read_name']=the_input_name;
 				}
 				if(this.global_typeof(the_error_msg_1)==='string'){
-					return_result.fails[the_input_name]['error_msg_1']=the_error_msg_1;
+					return_result.fails[the_input_name]['validate_fail_message']=the_error_msg_1;
+					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_error_msg_1);
 				}
 				else{
-					return_result.fails[the_input_name]['error_msg_1']=temp_reg_tip;
+					return_result.fails[the_input_name]['validate_fail_message']=the_reg_tip;
+					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_reg_tip);
 				}
+				
 			}
 		}
+		
 		if( Object.keys(return_result.fails).length==0 ){
 			return_result['fails']=null;
 		}else{
 			return_result['code']='0';
+			
+			
 		}
 		
 		return return_result;
