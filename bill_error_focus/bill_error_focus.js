@@ -13,7 +13,7 @@
 			}
 			this.deattach(jquery_expression);
 			if(jQuery.bill_error_focus.action==='add_class'){
-				jQuery(jquery_expression).find(input_jquery_expression).each(
+				jQuery(jquery_expression).find(this.input_jquery_expression).each(
 					function(){
 						if(jQuery(this).attr('validate_fail_message')!==''){
 							jQuery(this).addClass("input_validation-failed");
@@ -28,7 +28,7 @@
 				return;
 			}
 			if(jQuery.bill_error_focus.action==='add_class'){
-				jQuery(jquery_expression).find(input_jquery_expression).removeClass("input_validation-failed");
+				jQuery(jquery_expression).find(this.input_jquery_expression).removeClass("input_validation-failed");
 			}
 		}
 	};

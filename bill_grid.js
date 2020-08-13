@@ -208,7 +208,10 @@
 					get_jqobject.data('record_sort_up_ajax_url'),
 					{
 						'CSRF_TOKEN':get_jqobject.data('CSRF_TOKEN'),
-						'obj_id':record_id
+						'obj_id':record_id,
+						'cat_id':get_jqobject.data('search_items')['cat_id'],
+						'p_cat_id':get_jqobject.data('search_items')['p_cat_id'],
+						'parent_id':get_jqobject.data('search_items')['parent_id']
 					},
 					function(response_data,textStatus,jqXHR){
 						if(response_data.code==='1'){
@@ -232,7 +235,10 @@
 					get_jqobject.data('record_sort_down_ajax_url'),
 					{
 						'CSRF_TOKEN':get_jqobject.data('CSRF_TOKEN'),
-						'obj_id':record_id
+						'obj_id':record_id,
+						'cat_id':get_jqobject.data('search_items')['cat_id'],
+						'p_cat_id':get_jqobject.data('search_items')['p_cat_id'],
+						'parent_id':get_jqobject.data('search_items')['parent_id']
 					},
 					function(response_data,textStatus,jqXHR){
 						if(response_data.code==='1'){

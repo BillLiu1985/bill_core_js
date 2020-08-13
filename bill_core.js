@@ -1882,6 +1882,7 @@ var bill_core={
 			}
 
 			if(the_reg_1_obj.test(the_value)){
+				inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message','');
 			}
 			else{
 				if( return_result.fails.hasOwnProperty(the_input_name)===false ){
