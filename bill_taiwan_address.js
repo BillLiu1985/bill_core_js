@@ -21,6 +21,16 @@
 				//'others':temp_default_value.others
 			},
 			'input_name':'',
+			'container_class_attr_value':'',
+			'container_style_attr_value':'display: inline-block;',
+			'city_input_class_attr_value':'',
+			'city_input_style_attr_value':'',
+			'city_input_error_msg_1_attr_value':'',
+			'city_input_human_read_name_attr_value':'',
+			'area_input_class_attr_value':'',
+			'area_input_style_attr_value':'',
+			'area_input_error_msg_1_attr_value':'',
+			'area_input_human_read_name_attr_value':'',
 			'type':'city_area',
 			//'is_print_preview_button':'0',
 			//'preview_type':'googlemap',
@@ -56,6 +66,27 @@
 		
 		//物件方法
 		var jqobject_scope_methods={
+			'set_value':function(value_object){
+				if(bill_core.global_typeof(value_object)!=='object'){
+					return;
+				}
+				var input_id_prefix=this.attr('id')+'_';
+				if(
+					'city' in value_object &&
+					bill_core.global_typeof(value_object['city'])==='string'
+				){
+					jQuery('#'+input_id_prefix+'city').val(value_object['city']);
+
+					if(
+						'area' in value_object &&
+						bill_core.global_typeof(value_object['area'])==='string'
+					){
+						jQuery('#'+input_id_prefix+'city').change();
+						jQuery('#'+input_id_prefix+'area').val(value_object['area']);
+					}
+				}
+				
+			}	
 		};
 		//若是呼叫物件方法
 		if(typeof(param1)=='string'){
@@ -97,13 +128,19 @@
 			return;
 		}
 		if(get_jqobject.attr('is_transformed_to_bill_taiwan_address')!=='1'){
-			get_jqobject.css('display','inline-block');
+			get_jqobject.attr('style',opts.container_style_attr_value);
+			get_jqobject.attr('class',opts.container_class_attr_value);
 			var container_id=get_jqobject.attr('id');
 			var default_address_city=(opts.default_value.city===undefined?'':opts.default_value.city);
 			var default_address_area=(opts.default_value.area===undefined?'':opts.default_value.area);
 			if(opts.type=='city'){
 				var temp_html=
-				'<select id="'+container_id+'_city" name="'+opts.input_name+'_city" reg_1="(^[\\s\\S]+$)'+(opts.is_required==='1'?'':'|(^$)')+'" ></select>';
+				'<select id="'+container_id+'_city" name="'+opts.input_name+'_city" reg_1="(^[\\s\\S]+$)'+(opts.is_required==='1'?'':'|(^$)')+'" '+
+				'class="'+opts.city_input_class_attr_value+'" '+
+				'style="'+opts.city_input_style_attr_value+'" '+
+				'error_msg_1="'+opts.city_input_error_msg_1_attr_value+'" '+
+				'human_read_name="'+opts.city_input_human_read_name_attr_value+'" '+
+				'></select>';
 				get_jqobject.html(temp_html);
 				
 				var city_options_html='';
@@ -124,8 +161,18 @@
 			}
 			else if(opts.type=='city_area'){
 				var temp_html=
-				'<select id="'+container_id+'_city" name="'+opts.input_name+'_city" reg_1="(^[\\s\\S]+$)'+(opts.is_required==='1'?'':'|(^$)')+'" ></select>'+
-				'<select id="'+container_id+'_area" name="'+opts.input_name+'_area" reg_1="(^[\\s\\S]+$)'+(opts.is_required==='1'?'':'|(^$)')+'" ></select>';
+				'<select id="'+container_id+'_city" name="'+opts.input_name+'_city" reg_1="(^[\\s\\S]+$)'+(opts.is_required==='1'?'':'|(^$)')+'" '+
+				'class="'+opts.city_input_class_attr_value+'" '+
+				'style="'+opts.city_input_style_attr_value+'" '+
+				'error_msg_1="'+opts.city_input_error_msg_1_attr_value+'" '+
+				'human_read_name="'+opts.city_input_human_read_name_attr_value+'" '+
+				'></select>'+
+				'<select id="'+container_id+'_area" name="'+opts.input_name+'_area" reg_1="(^[\\s\\S]+$)'+(opts.is_required==='1'?'':'|(^$)')+'" '+
+				'class="'+opts.area_input_class_attr_value+'" '+
+				'style="'+opts.area_input_style_attr_value+'" '+
+				'error_msg_1="'+opts.area_input_error_msg_1_attr_value+'" '+
+				'human_read_name="'+opts.area_input_human_read_name_attr_value+'" '+
+				'></select>';
 				
 				jQuery(this).html(temp_html);
 				var city_options_html='';

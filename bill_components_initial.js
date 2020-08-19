@@ -340,6 +340,52 @@
 					if( bill_core.global_typeof(temp_string)==='string' ){
 						temp_opts['limit_citys']=temp_string.split(',,,');
 					}
+					
+					temp_string=jQuery(this).attr('container_style_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['container_style_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('city_input_class_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['city_input_class_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('city_input_style_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['city_input_style_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('city_input_error_msg_1_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['city_input_error_msg_1_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('city_input_human_read_name_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['city_input_human_read_name_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('area_input_class_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['area_input_class_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('area_input_style_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['area_input_style_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('area_input_error_msg_1_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['area_input_error_msg_1_attr_value']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('area_input_human_read_name_attr_value');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['area_input_human_read_name_attr_value']=temp_string;
+					}
+					
 					jQuery(this).bill_taiwan_address(
 						temp_opts
 					);
