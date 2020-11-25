@@ -327,7 +327,10 @@
 			jQuery('body').append(temp_string);
 			//bind element event_handler
 			jQuery('#'+component_id+'_input').change(
-				function(){
+				{
+					'component_id':component_id
+				},
+				function(the_event){
 					
 					if(bill_core.validate_string(jQuery(this).attr('reg_1'),jQuery(this).val())==='0'){
 						jQuery(this).val('');
@@ -335,32 +338,36 @@
 						return;
 					}
 					jQuery(this).attr('name','input_file');
-					jQuery("#"+component_id+"_file_delete_button").hide();
-					jQuery("#"+component_id+"_ingicon").show();
-					jQuery(this).appendTo(jQuery("#"+component_id+"_form"));
+					jQuery("#"+the_event.data.component_id+"_file_delete_button").hide();
+					jQuery("#"+the_event.data.component_id+"_ingicon").show();
+					jQuery(this).appendTo(jQuery("#"+the_event.data.component_id+"_form"));
 					
-					jQuery("#"+component_id+"_form").submit();
+					jQuery("#"+the_event.data.component_id+"_form").submit();
 				}
 			)
 			jQuery('#'+component_id+'_file_delete_button').click(
-				function(){
-					if(opts.file_type=='normal'){
-						if(jQuery('#'+component_id+'_preview'+'>a').length==0){
+				{
+					'component_id':component_id,
+					'opts':opts
+				},
+				function(the_event){
+					if(the_event.data.opts.file_type=='normal'){
+						if(jQuery('#'+the_event.data.component_id+'_preview'+'>a').length==0){
 							alert('無檔案可移除');
 							return;
 						}
-					}else if(opts.file_type=='pic'){
-						if(jQuery('#'+component_id+'_preview'+'>img[src]').length==0){
+					}else if(the_event.data.opts.file_type=='pic'){
+						if(jQuery('#'+the_event.data.component_id+'_preview'+'>img[src]').length==0){
 							alert('無檔案可移除');
 							return;
 						}
-					}else if(opts.file_type=='html5video'){
-						if(jQuery('#'+component_id+'_preview'+'>video[src]').length==0){
+					}else if(the_event.data.opts.file_type=='html5video'){
+						if(jQuery('#'+the_event.data.component_id+'_preview'+'>video[src]').length==0){
 							alert('無檔案可移除');
 							return;
 						}
-					}else if(opts.file_type=='flash'){
-						if(jQuery('#'+component_id+'_preview'+'>embed').length==0){
+					}else if(the_event.data.opts.file_type=='flash'){
+						if(jQuery('#'+the_event.data.component_id+'_preview'+'>embed').length==0){
 							alert('無檔案可移除');
 							return;
 						}
@@ -368,19 +375,19 @@
 
 					
 					jQuery(this).hide();
-					jQuery("#"+component_id+"_ingicon").show();
+					jQuery("#"+the_event.data.component_id+"_ingicon").show();
 					
 					var about_info={
-						'updated_column_name':opts.input_name,
-						'tmpfile_uploadfile_id':jQuery("#"+component_id+"_tmpfile_uploadfile_id").val(),
-						'_token':opts.csrf_token,
-						'component_id':component_id
+						'updated_column_name':the_event.data.opts.input_name,
+						'tmpfile_uploadfile_id':jQuery("#"+the_event.data.component_id+"_tmpfile_uploadfile_id").val(),
+						'_token':the_event.data.opts.csrf_token,
+						'component_id':the_event.data.component_id
 					};
 					//destination_url、post_data、request_success_handler、request_fail_handler
 							//destination_url、post_data、request_success_handler、request_fail_handler、is_sync
 							//destination_url、post_data、request_success_handler、request_fail_handler、is_sync、context
 					bill_core.ajax_post(
-						opts.process_upload_url+'?ajax_func=delete_upload',
+						the_event.data.opts.process_upload_url+'?ajax_func=delete_upload',
 						about_info,
 						function(data,textStatus,jqXHR){
 							if(data.code=='1'){
