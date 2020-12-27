@@ -15,9 +15,11 @@
 			'input_name':'',
 			//normal,pic,html5video,flash
 			'file_type':'pic',
+			'layout_type':'basic',
 			'process_upload_url':'',
 			'process_download_url':'',
 			'uploading_icon_url':'',
+			'value_base_url':'',
 			'file_tip':'選擇檔案：',
 			'preview_width':400,
 			'output_width':0,
@@ -131,24 +133,23 @@
 			
 
 			var final_component_html='';
-			if(opts.file_type=='normal'){
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
-				if( 
-					bill_core.string_is_solid(opts.process_download_url)==='1' &&
-					bill_core.string_is_solid(opts.default_value)==='1'
-				){
-					final_component_html+=
-					'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
-				}else{
-					final_component_html+=
-					'暫無檔案';
-				}
-				final_component_html+=
-				'</div>';
-			}else if(opts.file_type=='pic'){
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
+			final_component_html+=
+			'<div id="'+component_id+'_preview">';
+			if(opts.layout_type==='basic'){
+				if(opts.file_type=='normal'){
+				
+					if( 
+						bill_core.string_is_solid(opts.process_download_url)==='1' &&
+						bill_core.string_is_solid(opts.default_value)==='1'
+					){
+						final_component_html+=
+						'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
+					}else{
+						final_component_html+=
+						'<a>下載檔案</a>';
+					}
+					
+				}else if(opts.file_type=='pic'){
 					var temp_style_string='';
 					if( 
 						bill_core.number_is_solid(opts.preview_width)==='1' &&
@@ -165,83 +166,88 @@
 						
 						final_component_html+=
 						'<img border="0" '+temp_style_string+' src="'+
-						bill_core.url_get_full(opts.default_value)+'" />';
+						opts.value_base_url+opts.default_value+'" />';
 					}
 					else{
 						final_component_html+=
-						'<img border="0" '+temp_style_string+'  alt="無圖檔"  />';
+						'<img border="0" '+temp_style_string+'  />';
 					}
-				final_component_html+=
-				'</div>';
-				
-			}else if(opts.file_type=='html5video'){
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
-				var temp_style_string='';
-				if( 
-					bill_core.number_is_solid(opts.preview_width)==='1' &&
-					opts.preview_width>0
-				){
-					temp_style_string+='width:'+opts.preview_width+'px;';
-				}
-				
-				if(temp_style_string!=''){
-					temp_style_string='style="'+temp_style_string+'"';
-				}
-				if( bill_core.string_is_solid(opts.default_value)==='1'){
-					var temp_mime='';
-					var temp_extension=bill_core.file_fetch_extension(opts.default_value);
-					if(temp_extension=='ogv'){
-						temp_mime='video/ogg';
-					}else{
-						temp_mime='video/'+temp_extension;
-					}
-					final_component_html+=
-					'<video '+temp_style_string+'  controls="controls">'+
-						'<source src="'+bill_core.url_get_full(opts.default_value)+'" type="'+temp_mime+'" />'+
-						'Your browser does not support the video tag.'+
-					'</video>';
-				}
-				else{
-					final_component_html+=
-					'<video '+temp_style_string+' controls="controls">'+
-						'<source src="" type="video/mp4"  />'+
-					'</video>';
-				}
-														
-				final_component_html+=
-				'</div>';
-			}
-			else if(opts.file_type=='flash'){
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
-				if( bill_core.string_is_solid(opts.default_value)==='1'){
 					
+				}else if(opts.file_type=='html5video'){
 					
-					var temp_attrs_string=' wmode="opaque" ';
+					var temp_style_string='';
 					if( 
 						bill_core.number_is_solid(opts.preview_width)==='1' &&
 						opts.preview_width>0
 					){
-						temp_attrs_string+=' width="'+opts.preview_width+'" ';
+						temp_style_string+='width:'+opts.preview_width+'px;';
+					}
+					
+					if(temp_style_string!=''){
+						temp_style_string='style="'+temp_style_string+'"';
+					}
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						var temp_mime='';
+						var temp_extension=bill_core.file_fetch_extension(opts.default_value);
+						if(temp_extension=='ogv'){
+							temp_mime='video/ogg';
+						}else{
+							temp_mime='video/'+temp_extension;
+						}
+						final_component_html+=
+						'<video '+temp_style_string+'  controls="controls">'+
+							'<source src="'+opts.value_base_url+opts.default_value+'" type="'+temp_mime+'" />'+
+							'Your browser does not support the video tag.'+
+						'</video>';
 					}
 					else{
-						temp_attrs_string+=' width="600" ';
+						final_component_html+=
+						'<video '+temp_style_string+' controls="controls">'+
+							'<source type="video/mp4"  />'+
+						'</video>';
 					}
-					
-					
-					final_component_html+=
-					'<embed src="'+bill_core.url_get_full(opts.default_value)+'" '+temp_attrs_string+'  ></embed>';
-				
 				}
-				else{
-					final_component_html+=
-					'暫無檔案';
-				}						
-				final_component_html+=
-				'</div>';
+				else if(opts.file_type=='flash'){
+
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						
+						
+						var temp_attrs_string=' wmode="opaque" ';
+						if( 
+							bill_core.number_is_solid(opts.preview_width)==='1' &&
+							opts.preview_width>0
+						){
+							temp_attrs_string+=' width="'+opts.preview_width+'" ';
+						}
+						else{
+							temp_attrs_string+=' width="600" ';
+						}
+						
+						
+						final_component_html+=
+						'<embed src="'+opts.value_base_url+opts.default_value+'" '+temp_attrs_string+'  ></embed>';
+					
+					}
+					else{
+						final_component_html+=
+						'<embed  '+temp_attrs_string+' wmode="opaque" ></embed>';
+					}						
+
+				}
+			}else if(opts.layout_type==='haiduau'){
+				if(opts.file_type=='pic'){
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						final_component_html+=
+						'<img class="img-account-profile  mb-2" src="'+opts.value_base_url+opts.default_value+'" alt="" />';
+					}
+					else{
+						final_component_html+=
+						'<img class="img-account-profile  mb-2" alt="" />';
+					}
+				}
 			}
-			
+			final_component_html+=
+			'</div>';
 			var reg_1_string='';
 			if(
 				bill_core.global_typeof(opts.white_extensions.length)==='number' && 
@@ -275,22 +281,35 @@
 			}
 			
 			//draw csrf_token
-		
-			//draw file_tip
-			if( bill_core.global_typeof(opts.file_tip)==='string' ){
+			if(opts.layout_type==='basic'){
+				//draw file_tip
+				if( bill_core.global_typeof(opts.file_tip)==='string' ){
+					final_component_html+=
+					'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+				}
+				//draw input
 				final_component_html+=
-				'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+				'<input type="file" maxlength="255" size="50" id="'+component_id+'_input" name="input_file" reg_1="'+reg_1_string+'" />';  
+		
+				
+				//draw file_delete_button
+				
+				final_component_html+=
+				'<input type="button" value="移除" style="margin-right:10px;" '+
+				'id="'+component_id+'_file_delete_button" />';
+			}else if(opts.layout_type==='haiduau'){
+				if( bill_core.global_typeof(opts.file_tip)==='string' ){
+					final_component_html+=
+					'<div class="small  text-muted mb-4" id="'+component_id+'_file_tip">'+opts.file_tip+'</div>';
+				}
+				final_component_html+=
+				'<a id="'+component_id+'_input_wrapper" href="javascript:void(0);" class="btn btn-primary file">Upload new image'+
+					'<input type="file" id="'+component_id+'_input" name="input_file" reg_1="'+reg_1_string+'" />'+
+				'</a>';
+				
+				final_component_html+=
+				'<a href="javascript:void(0);" id="'+component_id+'_file_delete_button" >移除</a>';
 			}
-			//draw input
-			final_component_html+=
-			'<input type="file" maxlength="255" size="50" id="'+component_id+'_input" name="" reg_1="'+reg_1_string+'" />';  
-	
-			
-			//draw file_delete_button
-			final_component_html+=
-			'<input type="button" value="移除" style="margin-right:10px;" '+
-			'id="'+component_id+'_file_delete_button" />';
-	
 		
 			//draw uploading icon
 			final_component_html+=
@@ -328,7 +347,8 @@
 			//bind element event_handler
 			jQuery('#'+component_id+'_input').change(
 				{
-					'component_id':component_id
+					'component_id':component_id,
+					'opts':opts
 				},
 				function(the_event){
 					
@@ -337,10 +357,19 @@
 						alert('檔案格式錯誤');
 						return;
 					}
-					jQuery(this).attr('name','input_file');
+					if(this.files[0]===undefined){
+						//jQuery("#"+the_event.data.component_id+"_file_delete_button").click();
+						return;
+					}
+					
 					jQuery("#"+the_event.data.component_id+"_file_delete_button").hide();
 					jQuery("#"+the_event.data.component_id+"_ingicon").show();
-					jQuery(this).appendTo(jQuery("#"+the_event.data.component_id+"_form"));
+					if(opts.layout_type==='basic'){
+						jQuery(this).appendTo(jQuery("#"+the_event.data.component_id+"_form"));
+					}else if(opts.layout_type==='haiduau'){
+						jQuery(this).parent().hide();
+						jQuery(this).appendTo(jQuery("#"+the_event.data.component_id+"_form"));
+					}
 					
 					jQuery("#"+the_event.data.component_id+"_form").submit();
 				}
@@ -352,22 +381,39 @@
 				},
 				function(the_event){
 					if(the_event.data.opts.file_type=='normal'){
-						if(jQuery('#'+the_event.data.component_id+'_preview'+'>a').length==0){
+						if(
+							bill_core.string_is_solid(
+								jQuery('#'+the_event.data.component_id+'_preview'+'>a').attr('href')
+							)==='0'
+						
+						){
 							alert('無檔案可移除');
 							return;
 						}
 					}else if(the_event.data.opts.file_type=='pic'){
-						if(jQuery('#'+the_event.data.component_id+'_preview'+'>img[src]').length==0){
+						if(
+							bill_core.string_is_solid(
+								jQuery('#'+the_event.data.component_id+'_preview'+'>img').attr('src')
+							)==='0'
+						){
 							alert('無檔案可移除');
 							return;
 						}
 					}else if(the_event.data.opts.file_type=='html5video'){
-						if(jQuery('#'+the_event.data.component_id+'_preview'+'>video[src]').length==0){
+						if(
+							bill_core.string_is_solid(
+								jQuery('#'+the_event.data.component_id+'_preview'+'>video>source').attr('src')
+							)==='0'
+						){
 							alert('無檔案可移除');
 							return;
 						}
 					}else if(the_event.data.opts.file_type=='flash'){
-						if(jQuery('#'+the_event.data.component_id+'_preview'+'>embed').length==0){
+						if(
+							bill_core.string_is_solid(
+								jQuery('#'+the_event.data.component_id+'_preview'+'>embed').attr('src')
+							)==='0'
+						){
 							alert('無檔案可移除');
 							return;
 						}
@@ -403,19 +449,16 @@
 								
 								var preview_html='';
 								if(opts.file_type=='normal'){
-									preview_html="暫無檔案";
+									jQuery("#"+component_id+'_preview>a').removeAttr('src');
 								}else if(opts.file_type=='pic'){
-									preview_html="<img  alt=\"無圖檔\"    border=\"0\"   />";											
+									jQuery("#"+component_id+'_preview>img').removeAttr('src');										
 								}else if(opts.file_type=='video'){
-									preview_html+=
-									'<video controls="controls">'+
-										'<source  type="video/mp4" />'+
-									'</video>';
+									jQuery("#"+component_id+'_preview>video>source').removeAttr('src');	
+									jQuery("#"+component_id+'_preview>video')[0].load();			
 								}else if(opts.file_type=='flash'){
-									preview_html="暫無檔案";
-								}
-								jQuery("#"+component_id+'_preview').html(preview_html);
+									jQuery("#"+component_id+'_preview>embed').removeAttr('src');
 								
+								}
 								
 							}else{
 								alert(data.message);
@@ -452,65 +495,33 @@
 				}
 				if(about_info['code']==='1'){
 					
-					var new_preview_html='';
 					if(opts.file_type=='normal'){
 						
 						if( bill_core.string_is_solid(opts.process_download_url)==='1'){
-							new_preview_html=
-							'<a href="'+opts.process_download_url+'?obj_id='+
-							encodeURIComponent(about_info['tmpfile_uploadfile_id'])+
-							'">下載檔案</a>';
-							
+							jQuery("#"+component_id+"_preview>a").attr(
+								'href',
+								opts.process_download_url+'?obj_id='+
+								encodeURIComponent(about_info['tmpfile_uploadfile_id'])
+							);
 						}else{
-							new_preview_html=
-							'暫無檔案';
+							jQuery("#"+component_id+"_preview>a").removeAttr('href');
 						}
 					}else if(opts.file_type=='pic'){
 						
-						var temp_style_string='';
-						if( 
-							bill_core.number_is_solid(opts.preview_width)==='1' &&
-							opts.preview_width>0
-						){
-							temp_style_string+='width:'+opts.preview_width+'px;';
-						}else{
-							temp_style_string+='width:'+
-								bill_core.img_suitable_width(
-									bill_core.url_get_full(
-										about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
-									),
-									opts.max_width
-								)+'px;';
-						}
 						
-						if(temp_style_string!=''){
-							temp_style_string='style="'+temp_style_string+'"';
-						}
 						if( bill_core.string_is_solid(about_info['tmpfile_uploadfile_id'])==='1'){
-							
-							new_preview_html=
-							'<img border="0" '+temp_style_string+' src="'+
-							bill_core.url_get_full(about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime())+'" />';
+							jQuery("#"+component_id+"_preview>img").attr(
+								'src',
+								opts.value_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
+							);
 						}
 						else{
-							new_preview_html=
-							'<img border="0" '+temp_style_string+'  alt="無圖檔"  />';
+							jQuery("#"+component_id+"_preview>img").removeAttr('src');
 						}
 						
 						
 					}else if(opts.file_type=='html5video'){
 					
-						var temp_style_string='';
-						if( 
-							bill_core.number_is_solid(opts.preview_width)==='1' &&
-							opts.preview_width>0
-						){
-							temp_style_string+='width:'+opts.preview_width+'px;';
-						}
-						
-						if(temp_style_string!=''){
-							temp_style_string='style="'+temp_style_string+'"';
-						}
 						if( bill_core.string_is_solid(about_info['tmpfile_uploadfile_id'])==='1'){
 							var temp_mime='';
 							var temp_extension=bill_core.file_fetch_extension(about_info['tmpfile_uploadfile_id']);
@@ -519,50 +530,35 @@
 							}else{
 								temp_mime='video/'+temp_extension;
 							}
-							new_preview_html=
-							'<video '+temp_style_string+'  controls="controls">'+
-								'<source src="'+bill_core.url_get_full(about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime())+'" type="'+temp_mime+'" />'+
-								'Your browser does not support the video tag.'+
-							'</video>';
+							jQuery("#"+component_id+"_preview>video>source").attr(
+								'src',
+								opts.value_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
+							);
+							jQuery("#"+component_id+"_preview>video>source").attr(
+								'type',
+								temp_mime
+							);
 						}
 						else{
-							new_preview_html=
-							'<video '+temp_style_string+' controls="controls">'+
-								'<source src="" type="video/mp4"  />'+
-							'</video>';
+							jQuery("#"+component_id+"_preview>video>source").removeAttr('src');	
 						}
+						jQuery("#"+component_id+'_preview>video')[0].load();
 					}
 					else if(opts.file_type=='flash'){
 						
 						if( bill_core.string_is_solid(about_info['tmpfile_uploadfile_id'])==='1'){
 							
 							
-							var temp_attrs_string=' wmode="opaque" ';
-							if( 
-								bill_core.number_is_solid(opts.preview_width)==='1' &&
-								opts.preview_width>0
-							){
-								temp_attrs_string+=' width="'+opts.preview_width+'" ';
-							}
-							else{
-								temp_attrs_string+=' width="600" ';
-							}
-							
-							
-							new_preview_html=
-							'<embed src="'+
-							bill_core.url_get_full(about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime())+'"'+
-							' '+temp_attrs_string+'  ></embed>';
-						
+							jQuery("#"+component_id+"_preview>embed").attr(
+								'src',
+								opts.value_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
+							);
 						}
 						else{
-							new_preview_html=
-							'暫無檔案';
-						}						
+							jQuery("#"+component_id+"_preview>embed").removeAttr('src');	
+						}
+							
 					}
-					
-					
-					jQuery("#"+component_id+"_preview").html(new_preview_html);
 					
 					if(bill_core.string_is_solid(opts.default_value)==='1'){
 						jQuery("#"+component_id+'_op').val('DO_MODIFY');
@@ -573,11 +569,18 @@
 					jQuery("#"+component_id+"_form>[name='tmpfile_uploadfile_id']").val(about_info['tmpfile_uploadfile_id']);
 					jQuery("#"+component_id+"_tmpfile_uploadfile_id").val(about_info['tmpfile_uploadfile_id']);
 					jQuery("#"+component_id+"_data").val(about_info['tmpfile_uploadfile_id']);
-					jQuery('#'+component_id+'_input').removeAttr('name');
+
+					jQuery('#'+component_id+'_input').val('');
 				}else{
 					alert(about_info['message']);	
 				}
-				jQuery('#'+component_id+'_input').insertAfter(jQuery('#'+component_id+"_file_tip"));
+				if(opts.layout_type==='basic'){
+					jQuery('#'+component_id+'_input').insertAfter(jQuery('#'+component_id+"_file_tip"));	
+				}else if(opts.layout_type==='haiduau'){
+					jQuery('#'+component_id+'_input').appendTo(jQuery('#'+component_id+"_input_wrapper"));
+					jQuery('#'+component_id+'_input_wrapper').show();
+				}
+				
 				jQuery('#'+component_id+'_ingicon').hide();
 				jQuery("#"+component_id+'_file_delete_button').show();
 			}

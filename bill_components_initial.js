@@ -23,6 +23,7 @@
 		get_jqobject.find(
 			'input[type="text"][component_type="input_text"],'+
 			'input[type="text"][component_type="input_text_number"],'+
+			'input[type="date"][component_type="input_date"],'+
 			'input[type="radio"][component_type="input_radio"],'+
 			'input[type="checkbox"][component_type="input_checkbox"],'+
 			'input[type="hidden"][component_type="input_hidden"],'+
@@ -103,6 +104,39 @@
 						
 					}
 				}
+				else if(the_component_type=='input_date'){
+					var now_datetimebigint=bill_core.datetimebigint_now('0','0','0');
+					if( bill_core.string_is_solid(temp_default_value)==='1' ){
+					}else{
+						temp_default_value=now_datetimebigint;
+					}
+					
+					var min_datebigint='';
+					var temp_string=jQuery(this).attr('years_before_now');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						min_datebigint=bill_core.datetimebigint_add(now_datetimebigint, -1*parseInt(temp_string,10), 'year'); 	
+						jQuery(this).attr(
+							'min',
+							bill_core.datetimebigint_toFormattedString(min_datebigint,'Y-m-d')
+						);
+					}
+					
+					var max_datebigint='';
+					temp_string=jQuery(this).attr('years_after_now');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						max_datebigint=bill_core.datetimebigint_add(now_datetimebigint, 1*parseInt(temp_string,10), 'year');
+						jQuery(this).attr(
+							'max',
+							bill_core.datetimebigint_toFormattedString(max_datebigint,'Y-m-d')
+						);
+					}
+					
+					
+					
+					temp_default_value=bill_core.datetimebigint_toFormattedString(temp_default_value,'Y-m-d');
+					
+					jQuery(this).val(temp_default_value);
+				}
 				else if( the_component_type==='textarea' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
 						jQuery(this).html( temp_default_value.replace(/<br \/>/g,"\n") );
@@ -137,7 +171,7 @@
 		
 		//再處理特殊元件
 		get_jqobject.find(
-			'span[component_type="display_info"],'+
+			'[component_type="display_info"],'+
 			'div[component_type="bill_checkboxs_group"],'+
 			'div[component_type="bill_radios_group"],'+
 			'input[type="text"][component_type="dynDateTime"],'+
@@ -394,20 +428,41 @@
 					var temp_opts={
 						'input_name':the_input_name
 					};
-					
-				
-					temp_opts['default_value']=temp_default_value;
+					var temp_string='';
 					
 					
-					var temp_string=jQuery(this).attr('file_type');
-					temp_opts['file_type']=temp_string;
+					temp_string=temp_default_value;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						var temp_parts=temp_string.split(',,,');
+						bill_core.array_keep_solid_string_value( temp_parts );
+						if(temp_parts.length>=2){
+							temp_opts['default_value']=temp_parts[0];
+							temp_opts['value_alt']=temp_parts[1];
+						}else{
+							temp_opts['default_value']=temp_parts[0];
+						}
+						
+					}					
+					
+					temp_string=jQuery(this).attr('file_type');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['file_type']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('layout_type');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['layout_type']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('preview_base_url');
-					temp_opts['preview_base_url']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['preview_base_url']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('process_download_url');
-					temp_opts['process_download_url']=temp_string;
-					
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['process_download_url']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('is_required');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
@@ -425,15 +480,17 @@
 					}
 					
 					temp_string=jQuery(this).attr('error_msg_1');
-					temp_opts['error_msg_1']=temp_string;
-					
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['error_msg_1']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('human_read_name');
-					temp_opts['human_read_name']=temp_string;
-					
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['human_read_name']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('file_tip');
-					if( bill_core.global_typeof(temp_string)==='string' ){
+					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['file_tip']=temp_string;
 					}
 					
@@ -443,12 +500,11 @@
 						temp_opts['preview_width']=parseInt(temp_string,10);
 					}
 					
-					
-					
 					temp_string=jQuery(this).attr('preview_height');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['preview_height']=parseInt(temp_string,10);
 					}
+					
 					
 					
 					jQuery(this).bill_file_upload(
@@ -460,22 +516,42 @@
 					var temp_opts={
 						'input_name':the_input_name
 					};
+					var temp_string='';
 					
-				
-					temp_opts['default_value']=temp_default_value;
+					temp_string=temp_default_value;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['default_value']=temp_string;
+					}
 					
+					temp_string=jQuery(this).attr('value_base_url');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['value_base_url']=temp_string;
+					}
 					
-					var temp_string=jQuery(this).attr('file_type');
-					temp_opts['file_type']=temp_string;
+					temp_string=jQuery(this).attr('file_type');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['file_type']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('layout_type');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['layout_type']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('process_upload_url');
-					temp_opts['process_upload_url']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['process_upload_url']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('process_download_url');
-					temp_opts['process_download_url']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['process_download_url']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('uploading_icon_url');
-					temp_opts['uploading_icon_url']=temp_string;
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['uploading_icon_url']=temp_string;
+					}
 					
 					temp_string=jQuery(this).attr('file_tip');
 					if( bill_core.global_typeof(temp_string)==='string' ){
@@ -486,8 +562,6 @@
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['preview_width']=parseInt(temp_string,10);
 					}
-					
-					
 					
 					temp_string=jQuery(this).attr('preview_height');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
@@ -523,8 +597,6 @@
 						temp_opts['csrf_token']=temp_string;
 					}
 	
-					
-					
 					jQuery(this).bill_file_immediate_upload(
 						temp_opts
 					);
@@ -573,20 +645,31 @@
 					}
 					var want_set_ckeditor_config={};
 					var final_ckeditor_config={};
-					if(bill_core.string_is_solid( jQuery(this).attr('editor_custom_config'))==='1'){
-						want_set_ckeditor_config['customConfig']=jQuery(this).attr('editor_custom_config');
+					
+					var temp_string='';
+					temp_string=jQuery(this).attr('editor_custom_config');
+					if(bill_core.string_is_solid( temp_string )==='1'){
+						want_set_ckeditor_config['customConfig']=temp_string;
 					}
-					if(bill_core.string_is_solid( jQuery(this).attr('editor_contents_css'))==='1'){
-						want_set_ckeditor_config['contentsCss']=jQuery(this).attr('editor_contents_css');
+					
+					temp_string=jQuery(this).attr('editor_contents_css');
+					if(bill_core.string_is_solid( temp_string )==='1'){
+						want_set_ckeditor_config['contentsCss']=temp_string;
 					}
-					if(bill_core.string_is_solid( jQuery(this).attr('editor_width'))==='1'){
-						want_set_ckeditor_config['width']=jQuery(this).attr('editor_width');
+					
+					temp_string=jQuery(this).attr('editor_width');
+					if(bill_core.string_is_solid( temp_string )==='1'){
+						want_set_ckeditor_config['width']=temp_string;
 					}
-					if(bill_core.string_is_solid( jQuery(this).attr('editor_height'))==='1'){
-						want_set_ckeditor_config['height']=jQuery(this).attr('editor_height');
+					
+					temp_string=jQuery(this).attr('editor_height');
+					if(bill_core.string_is_solid( temp_string )==='1'){
+						want_set_ckeditor_config['height']=temp_string;
 					}
-					if(bill_core.string_is_solid( jQuery(this).attr('editor_base_href'))==='1'){
-						want_set_ckeditor_config['baseHref']=jQuery(this).attr('editor_base_href');
+					
+					temp_string=jQuery(this).attr('editor_base_href');
+					if(bill_core.string_is_solid( temp_string )==='1'){
+						want_set_ckeditor_config['baseHref']=temp_string;
 					}
 					
 					jQuery.extend( true,final_ckeditor_config, jQuery.bill_bridge_ckeditor.defaults,want_set_ckeditor_config  );

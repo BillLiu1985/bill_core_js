@@ -236,6 +236,7 @@ var bill_core={
 		var error_msg_1s=return_data['error_msg_1s'];
 		var fetch_input_jquery_expression_1=
 			'input[type="text"][name],'+
+			'input[type="date"][name],'+
 			'input[type="radio"][name]:checked,'+
 			'input[type="hidden"][name],'+
 			'input[type="password"][name],'+
@@ -248,7 +249,7 @@ var bill_core={
 			var the_input_reg_1;
 			var the_input_error_msg_1;
 			
-			if(the_input_jqobject.is('input[type="text"],input[type="hidden"],input[type="password"],input[type="file"],textarea')){
+			if(the_input_jqobject.is('input[type="text"],input[type="date"],input[type="hidden"],input[type="password"],input[type="file"],textarea')){
 				the_input_name=the_input_jqobject.attr('name');
 				the_input_human_read_name=the_input_jqobject.attr('human_read_name');
 				the_input_reg_1=the_input_jqobject.attr('reg_1');
@@ -710,7 +711,28 @@ var bill_core={
 		}
 		
 	},
+	 'string_replace':function(source_string,sub_string,new_sub_string){
+		if(this.global_typeof(source_string)!=='string'){
+			alert('source_string argument error');
+			return;
+		}
+		if(this.global_typeof(sub_string)!=='string'){
+			alert('sub_string argument error');
+			return;
+		}
+		if(this.global_typeof(new_sub_string)!=='string'){
+			alert('new_sub_string argument error');
+			return;
+		}
 		
+		sub_string=this.validate_regexp_escape(sub_string);
+
+		return source_string.replace(
+			new RegExp(sub_string,'g'), 
+			new_sub_string
+		)
+		
+	},	
 	/**
 	 * 
 	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
@@ -1339,7 +1361,22 @@ var bill_core={
 			return '';
 		}
 	},
-
+	/**
+	 * 
+	 * 取得檔案的檔名
+	 *
+	 * @param string filename
+	 * @return string
+	 */
+	'file_fetch_name':function(filename){
+		var temp_reg=new RegExp('['+this.validate_regexp_escape('\\/')+']([^'+this.validate_regexp_escape('\\/')+']+)$');
+		var temp_result=temp_reg.exec(filename);
+		if(temp_result===null){
+			return '';
+		}else{
+			return temp_result[1];
+		}
+	},
 	/**
 	 * 
 	 * 變更url的query參數部分
@@ -2075,7 +2112,11 @@ var bill_core={
 		   success: param3,
 		   error:param4
 		};
-	
+		if(param2 instanceof FormData){
+			ajax_settings['processData']=false;
+			ajax_settings['contentType']=false;
+			ajax_settings['cache']=false;
+		}
 		
 		if(is_sync==='1'){
 			ajax_settings['async']=false;
@@ -2120,5 +2161,63 @@ var bill_core={
 		}
 		
 		return display_img_width;
+	},
+	'math_op':function(num_1,num_2,op_name){
+		if(this.global_typeof(num_1)!=='number'){
+			this.debug_console('bill_core.'+arguments.callee.name+' num_1 error!','error');
+			return;
+		}
+		if(this.global_typeof(num_2)!=='number'){
+			this.debug_console('bill_core.'+arguments.callee.name+' num_2 error!','error');
+			return;
+		}
+		if(this.global_typeof(op_name)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' op_name error!','error');
+			return;
+		}
+		var num_1_string=num_1.toString(10);
+		var num_2_string=num_2.toString(10);
+		 
+		
+		var num_1_part_1_string='';
+		var num_1_part_2_string='';
+		var num_2_part_1_string='';
+		var num_2_part_2_string='';
+		
+		var temp_array=num_1_string.split('.');
+		if(temp_array.length==1){
+			num_1_part_1_string=temp_array[0];
+		}else{
+			num_1_part_1_string=temp_array[0];
+			num_1_part_2_string=temp_array[1];
+		}
+		temp_array=num_2_string.split('.');
+		if(temp_array.length==1){
+			num_2_part_1_string=temp_array[0];
+		}else{
+			num_2_part_1_string=temp_array[0];
+			num_2_part_2_string=temp_array[1];
+		}
+		
+		var temp_max=Math.max(num_1_part_2_string.length,num_2_part_2_string.length);
+		var temp_num_1=
+			parseInt(num_1_part_1_string,10)*Math.pow(10,temp_max)+
+			parseInt(num_1_part_2_string,10)*Math.pow(10,temp_max-num_1_part_2_string.length);
+		var temp_num_2=
+			parseInt(num_2_part_1_string,10)*Math.pow(10,temp_max)+
+			parseInt(num_2_part_2_string,10)*Math.pow(10,temp_max-num_2_part_2_string.length);
+		
+		var return_result=0;
+		switch(op_name){
+			case '+':
+				return_result=(temp_num_1+temp_num_2)/Math.pow(10,temp_max);
+			break;
+			case '-':
+				return_result=(temp_num_1-temp_num_2)/Math.pow(10,temp_max);
+			break;
+		}
+		
+		return return_result;
+
 	}
 }

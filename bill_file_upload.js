@@ -8,13 +8,15 @@
 			'input_name':'',
 			//normal,pic,html5video,flash
 			'file_type':'pic',
+			'layout_type':'basic',
+			'value_alt':'',
 			'process_download_url':'',
 			//'reg_1':'orequired',
 			'is_required':'0',
 			'white_extensions':[],
 			'error_msg_1':'',
 			'human_read_name':'',	
-			'file_tip':'選擇檔案：',
+			'file_tip':'',
 			'preview_width':0,
 			'preview_height':0,
 			'default_value':''
@@ -102,27 +104,57 @@
 			
 
 			var final_component_html='';
-			if(opts.file_type=='normal'){
-				final_component_html+=
+			final_component_html+=
 				'<div id="'+component_id+'_preview">';
-				if( 
-					bill_core.string_is_solid(opts.process_download_url)==='1' &&
-					bill_core.string_is_solid(opts.default_value)==='1'
-				){
-					final_component_html+=
-					'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
-				}else{
-					final_component_html+=
-					'暫無檔案';
+			if(opts.layout_type==='basic'){
+				if(opts.file_type=='normal'){
+					
+					if( 
+						bill_core.string_is_solid(opts.process_download_url)==='1' &&
+						bill_core.string_is_solid(opts.default_value)==='1'
+					){
+						final_component_html+=
+						'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
+					}else{
+						final_component_html+=
+						'暫無檔案';
+					}
+					
+					
 				}
-				final_component_html+=
-				'</div>';
-				
-			}
-			else if(opts.file_type=='pic'){
-				
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
+				else if(opts.file_type=='pic'){
+						var temp_style_string='';
+						if( 
+							bill_core.number_is_solid(opts.preview_width)==='1' &&
+							opts.preview_width>0
+						){
+							temp_style_string+='width:'+opts.preview_width+'px;';
+						}
+						
+						
+						if( 
+							bill_core.number_is_solid(opts.preview_height)==='1' &&
+							opts.preview_height>0
+						){
+							temp_style_string+='height:'+opts.preview_height+'px;';
+						}
+						
+						
+						if(temp_style_string!=''){
+							temp_style_string='style="'+temp_style_string+'"';
+						}
+						if( bill_core.string_is_solid(opts.default_value)==='1'){
+							
+							final_component_html+=
+							'<img border="0" '+temp_style_string+' src="'+
+							opts.preview_base_url+opts.default_value+'" />';
+						}
+						else{
+							final_component_html+=
+							'<img border="0" '+temp_style_string+'  alt="無圖檔"  />';
+						}
+				}
+				else if(opts.file_type=='html5video'){
 					var temp_style_string='';
 					if( 
 						bill_core.number_is_solid(opts.preview_width)==='1' &&
@@ -139,106 +171,73 @@
 						temp_style_string+='height:'+opts.preview_height+'px;';
 					}
 					
-					
 					if(temp_style_string!=''){
 						temp_style_string='style="'+temp_style_string+'"';
 					}
 					if( bill_core.string_is_solid(opts.default_value)==='1'){
-						
+						var temp_mime='';
+						var temp_extension=bill_core.file_fetch_extension(opts.default_value);
+						if(temp_extension=='ogv'){
+							temp_mime='video/ogg';
+						}else{
+							temp_mime='video/'+temp_extension;
+						}
 						final_component_html+=
-						'<img border="0" '+temp_style_string+' src="'+
-						opts.preview_base_url+opts.default_value+'" />';
+						'<video '+temp_style_string+'  controls="controls">'+
+							'<source src="'+opts.preview_base_url+opts.default_value+'" type="'+temp_mime+'" />'+
+							'Your browser does not support the video tag.'+
+						'</video>';
 					}
 					else{
 						final_component_html+=
-						'<img border="0" '+temp_style_string+'  alt="無圖檔"  />';
+						'<video '+temp_style_string+' controls="controls">'+
+							'<source src="" type="video/mp4"  />'+
+						'</video>';
 					}
-				final_component_html+=
+				}
+				else if(opts.file_type=='flash'){
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						
+						
+						var temp_attrs_string=' wmode="opaque" ';
+						if( 
+							bill_core.number_is_solid(opts.preview_width)==='1' &&
+							opts.preview_width>0
+						){
+							temp_attrs_string+=' width="'+opts.preview_width+'" ';
+						}
+						
+						if( 
+							bill_core.number_is_solid(opts.preview_height)==='1' &&
+							opts.preview_height>0
+						){
+							temp_attrs_string+=' height="'+opts.preview_height+'" ';
+						}
+						
+						
+						final_component_html+=
+						'<embed src="'+opts.preview_base_url+opts.default_value+'" '+temp_attrs_string+'  ></embed>';
+					
+					}
+					else{
+						final_component_html+=
+						'暫無檔案';
+					}						
+				}
+			}else if(opts.layout_type==='haiduau'){
+				if(opts.file_type=='pic'){
+						
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						final_component_html+=
+						'<a href="'+opts.preview_base_url+opts.default_value+'" target="_blank"><i class="fa fa-file-photo-o" aria-hidden="true"></i>'+opts.value_alt+'</a>';
+					}
+				}
+			}
+			final_component_html+=
 				'</div>';
-			}
-			else if(opts.file_type=='html5video'){
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
-				var temp_style_string='';
-				if( 
-					bill_core.number_is_solid(opts.preview_width)==='1' &&
-					opts.preview_width>0
-				){
-					temp_style_string+='width:'+opts.preview_width+'px;';
-				}
-				
-				
-				if( 
-					bill_core.number_is_solid(opts.preview_height)==='1' &&
-					opts.preview_height>0
-				){
-					temp_style_string+='height:'+opts.preview_height+'px;';
-				}
-				
-				if(temp_style_string!=''){
-					temp_style_string='style="'+temp_style_string+'"';
-				}
-				if( bill_core.string_is_solid(opts.default_value)==='1'){
-					var temp_mime='';
-					var temp_extension=bill_core.file_fetch_extension(opts.default_value);
-					if(temp_extension=='ogv'){
-						temp_mime='video/ogg';
-					}else{
-						temp_mime='video/'+temp_extension;
-					}
-					final_component_html+=
-					'<video '+temp_style_string+'  controls="controls">'+
-						'<source src="'+opts.preview_base_url+opts.default_value+'" type="'+temp_mime+'" />'+
-						'Your browser does not support the video tag.'+
-					'</video>';
-				}
-				else{
-					final_component_html+=
-					'<video '+temp_style_string+' controls="controls">'+
-						'<source src="" type="video/mp4"  />'+
-					'</video>';
-				}
-														
-				final_component_html+=
-				'</div>';
-			}
-			else if(opts.file_type=='flash'){
-				final_component_html+=
-				'<div id="'+component_id+'_preview">';
-				if( bill_core.string_is_solid(opts.default_value)==='1'){
-					
-					
-					var temp_attrs_string=' wmode="opaque" ';
-					if( 
-						bill_core.number_is_solid(opts.preview_width)==='1' &&
-						opts.preview_width>0
-					){
-						temp_attrs_string+=' width="'+opts.preview_width+'" ';
-					}
-					
-					if( 
-						bill_core.number_is_solid(opts.preview_height)==='1' &&
-						opts.preview_height>0
-					){
-						temp_attrs_string+=' height="'+opts.preview_height+'" ';
-					}
-					
-					
-					final_component_html+=
-					'<embed src="'+opts.preview_base_url+opts.default_value+'" '+temp_attrs_string+'  ></embed>';
-				
-				}
-				else{
-					final_component_html+=
-					'暫無檔案';
-				}						
-				final_component_html+=
-				'</div>';
-			}
-			if( bill_core.string_is_solid(opts.file_tip)==='1' ){
-				final_component_html+=
-				'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
-			}
+			
+			
+			
 			
 			
 			//draw input
@@ -283,23 +282,51 @@
 				temp_attrs_string+=' human_read_name="'+opts.human_read_name+'" ';
 			}
 			temp_attrs_string+=' maxlength="255" size="50" ';
-			final_component_html+=
-			'<input type="file" '+temp_attrs_string+' value="" />';
 			
-			if( bill_core.string_is_solid(opts.default_value)==='1' ){
+			if(opts.layout_type==='basic'){
+				
+				if( bill_core.string_is_solid(opts.file_tip)==='1' ){
+					final_component_html+=
+					'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+				}
 				final_component_html+=
-				'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO" checked />不變'+
-				'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
-				if(opts.is_required==='1'){
-					
-				}else{
-					final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+				'<input type="file" '+temp_attrs_string+' value="" />';
+				
+				if( bill_core.string_is_solid(opts.default_value)==='1' ){
+					final_component_html+=
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO"  />不變'+
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
+					if(opts.is_required==='1'){
+						
+					}else{
+						final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+					}
+				}
+				else{
+					final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+				}
+			}else if(opts.layout_type==='haiduau'){
+				if( bill_core.string_is_solid(opts.file_tip)==='1' ){
+					final_component_html+=
+					'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+				}
+				final_component_html+=
+				'<input type="file" '+temp_attrs_string+' value="" /><br />';
+				
+				if( bill_core.string_is_solid(opts.default_value)==='1' ){
+					final_component_html+=
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO" />不變'+
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
+					if(opts.is_required==='1'){
+						
+					}else{
+						final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+					}
+				}
+				else{
+					final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
 				}
 			}
-			else{
-				final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
-			}
-			
 			
 			get_jqobject.html(final_component_html);
 			
@@ -322,6 +349,7 @@
 								'reg_1',value_jqobject_reg_1.replace(/$/g,'|(^$)')
 							);
 						}
+						value_jqobject.val('');
 					}
 					else if( jQuery(this).val()=='DO_MODIFY' ){
 						
@@ -350,6 +378,7 @@
 								'reg_1',value_jqobject_reg_1.replace(/$/g,'|(^$)')
 							);
 						}
+						value_jqobject.val('');
 					}
 					
 				}
@@ -357,7 +386,9 @@
 			jQuery('#'+component_id+'_value').change(
 				function(){
 					if(bill_core.string_is_solid(opts.default_value)==='1'){
-						
+						if($(this).val()!==''){
+							jQuery("input:radio[name='"+opts.input_name+"_op'][value='DO_MODIFY']").click();
+						}
 					}else{
 						
 						if($(this).val()===''){
@@ -369,7 +400,7 @@
 				}
 			)
 			
-			jQuery('input:radio[name="'+opts.input_name+'_op"]:checked').change();
+			jQuery('input:radio[name="'+opts.input_name+'_op"][value="DO_NO"]').click();
 			get_jqobject.attr('is_transformed_to_bill_file_upload','1');	
 		}
 		
