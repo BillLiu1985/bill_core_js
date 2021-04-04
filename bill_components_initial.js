@@ -38,7 +38,7 @@
 				
 				if( the_component_type==='input_text' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						temp_default_value=jQuery('<div></div>').html(temp_default_value).text();
+						
 						jQuery(this).attr('value',temp_default_value);
 					}
 					if( bill_core.global_typeof($(this).attr('illegal_reg'))==='string' ){
@@ -62,7 +62,7 @@
 					*/
 					
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						temp_default_value=jQuery('<div></div>').html(temp_default_value).text();
+					
 						jQuery(this).attr('value',temp_default_value);
 					}
 					
@@ -77,13 +77,13 @@
 				}
 				else if( the_component_type==='input_hidden' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						temp_default_value=jQuery('<div></div>').html(temp_default_value).text();
+						
 						jQuery(this).attr('value',temp_default_value);
 					}
 				}
 				else if( the_component_type==='input_radio' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						temp_default_value=jQuery('<div></div>').html(temp_default_value).text();
+				
 						if(jQuery(this).attr('value')==temp_default_value){
 							jQuery(this).attr('checked',true);
 						}else{
@@ -93,7 +93,7 @@
 				}
 				else if( the_component_type==='input_checkbox' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						temp_default_value=jQuery('<div></div>').html(temp_default_value).text();
+				
 						var temp_array=temp_default_value.split(',,,');
 						
 						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
@@ -139,13 +139,11 @@
 				}
 				else if( the_component_type==='textarea' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						jQuery(this).html( temp_default_value.replace(/<br \/>/g,"\n") );
+						jQuery(this).val( temp_default_value );
 					}
 				}
 				else if( the_component_type==='select' ){
-					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						temp_default_value=jQuery('<div></div>').html(temp_default_value).text();
-					}
+					
 					var the_options=temp_environment_data;
 					//the_options Ex:
 					//[{'value':'value_1','text':'text_1'},{'value':'value_2','text':'text_2'},{'value':'value_3','text':'text_3'}...]
@@ -640,9 +638,7 @@
 					
 				}
 				else if(the_component_type=='ckeditor'){
-					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						jQuery(this).html(CKEDITOR.tools.htmlEncode(temp_default_value));
-					}
+					
 					var want_set_ckeditor_config={};
 					var final_ckeditor_config={};
 					
@@ -682,6 +678,7 @@
 					jQuery.bill_bridge_ckeditor.real_objs[the_element_id].on("instanceReady", 
 						function(event)
 						{
+							event.editor.setData(temp_default_value);	
 							return false;
 						},null,null
 					);
