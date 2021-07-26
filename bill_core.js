@@ -218,7 +218,7 @@ var bill_core={
 			this.debug_console('fetch_way error','error')
 			return;
 		}
-		if( fetch_way==='meets_the' && fetch_way!=='under_the' ){
+		if( fetch_way!=='meets_the' && fetch_way!=='under_the' ){
 			this.debug_console('fetch_way error','error')
 			return;
 		
