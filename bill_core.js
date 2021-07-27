@@ -398,55 +398,41 @@ var bill_core={
 			}
 			
 		}
-		if(fetch_way==='meets_the'){
-			jQuery(jquery_expression).filter(fetch_input_jquery_expression_1).each(
-				fetch_function_1
+			
+		if(fetch_way==='meets_the' || fetch_way==='under_the'){
+			var source_range;
+			if(fetch_way==='meets_the'){
+				source_range=jQuery(jquery_expression);
+			}else if(fetch_way==='under_the'){
+				source_range=jQuery(jquery_expression).find('*');
+			}
+			
+			var fetch_target_1=source_range.filter(fetch_input_jquery_expression_1);
+			var fetch_target_2=source_range.filter(fetch_input_jquery_expression_2);
+			var fetch_target_3=source_range.filter(fetch_input_jquery_expression_3);
+			source_range.each(
+				function(){
+					if(jQuery(this).is(fetch_target_1)){
+						fetch_function_1.call(this)
+					}else if(jQuery(this).is(fetch_target_2)){
+						fetch_function_2.call(this)
+					}else if(jQuery(this).is(fetch_target_3)){
+						fetch_function_3.call(this)
+					}
+				}
 			);
-			jQuery(jquery_expression).filter(fetch_input_jquery_expression_2).each(
-				fetch_function_2
-			);
+			
 			for(var input_name in checkbox_values){
 				values[input_name]=checkbox_values[input_name].join(',,,');
 			}
-			
-			jQuery(jquery_expression).filter(fetch_input_jquery_expression_3).each(
-				fetch_function_3
-			);
 			
 			for(var input_name in select_values){
 				values[input_name]=select_values[input_name].join(',,,');
 			}
 			return_data['all_inputs_jqobject']=
-				jQuery(jquery_expression).filter(
-					fetch_input_jquery_expression_1+','+
-					fetch_input_jquery_expression_2+','+
-					fetch_input_jquery_expression_3
-				);
+				fetch_target_1.add(fetch_target_2).add(fetch_target_3);
 		}
-		else if(fetch_way==='under_the'){
-			jQuery(jquery_expression).find(fetch_input_jquery_expression_1).each(
-				fetch_function_1
-			);
-			jQuery(jquery_expression).find(fetch_input_jquery_expression_2).each(
-				fetch_function_2
-			);
-			for(var input_name in checkbox_values){
-				values[input_name]=checkbox_values[input_name].join(',,,');
-			}
-			
-			jQuery(jquery_expression).find(fetch_input_jquery_expression_3).each(
-				fetch_function_3
-			);
-			for(var input_name in select_values){
-				values[input_name]=select_values[input_name].join(',,,');
-			}
-			return_data['all_inputs_jqobject']=
-				jQuery(jquery_expression).find(
-					fetch_input_jquery_expression_1+','+
-					fetch_input_jquery_expression_2+','+
-					fetch_input_jquery_expression_3
-				);
-		}
+		
 		
 		if( Object.keys(values).length==0 ){
 			return_data['values']=null;

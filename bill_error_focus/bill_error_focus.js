@@ -5,6 +5,7 @@
 		'input_jquery_expression':
 			'input[type="text"][validate_fail_message],'+
 			'input[type="password"][validate_fail_message],'+
+			'select[validate_fail_message],'+
 			'textarea[validate_fail_message]',
 		'attach':function(jquery_expression){
 			if(bill_core.global_typeof(jquery_expression)!=='string'){
