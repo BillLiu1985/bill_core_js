@@ -2062,6 +2062,23 @@ var bill_core={
 			);
 		}
 	},
+	'debug_stopwatch_begin':function(op_name){
+		if(this.global_typeof(op_name)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' op_name error!','error');
+			return;
+		}
+		bill_core.debug_stopwatch_date=new Date();
+		bill_core.debug_stopwatch_op_name=op_name;
+		
+	},
+	'debug_stopwatch_end':function(){
+		if(bill_core.debug_stopwatch_date===undefined){
+			this.debug_console('bill_core.'+arguments.callee.name+' debug stopwatch never begin','error');
+			return;
+		}
+		var now_date=new Date();
+		bill_core.debug_console(bill_core.debug_stopwatch_op_name+' took '+(now_date.getTime()-bill_core.debug_stopwatch_date.getTime())+' ms');
+	},
 	'ajax_post':function(param1,param2,param3,param4,param5,param6){
 		//destination_url、post_data、request_success_handler、request_fail_handler
 		//destination_url、post_data、request_success_handler、request_fail_handler、is_sync
