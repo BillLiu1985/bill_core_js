@@ -20,6 +20,8 @@
 			'process_download_url':'',
 			'uploading_icon_url':'',
 			'value_base_url':'',
+			'error_msg_1':'',
+			'human_read_name':'',	
 			'file_tip':'選擇檔案：',
 			'preview_width':400,
 			'output_width':0,
@@ -322,7 +324,7 @@
 			final_component_html+=
 			'<input type="hidden" value=""  id="'+component_id+'_tmpfile_uploadfile_id" />'+
 			'<input type="hidden" value="DO_NO" id="'+component_id+'_op" name="'+opts.input_name+'_op" />'+
-			'<input type="hidden" value="" id="'+component_id+'_data" name="'+opts.input_name+'" reg_1="'+reg_1_string+'" />';
+			'<input type="hidden" value="" id="'+component_id+'_data" name="'+opts.input_name+'" human_read_name="'+opts.human_read_name+'" error_msg_1="'+opts.error_msg_1+'" reg_1="'+reg_1_string+'" />';
 				
 			get_jqobject.html(final_component_html);
 			
@@ -482,7 +484,7 @@
 							jQuery("#"+component_id+'_ingicon').hide();
 							jQuery(this).show();
 						},
-						'1',
+						'0',
 						this
 					);
 				}

@@ -551,6 +551,16 @@
 						temp_opts['uploading_icon_url']=temp_string;
 					}
 					
+					temp_string=jQuery(this).attr('error_msg_1');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['error_msg_1']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('human_read_name');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['human_read_name']=temp_string;
+					}
+					
 					temp_string=jQuery(this).attr('file_tip');
 					if( bill_core.global_typeof(temp_string)==='string' ){
 						temp_opts['file_tip']=temp_string;
