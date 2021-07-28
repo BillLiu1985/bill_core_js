@@ -521,9 +521,9 @@
 						temp_opts['default_value']=temp_string;
 					}
 					
-					temp_string=jQuery(this).attr('value_base_url');
+					temp_string=jQuery(this).attr('preview_base_url');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
-						temp_opts['value_base_url']=temp_string;
+						temp_opts['preview_base_url']=temp_string;
 					}
 					
 					temp_string=jQuery(this).attr('file_type');
