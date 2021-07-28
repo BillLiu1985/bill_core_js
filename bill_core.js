@@ -234,167 +234,171 @@ var bill_core={
 		var human_read_names=return_data['human_read_names'];
 		var reg_1s=return_data['reg_1s'];
 		var error_msg_1s=return_data['error_msg_1s'];
-		var fetch_input_jquery_expression_1=
-			'input[type="text"][name],'+
-			'input[type="date"][name],'+
-			'input[type="radio"][name]:checked,'+
-			'input[type="hidden"][name],'+
-			'input[type="password"][name],'+
-			'input[type="file"][name],'+
-			'textarea[name]'
-		var fetch_function_1=function(){
+		
+		var fetch_jquery_expression_input_radio=
+			'input[type="radio"][name][name!=""]:checked';			
+		var fetch_function_input_radio=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
-			var the_input_human_read_name;
-			var the_input_reg_1;
-			var the_input_error_msg_1;
+			var the_input_value;
 			
-			if(the_input_jqobject.is('input[type="text"],input[type="date"],input[type="hidden"],input[type="password"],input[type="file"],textarea')){
-				the_input_name=the_input_jqobject.attr('name');
-				the_input_human_read_name=the_input_jqobject.attr('human_read_name');
-				the_input_reg_1=the_input_jqobject.attr('reg_1');
-				the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
-			}
-			else{
-				the_input_name=the_input_jqobject.attr('name');
-			}
-			if( bill_core.string_is_solid(the_input_name)!=='1' ){
-				return;
-			}
-			
-			if( the_input_jqobject.is('textarea') ){
-				if( the_input_jqobject.is('[component_type="ckeditor"]') ){
-					var the_input_value=jQuery.bill_bridge_ckeditor.real_objs[the_input_jqobject.attr('id')].getData();
-				}else{
-					var the_input_value=the_input_jqobject.val();
-				}
-				
-				values[the_input_name]=the_input_value;
-				
-				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					
-					human_read_names[the_input_name]=the_input_human_read_name;
-				}
-				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-					
-					reg_1s[the_input_name]=the_input_reg_1;
-				}
-				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					
-					error_msg_1s[the_input_name]=the_input_error_msg_1;
-				}
-			}
-			else if( the_input_jqobject.is('input[type="text"]') ){
-				var the_input_value=the_input_jqobject.val();
-				
-				values[the_input_name]=the_input_value;
-				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					
-					human_read_names[the_input_name]=the_input_human_read_name;
-				}
-				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-				
-					reg_1s[the_input_name]=the_input_reg_1;
-				}
-				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					
-					error_msg_1s[the_input_name]=the_input_error_msg_1;
-				}
-			}
-			else if( the_input_jqobject.is('input[type="file"]') ){
-				var the_input_value=the_input_jqobject.val();
-				
-				values[the_input_name]=the_input_value;
-				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					
-					human_read_names[the_input_name]=the_input_human_read_name;
-				}
-				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-					
-					reg_1s[the_input_name]=the_input_reg_1;
-				}
-				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					
-					error_msg_1s[the_input_name]=the_input_error_msg_1;
-				}
-			}
-			else{
-				var the_input_value=the_input_jqobject.val();
-				
-				values[the_input_name]=the_input_value;
-				if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-					
-					human_read_names[the_input_name]=the_input_human_read_name;
-				}
-				if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-					
-					reg_1s[the_input_name]=the_input_reg_1;
-				}
-				if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-					
-					error_msg_1s[the_input_name]=the_input_error_msg_1;
-				}
-			}
-		}
-		
-		var checkbox_values={};
-		var fetch_input_jquery_expression_2=
-			'input[type="checkbox"][name]:checked';
-		var fetch_function_2=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;			
 			the_input_name=the_input_jqobject.attr('name');
+			the_input_value=the_input_jqobject.val();
+			values[the_input_name]=the_input_value;
 			
-			if( bill_core.string_is_solid(the_input_name)!=='1' ){
-				return;
-			}
-			var the_input_value=the_input_jqobject.attr('value');
-			
-			if( checkbox_values.hasOwnProperty(the_input_name)===false ){
-				checkbox_values[the_input_name]=[];
-			}
-			checkbox_values[the_input_name].push(the_input_value);
+			human_read_names[the_input_name]=null;
+			reg_1s[the_input_name]=null;
+			error_msg_1s[the_input_name]=null;
 		}
 		
-		var select_values={};
-		var fetch_input_jquery_expression_3=
-			'select[name]';
-		var fetch_function_3=function(){
+		var fetch_jquery_expression_textarea=
+			'textarea[name][name!=""]';
+		var fetch_function_textarea=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
 			var the_input_human_read_name;
 			var the_input_reg_1;
 			var the_input_error_msg_1;
+			var the_input_value;
 			
 			the_input_name=the_input_jqobject.attr('name');
 			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
 			the_input_reg_1=the_input_jqobject.attr('reg_1');
 			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
 		
-			if( bill_core.string_is_solid(the_input_name)!=='1' ){
-				return;
+			if( the_input_jqobject.is('[component_type="ckeditor"]') ){
+				the_input_value=jQuery.bill_bridge_ckeditor.real_objs[the_input_jqobject.attr('id')].getData();
+			}else{
+				the_input_value=the_input_jqobject.val();
 			}
+			
+			values[the_input_name]=the_input_value;
+			
+			if( bill_core.global_typeof(the_input_human_read_name)==='string' ){
+				human_read_names[the_input_name]=the_input_human_read_name;
+			}else{
+				human_read_names[the_input_name]=null;
+			}
+			if( bill_core.global_typeof(the_input_reg_1)==='string' ){
+				reg_1s[the_input_name]=the_input_reg_1;
+			}else{
+				reg_1s[the_input_name]=null;
+			}
+			if( bill_core.global_typeof(the_input_error_msg_1)==='string' ){
+				error_msg_1s[the_input_name]=the_input_error_msg_1;
+			}else{
+				error_msg_1s[the_input_name]=null;
+			}
+			
+		}
+		
+		
+		
+		var checkbox_values={};
+		var fetch_jquery_expression_input_checkbox=
+			'input[type="checkbox"][name][name!=""]:checked';
+		var fetch_function_input_checkbox=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name;
+			var the_input_value;
+			
+			
+			the_input_name=the_input_jqobject.attr('name');
+			
+			the_input_value=the_input_jqobject.val();
+			
+			if( checkbox_values.hasOwnProperty(the_input_name)===false ){
+				checkbox_values[the_input_name]=[];
+				values[the_input_name]='';
+			}
+			checkbox_values[the_input_name].push(the_input_value);
+			
+			human_read_names[the_input_name]=null;
+			reg_1s[the_input_name]=null;
+			error_msg_1s[the_input_name]=null;
+		}
+		
+		var select_values={};
+		var fetch_jquery_expression_select=
+			'select[name][name!=""]';
+		var fetch_function_select=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name;
+			var the_input_human_read_name;
+			var the_input_reg_1;
+			var the_input_error_msg_1;
+			var the_input_value;
+			
+			the_input_name=the_input_jqobject.attr('name');
+			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
+			the_input_reg_1=the_input_jqobject.attr('reg_1');
+			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
+		
 			
 			if( select_values.hasOwnProperty(the_input_name)===false ){
 				select_values[the_input_name]=[];
+				values[the_input_name]='';
 			}
 			the_input_jqobject.find('option:selected').each(
 				function(){
-					select_values[the_input_name].push($(this).attr('value'));
+					select_values[the_input_name].push($(this).val());
 				}
 			)
 			
-			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-			
+			if( bill_core.global_typeof(the_input_human_read_name)==='string' ){
 				human_read_names[the_input_name]=the_input_human_read_name;
+			}else{
+				human_read_names[the_input_name]=null;
 			}
-			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-				
+			if( bill_core.global_typeof(the_input_reg_1)==='string' ){
 				reg_1s[the_input_name]=the_input_reg_1;
+			}else{
+				reg_1s[the_input_name]=null;
 			}
-			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-			
+			if( bill_core.global_typeof(the_input_error_msg_1)==='string' ){
 				error_msg_1s[the_input_name]=the_input_error_msg_1;
+			}else{
+				error_msg_1s[the_input_name]=null;
+			}
+			
+		}
+		
+		var fetch_jquery_expression_others=
+			'input[type="text"][name][name!=""],'+
+			'input[type="date"][name][name!=""],'+
+			'input[type="hidden"][name][name!=""],'+
+			'input[type="password"][name][name!=""],'+
+			'input[type="file"][name][name!=""]';
+		var fetch_function_others=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name;
+			var the_input_human_read_name;
+			var the_input_reg_1;
+			var the_input_error_msg_1;
+			var the_input_value;
+			
+			the_input_name=the_input_jqobject.attr('name');
+			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
+			the_input_reg_1=the_input_jqobject.attr('reg_1');
+			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
+			
+			the_input_value=the_input_jqobject.val();
+			values[the_input_name]=the_input_value;
+				
+			if( bill_core.global_typeof(the_input_human_read_name)==='string' ){
+				human_read_names[the_input_name]=the_input_human_read_name;
+			}else{
+				human_read_names[the_input_name]=null;
+			}
+			if( bill_core.global_typeof(the_input_reg_1)==='string' ){
+				reg_1s[the_input_name]=the_input_reg_1;
+			}else{
+				reg_1s[the_input_name]=null;
+			}
+			if( bill_core.global_typeof(the_input_error_msg_1)==='string' ){
+				error_msg_1s[the_input_name]=the_input_error_msg_1;
+			}else{
+				error_msg_1s[the_input_name]=null;
 			}
 			
 		}
@@ -407,17 +411,23 @@ var bill_core={
 				source_range=jQuery(jquery_expression).find('*');
 			}
 			
-			var fetch_target_1=source_range.filter(fetch_input_jquery_expression_1);
-			var fetch_target_2=source_range.filter(fetch_input_jquery_expression_2);
-			var fetch_target_3=source_range.filter(fetch_input_jquery_expression_3);
+			var fetch_target_input_radio=source_range.filter(fetch_jquery_expression_input_radio);
+			var fetch_target_textarea=source_range.filter(fetch_jquery_expression_textarea);
+			var fetch_target_input_checkbox=source_range.filter(fetch_jquery_expression_input_checkbox);
+			var fetch_target_select=source_range.filter(fetch_jquery_expression_select);
+			var fetch_target_others=source_range.filter(fetch_jquery_expression_others);
 			source_range.each(
 				function(){
-					if(jQuery(this).is(fetch_target_1)){
-						fetch_function_1.call(this)
-					}else if(jQuery(this).is(fetch_target_2)){
-						fetch_function_2.call(this)
-					}else if(jQuery(this).is(fetch_target_3)){
-						fetch_function_3.call(this)
+					if(jQuery(this).is(fetch_target_input_radio)){
+						fetch_function_input_radio.call(this)
+					}else if(jQuery(this).is(fetch_target_textarea)){
+						fetch_function_textarea.call(this)
+					}else if(jQuery(this).is(fetch_target_input_checkbox)){
+						fetch_function_input_checkbox.call(this)
+					}else if(jQuery(this).is(fetch_target_select)){
+						fetch_function_select.call(this)
+					}else if(jQuery(this).is(fetch_target_others)){
+						fetch_function_others.call(this)
 					}
 				}
 			);
@@ -430,22 +440,20 @@ var bill_core={
 				values[input_name]=select_values[input_name].join(',,,');
 			}
 			return_data['all_inputs_jqobject']=
-				fetch_target_1.add(fetch_target_2).add(fetch_target_3);
+				fetch_target_input_radio.
+				add(fetch_target_textarea).
+				add(fetch_target_input_checkbox).
+				add(fetch_target_select).
+				add(fetch_target_others);
 		}
-		
 		
 		if( Object.keys(values).length==0 ){
 			return_data['values']=null;
-		}
-		if( Object.keys(human_read_names).length==0 ){
 			return_data['human_read_names']=null;
-		}
-		if( Object.keys(reg_1s).length==0 ){
 			return_data['reg_1s']=null;
-		}
-		if( Object.keys(error_msg_1s).length==0 ){
 			return_data['error_msg_1s']=null;
 		}
+		
 		return return_data;
 	},
 	/**
@@ -1838,12 +1846,10 @@ var bill_core={
 	},
 	'validate_inputs_data':function(inputs_data){
 		var return_result={
-			'code':'1',
 			'fails':{}
 		};
 		if(this.global_typeof(inputs_data)!=='object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
-			return_result['code']='0';
 			return_result['fails']=null;
 			return return_result;
 		}
@@ -1853,7 +1859,6 @@ var bill_core={
 		
 		){
 			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
-			return_result['code']='0';
 			return_result['fails']=null;
 			return return_result;
 		}
@@ -1867,18 +1872,6 @@ var bill_core={
 			return_result['fails']=null;
 			return return_result;
 		}
-		if(this.global_typeof(values)!=='object'){
-			inputs_data['values']={};
-			values=inputs_data['values'];
-		}
-		if(this.global_typeof(human_read_names)!=='object'){
-			inputs_data['human_read_names']={};
-			human_read_names=inputs_data['human_read_names'];
-		}
-		if(this.global_typeof(error_msg_1s)!=='object'){
-			inputs_data['error_msg_1s']={};
-			error_msg_1s=inputs_data['error_msg_1s'];
-		}
 		
 		
 		for(var the_input_name in reg_1s ){
@@ -1888,10 +1881,13 @@ var bill_core={
 			var the_error_msg_1=error_msg_1s[the_input_name];
 			if(this.global_typeof(the_value)!=='string'){
 				this.debug_console('bill_core.'+arguments.callee.name+' input '+the_input_name+' error!','error');
-				return_result['code']='0';
 				return_result['fails']=null;
 				break;
 			}
+			if(this.string_is_solid(the_reg_1)==='0'){
+				continue;
+			}
+			
 			var the_reg_tip=this.validate_regexp_tips[the_reg_1];
 			if(the_reg_tip===undefined){
 				the_reg_tip='請輸入正確的格式';
@@ -1910,19 +1906,19 @@ var bill_core={
 			else{
 				if( return_result.fails.hasOwnProperty(the_input_name)===false ){
 					return_result.fails[the_input_name]={
-						'value':null,
-						'human_read_name':null,
-						'validate_fail_message':null,
+						'value':'',
+						'human_read_name':'',
+						'validate_fail_message':''
 					};
 				}
 				return_result.fails[the_input_name]['value']=the_value;
-				if(this.global_typeof(the_human_read_name)==='string'){
+				if(this.string_is_solid(the_human_read_name)==='1'){
 					return_result.fails[the_input_name]['human_read_name']=the_human_read_name;
 				}
 				else{
 					return_result.fails[the_input_name]['human_read_name']=the_input_name;
 				}
-				if(this.global_typeof(the_error_msg_1)==='string'){
+				if(this.string_is_solid(the_error_msg_1)==='1'){
 					return_result.fails[the_input_name]['validate_fail_message']=the_error_msg_1;
 					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_error_msg_1);
 				}
@@ -1936,12 +1932,7 @@ var bill_core={
 		
 		if( Object.keys(return_result.fails).length==0 ){
 			return_result['fails']=null;
-		}else{
-			return_result['code']='0';
-			
-			
 		}
-		
 		return return_result;
 	},
 	'array_keep_solid_string_value':function(the_array){
