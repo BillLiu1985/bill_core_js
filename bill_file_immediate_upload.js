@@ -19,7 +19,7 @@
 			'process_upload_url':'',
 			'process_download_url':'',
 			'uploading_icon_url':'',
-			'value_base_url':'',
+			'preview_base_url':'',
 			'error_msg_1':'',
 			'human_read_name':'',	
 			'file_tip':'選擇檔案：',
@@ -168,7 +168,7 @@
 						
 						final_component_html+=
 						'<img border="0" '+temp_style_string+' src="'+
-						opts.value_base_url+opts.default_value+'" />';
+						opts.preview_base_url+opts.default_value+'" />';
 					}
 					else{
 						final_component_html+=
@@ -198,7 +198,7 @@
 						}
 						final_component_html+=
 						'<video '+temp_style_string+'  controls="controls">'+
-							'<source src="'+opts.value_base_url+opts.default_value+'" type="'+temp_mime+'" />'+
+							'<source src="'+opts.preview_base_url+opts.default_value+'" type="'+temp_mime+'" />'+
 							'Your browser does not support the video tag.'+
 						'</video>';
 					}
@@ -227,7 +227,7 @@
 						
 						
 						final_component_html+=
-						'<embed src="'+opts.value_base_url+opts.default_value+'" '+temp_attrs_string+'  ></embed>';
+						'<embed src="'+opts.preview_base_url+opts.default_value+'" '+temp_attrs_string+'  ></embed>';
 					
 					}
 					else{
@@ -240,7 +240,7 @@
 				if(opts.file_type=='pic'){
 					if( bill_core.string_is_solid(opts.default_value)==='1'){
 						final_component_html+=
-						'<img class="img-account-profile  mb-2" src="'+opts.value_base_url+opts.default_value+'" alt="" />';
+						'<img class="img-account-profile  mb-2" src="'+opts.preview_base_url+opts.default_value+'" alt="" />';
 					}
 					else{
 						final_component_html+=
@@ -514,7 +514,7 @@
 						if( bill_core.string_is_solid(about_info['tmpfile_uploadfile_id'])==='1'){
 							jQuery("#"+component_id+"_preview>img").attr(
 								'src',
-								opts.value_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
+								opts.preview_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
 							);
 						}
 						else{
@@ -534,7 +534,7 @@
 							}
 							jQuery("#"+component_id+"_preview>video>source").attr(
 								'src',
-								opts.value_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
+								opts.preview_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
 							);
 							jQuery("#"+component_id+"_preview>video>source").attr(
 								'type',
@@ -553,7 +553,7 @@
 							
 							jQuery("#"+component_id+"_preview>embed").attr(
 								'src',
-								opts.value_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
+								opts.preview_base_url+about_info['tmpfile_uploadfile_id']+'?rnd='+new Date().getTime()
 							);
 						}
 						else{
