@@ -41,11 +41,11 @@
 						
 						jQuery(this).attr('value',temp_default_value);
 					}
-					if( bill_core.global_typeof($(this).attr('illegal_reg'))==='string' ){
+					if( bill_core.global_typeof(jQuery(this).attr('illegal_reg'))==='string' ){
 						jQuery(this).keyup(
 							function(event){
-								$(this).val(
-									bill_core.validate_remove_illegal($(this).attr('illegal_reg'),$(this).val())
+								jQuery(this).val(
+									bill_core.validate_remove_illegal(jQuery(this).attr('illegal_reg'),jQuery(this).val())
 								);
 							}
 						)
@@ -68,8 +68,8 @@
 					
 					jQuery(this).keyup(
 							function(event){
-								$(this).val(
-									bill_core.validate_remove_illegal('inumber',$(this).val())
+								jQuery(this).val(
+									bill_core.validate_remove_illegal('inumber',jQuery(this).val())
 								);
 							}
 						)
@@ -85,9 +85,9 @@
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
 				
 						if(jQuery(this).attr('value')==temp_default_value){
-							jQuery(this).attr('checked',true);
+							jQuery(this).attr('checked','checked');
 						}else{
-							jQuery(this).attr('checked',false);
+							jQuery(this).removeAttr('checked');
 						}
 					}
 				}
@@ -97,20 +97,17 @@
 						var temp_array=temp_default_value.split(',,,');
 						
 						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
-							jQuery(this).attr('checked',true);
+							jQuery(this).attr('checked','checked');
 						}else{
-							jQuery(this).attr('checked',false);
+							jQuery(this).removeAttr('checked');
 						}
 						
 					}
 				}
 				else if(the_component_type=='input_date'){
-					var now_datetimebigint=bill_core.datetimebigint_now('0','0','0');
-					if( bill_core.string_is_solid(temp_default_value)==='1' ){
-					}else{
-						temp_default_value=now_datetimebigint;
-					}
 					
+					
+					var now_datetimebigint=bill_core.datetimebigint_now('0','0','0');
 					var min_datebigint='';
 					var temp_string=jQuery(this).attr('years_before_now');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
@@ -132,10 +129,14 @@
 					}
 					
 					
-					
-					temp_default_value=bill_core.datetimebigint_toFormattedString(temp_default_value,'Y-m-d');
-					
-					jQuery(this).val(temp_default_value);
+					if(bill_core.string_is_solid(temp_default_value)==='1'){
+						if(temp_default_value==='now'){
+							temp_default_value=bill_core.datetimebigint_toFormattedString(now_datetimebigint,'Y-m-d');
+						}else{
+							temp_default_value=bill_core.datetimebigint_toFormattedString(temp_default_value,'Y-m-d');
+						}
+					}
+					jQuery(this).attr('value',temp_default_value);
 				}
 				else if( the_component_type==='textarea' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
@@ -160,7 +161,7 @@
 					}
 					
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						jQuery(this).val(temp_default_value);
+						jQuery(this).children('option[value="'+temp_default_value+'"]').attr('selected','selected');
 					}
 				}
 			}
