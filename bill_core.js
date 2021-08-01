@@ -433,11 +433,40 @@ var bill_core={
 			);
 			
 			for(var input_name in checkbox_values){
-				values[input_name]=checkbox_values[input_name].join(',,,');
+				var temp_array=checkbox_values[input_name].map(
+					function(element){
+						return element.
+						replace(/[\|\,]/g,
+							function(match){
+								if(match==='|'){
+									return '|vertical_line|';
+								}else if(match===','){
+									return '|comma|';
+								}
+							}
+						);
+					}
+				)
+				values[input_name]=temp_array.join(',,,');
 			}
 			
 			for(var input_name in select_values){
-				values[input_name]=select_values[input_name].join(',,,');
+				var temp_array=select_values[input_name].map(
+					function(element){
+						return element.
+						replace(/[\|\,]/g,
+							function(match){
+								if(match==='|'){
+									return '|vertical_line|';
+								}else if(match===','){
+									return '|comma|';
+								}
+							}
+						);
+					
+					}
+				)
+				values[input_name]=temp_array.join(',,,');
 			}
 			return_data['all_inputs_jqobject']=
 				fetch_target_input_radio.

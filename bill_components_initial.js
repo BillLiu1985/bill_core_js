@@ -95,7 +95,23 @@
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
 				
 						var temp_array=temp_default_value.split(',,,');
-						
+						temp_array=temp_array.map(
+							function(element){
+								return element.
+								replace(/\|.+?\|/g,
+									function(match){
+										if(match==='|vertical_line|'){
+											return '|';
+										}else if(match==='|comma|'){
+											return ',';
+										}
+									}
+								);
+								;
+							
+							}
+						)
+					
 						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
 							jQuery(this).attr('checked','checked');
 						}else{
@@ -153,9 +169,7 @@
 						for(var kindex in the_options){
 							var the_option=the_options[kindex];
 							temp_html+=
-								'<option '+
-								(the_option['value']===temp_default_value?'selected="selected" ':'')+
-								'value="'+the_option['value']+'" >'+the_option['text']+'</option>';
+								'<option value="'+the_option['value']+'" >'+the_option['text']+'</option>';
 						}
 						jQuery(this).append(temp_html);
 					}
