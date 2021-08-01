@@ -61,9 +61,9 @@
 	
 	jQuery.fn.bill_grid = function(param1){
 		
-		var get_jqobject=this.filter('div[id]');
+		var get_jqobject=this.filter('div[id],table[id]');
 		if( get_jqobject.length>1 ){
-			bill_core.debug_console('bill_grid一次只能轉換一個,轉換的元素為賦予id的div','error');
+			bill_core.debug_console('bill_grid一次只能轉換一個,轉換的元素為賦予id的div或table','error');
 			return;
 		}
 		if( typeof(param1)=='string '){
@@ -157,15 +157,16 @@
 					},
 					function(data,textStatus,jqXHR){
 						if(data.code=='1'){
+							/*
 							var temp_map={
 								'是':'否',
 								'否':'是',
-								'上架':'下架',
-								'下架':'上架'
+								'啟動':'停用',
+								'停用':'啟動'
 							};
-							
 							this.text(temp_map[this.text()]);
-							
+							*/
+							reload.call(get_jqobject);
 						}else{
 							alert(data.message)
 						}
@@ -189,13 +190,15 @@
 					},
 					function(data,textStatus,jqXHR){
 						if(data.code=='1'){
+							/*
 							var temp_map={
 								'是':'否',
 								'否':'是',
-								'啟動中':'停用中',
-								'停用中':'啟動中'
+								'上架':'下架',
+								'下架':'上架'
 							};
-							
+							*/
+							reload.call(get_jqobject);
 							this.text(temp_map[this.text()]);
 						}else{
 							alert(data.message)
