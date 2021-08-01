@@ -61,9 +61,9 @@
 	
 	jQuery.fn.bill_grid = function(param1){
 		
-		var get_jqobject=this.filter('div[id],table[id]');
+		var get_jqobject=this.filter('div[id]');
 		if( get_jqobject.length>1 ){
-			bill_core.debug_console('bill_grid一次只能轉換一個,轉換的元素為賦予id的div或table','error');
+			bill_core.debug_console('bill_grid一次只能轉換一個,轉換的元素為賦予id的div','error');
 			return;
 		}
 		if( typeof(param1)=='string '){
@@ -104,7 +104,7 @@
 				function(jqXHR,textStatus,errorThrown ){
 					alert(errorThrown);
 				},
-				'1',
+				'0',
 				this
 			);
 		}
@@ -135,15 +135,15 @@
 						}
 						else{
 							alert(response_data.message);
-							jQuery(this).attr('disabled',false);
+							this.attr('disabled',false);
 						}
 						
 					},
 					function(jqXHR,textStatus,errorThrown ){
 						alert(errorThrown);
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
-					'1',
+					'0',
 					this
 				);
 			},
@@ -157,21 +157,25 @@
 					},
 					function(data,textStatus,jqXHR){
 						if(data.code=='1'){
-							if(jQuery(this).text()==='是'){
-								jQuery(this).text('否');
-							}else{
-								jQuery(this).text('是');
-							}
+							var temp_map={
+								'是':'否',
+								'否':'是',
+								'上架':'下架',
+								'下架':'上架'
+							};
+							
+							this.text(temp_map[this.text()]);
+							
 						}else{
 							alert(data.message)
 						}
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
 					function(jqXHR,textStatus,errorThrown ){
 						alert(errorThrown);
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
-					'1',
+					'0',
 					this
 				);	
 			},
@@ -185,21 +189,24 @@
 					},
 					function(data,textStatus,jqXHR){
 						if(data.code=='1'){
-							if(jQuery(this).text()==='是'){
-								jQuery(this).text('否');
-							}else{
-								jQuery(this).text('是');
-							}
+							var temp_map={
+								'是':'否',
+								'否':'是',
+								'啟動中':'停用中',
+								'停用中':'啟動中'
+							};
+							
+							this.text(temp_map[this.text()]);
 						}else{
 							alert(data.message)
 						}
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
 					function(jqXHR,textStatus,errorThrown ){
 						alert(errorThrown);
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
-					'1',
+					'0',
 					this
 				);	
 			},
@@ -219,14 +226,14 @@
 						}
 						else{
 							alert(response_data.message);
-							jQuery(this).attr('disabled',false);
+							this.attr('disabled',false);
 						}
 					},
 					function(jqXHR,textStatus,errorThrown ){
 						alert(errorThrown);
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
-					'1',
+					'0',
 					this
 				);
 			},
@@ -246,14 +253,14 @@
 						}
 						else{
 							alert(response_data.message);
-							jQuery(this).attr('disabled',false);
+							this.attr('disabled',false);
 						}
 					},
 					function(jqXHR,textStatus,errorThrown ){
 						alert(errorThrown);
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
-					'1',
+					'0',
 					this
 				);
 			},
@@ -263,7 +270,7 @@
 				var is_pass_validator='1';
 				jQuery('[name="custom_grid_record_sort_all_input"]').each(
 					function(){
-						var temp_id=$(this).attr('record_id');
+						var temp_id=jQuery(this).closest('*[record_id]').attr('record_id');
 						var temp_value=jQuery(this).val();
 						if(
 							is_pass_validator==='0'
@@ -303,13 +310,13 @@
 						}else{
 							alert(data.message)
 						}
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
 					function(jqXHR,textStatus,errorThrown ){
 						alert(errorThrown);
-						jQuery(this).attr('disabled',false);
+						this.attr('disabled',false);
 					},
-					'1',
+					'0',
 					this
 				);
 			},
@@ -378,64 +385,64 @@
 				jqobject_scope_methods['reset'].call(get_jqobject);
 			}
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_record_delete_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_delete_button'+'"]',function(){
 				if(window.confirm("確定刪除嗎?")){
 					jQuery(this).attr('disabled',true);
 				
 					jqobject_scope_methods['record_delete'].call(
-						this,
-						$(this).attr('record_id')
+						jQuery(this),
+						jQuery(this).closest('*[record_id]').attr('record_id')
 					);
 				}
 			});
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_record_toggle_is_enabled_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_toggle_is_enabled_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);			
 				jqobject_scope_methods['record_toggle_is_enabled'].call(
-					this,
-					$(this).attr('record_id')
+					jQuery(this),
+					jQuery(this).closest('*[record_id]').attr('record_id')
 				);
 				
 			});
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_record_toggle_is_show_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_toggle_is_show_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);			
 				jqobject_scope_methods['record_toggle_is_show'].call(
-					this,
-					$(this).attr('record_id')
+					jQuery(this),
+					jQuery(this).closest('*[record_id]').attr('record_id')
 				);
 				
 			});
 			
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_up_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_up_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);
 				jqobject_scope_methods['record_sort_up'].call(
-					this,
-					$(this).attr('record_id')
+					jQuery(this),
+					jQuery(this).closest('*[record_id]').attr('record_id')
 				);
 			});
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_down_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_down_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);
 				jqobject_scope_methods['record_sort_down'].call(
-					this,
-					$(this).attr('record_id')
+					jQuery(this),
+					jQuery(this).closest('*[record_id]').attr('record_id')
 				);
 			});
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_all_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_all_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);
 				jqobject_scope_methods['record_sort_all'].call(
-					this
+					jQuery(this)
 				);
 			});
 			
-			$(document).on('click','[name="'+get_jqobject.attr('id')+'_pager_nthpage'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_pager_nthpage'+'"]',function(){
 				jQuery(this).attr('disabled',true);
 				jqobject_scope_methods['change_page'].call(
-					this,
-					parseInt($(this).attr('nthpage'),10)
+					jQuery(this),
+					parseInt(jQuery(this).attr('nthpage'),10)
 				);
 			});
 			
