@@ -110,7 +110,10 @@ var bill_core={
 		
 		return template_string.replace(
 			/!!!(.+?)!!!/g, 
-			function (match, capture) { 
+			function (match, capture) {
+				if(params[capture]===undefined){
+					return match;
+				}
 				return params[capture];
 			}
 		); // "gold ring|string"

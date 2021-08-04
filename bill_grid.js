@@ -29,6 +29,9 @@
 					'template':''
 				}
 			},
+			'_button_htmls':{
+				
+			},
 			'is_initial_load_data':'1',
 			'reload_ajax_url':'',
 			'record_delete_ajax_url':'',
@@ -90,29 +93,51 @@
 				var about_grid=the_grid.data();
 				var button_infos=about_grid['button_infos'];
 				var can_do_what=about_grid['can_do_what'];
-				
-				
-				var button_htmls={};
-				
+				var _button_htmls=about_grid._button_htmls;
 				for(var button_id in button_infos){
 					var button_info=button_infos[button_id];
 					if(
 						jQuery.inArray(button_info.need_can,can_do_what)===-1
 					){
-						button_htmls[button_id]='';
+						_button_htmls[button_id]='';
 					}else{
-						button_htmls[button_id]=bill_core.global_parse_template_string(
+						_button_htmls[button_id]=bill_core.global_parse_template_string(
 							button_info.template,
 							{
-								'grid_id':grid_id
+								'grid_id':grid_id,
+								'button_id':button_id
 							}
 						);
 					}
 				}
-				about_grid['make_heading_part_func'].call(the_grid,button_htmls);				
-				about_grid['make_list_part_func'].call(the_grid,data['list_records'],button_htmls);
-				about_grid['make_pager_part_func'].call(the_grid,data['data_status'],button_htmls);
-				about_grid['after_draw_func'].call(the_grid,button_htmls);
+				about_grid['make_heading_part_func'].call(the_grid,jqobject_private_methods['draw_button']);				
+				about_grid['make_list_part_func'].call(the_grid,data['list_records'],jqobject_private_methods['draw_button']);
+				about_grid['make_pager_part_func'].call(the_grid,data['data_status'],jqobject_private_methods['draw_button']);
+				about_grid['after_draw_func'].call(the_grid,jqobject_private_methods['draw_button']);
+				
+			},
+			'draw_button':function(button_id,params){
+				var the_grid=get_jqobject;
+				var grid_id=the_grid.attr('id');
+				var about_grid=the_grid.data();
+				
+				var _button_htmls=about_grid['_button_htmls'];
+				var button_html=_button_htmls[button_id];
+				var return_html='';
+				if(params===undefined){
+					params={};
+				}
+				if(
+					bill_core.string_is_solid(button_html)==='1'
+				){
+					return_html=
+						bill_core.global_parse_template_string(
+							button_html,
+							params
+						);
+				}
+				
+				return return_html;
 				
 			}
 			,
