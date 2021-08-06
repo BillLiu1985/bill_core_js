@@ -758,6 +758,27 @@ var bill_core={
 			new_sub_string
 		)
 		
+	},
+	 'escape_html_specialchars':function(the_html){
+		var return_result='';
+		if(this.global_typeof(the_html)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_html error!','error');
+			return return_result;
+		}
+		var temp_map={
+			'\'':'&#039;',
+			'"':'&quot;',
+			'&':'&amp;',
+			'<':'&lt;',
+			'>':'&gt;'
+		};
+		return_result=the_html.
+			replace(/['"&<>]/g,
+				function(match){
+					return temp_map[match];
+				}
+			);
+		return return_result;
 	},	
 	/**
 	 * 
