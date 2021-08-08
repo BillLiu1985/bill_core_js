@@ -2086,11 +2086,97 @@ var bill_core={
 		
 		return;
 	},
-	'form_simulate_send':function(param1,param2,param3,param4){
+	'form_simulate_send':function(param1,param2,param3,param4,param5){
 		//data
-		//data、url
-		//data、url、action
-		//data、url、action、encodetype
+		//data、action
+		//data、action、method
+		//data、action、method、target
+		//data、action、method、target、enctype
+		var data,action,method,enctype,target;
+		if(arguments.length==0){
+			console.error('bill_core.'+arguments.callee.name+' params error!');
+			return;
+		}else if(arguments.length==1){
+			data=param1;
+			action='';
+			method='post';
+			target="_self";
+			enctype='application/x-www-form-urlencoded';
+			
+		}else if(arguments.length==2){
+			data=param1;
+			action=param2;
+			method='post';
+			target="_self";
+			enctype='application/x-www-form-urlencoded';
+			
+		}else if(arguments.length==3){		
+			data=param1;
+			action=param2;
+			method=param3;
+			target="_self";
+			enctype='application/x-www-form-urlencoded';
+			
+		}else if(arguments.length==4){	
+			data=param1;
+			action=param2;
+			method=param3;
+			target=param4;
+			enctype='application/x-www-form-urlencoded';
+			
+		}else if(arguments.length==5){	
+			data=param1;
+			action=param2;
+			method=param3;
+			target=param4;
+			enctype=param5;
+		}else{
+			console.error('bill_core.'+arguments.callee.name+' params error!');
+			return;
+		}
+		if(this.global_typeof(data)!=='object'){
+			this.debug_console('bill_core.'+arguments.callee.name+' data error!','error');
+			return;
+		}
+		if(this.global_typeof(action)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' action error!','error');
+			return;
+		}
+		if(
+			this.global_typeof(method)!=='string' ||
+			['get','post'].indexOf(method)===-1
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' method error!','error');
+			return;
+		}
+		
+		if(
+			this.global_typeof(target)!=='string'
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' target error!','error');
+			return;
+		}
+		if(
+			this.global_typeof(enctype)!=='string' ||
+			['application/x-www-form-urlencoded','multipart/form-data','text/plain'].indexOf(enctype)===-1
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' enctype error!','error');
+			return;
+		}
+		
+		var temp_form = jQuery(
+			"<form action='"+action+"' method='"+method
+			+"' enctype='"+enctype+"' target='"+target+"' ></form>"
+		);
+
+		jQuery.each(data,function (the_key,the_value) {
+			var temp_input = jQuery("<input type='hidden' />");
+			temp_input.attr("name",the_key);
+			temp_input.val(the_value);
+			temp_form.append(temp_input);
+		});
+		jQuery(document.body).append(temp_form);
+		temp_form.submit().remove();
 	},
 	
 	'debug_console':function(param1,param2){
