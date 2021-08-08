@@ -625,7 +625,50 @@ var bill_core={
 			
 		return  return_string;
 	},
-
+	'string_pad':function(the_string,pad_char,need_length,direction){
+		var return_result='';
+		if(this.global_typeof(the_string)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_string error!','error');
+			return return_result;
+		}
+		if(
+			this.global_typeof(pad_char)!=='string' || 
+			pad_char.length!==1
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' pad_char error!','error');
+			return return_result;
+		}
+		if(
+			this.global_typeof(need_length)!=='number' ||
+			need_length<1
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' need_length error!','error');
+			return return_result;
+		}
+		if(
+			this.global_typeof(direction)!=='string' || 
+			['left','right'].indexOf(direction)===-1
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' direction error!','error');
+			return return_result;
+		}
+		if(the_string.length>=need_length){
+			return_result=the_string.substr(the_string,need_length);
+			return return_result;
+		}
+		var pad_counts=need_length-the_string.length;
+		return_result=the_string;
+		if(direction==='left'){
+			for( var temp_counts=1;temp_counts<=pad_counts;temp_counts++ ){
+				return_result=pad_char+return_result;
+			}
+		}else if(direction==='right'){
+			for( var temp_counts=1;temp_counts<=pad_counts;temp_counts++ ){
+				return_result=return_result+pad_char;
+			}
+		}
+		return  return_result;
+	},
 	/**
 	 * 
 	 * 確保變數返回的資料是字串
@@ -1170,7 +1213,28 @@ var bill_core={
 		datetimebigint_diff=datetimebigint_diff/1000/60/60/24;
 		return datetimebigint_diff;
 	},
-	
+	'datetimebigint_from_human_string':function(the_string) {
+		var return_result = '';
+		if(
+			this.global_typeof(the_string)!=='string'
+		){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_string error!','error');
+			return return_result;
+		}
+		if(
+			the_string.length<5
+		){
+			return return_result;
+		}
+		return_result=the_string.replace(
+			/[\/\- \:]/g, 
+			function (match, capture) {
+				return '';
+			}
+		);
+		return_result=this.string_pad(return_result,'0',14,'right');
+		return return_result;
+	},
 	/**
 	 * 
 	 * 去得知某年的某月有多少天
