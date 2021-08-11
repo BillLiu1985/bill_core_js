@@ -834,6 +834,8 @@ var bill_core={
 	'datetimebigint_toFormattedString':function(the_datetimebigint,the_format){
 		if(this.string_is_solid(the_datetimebigint)==='1'){
 		}else{
+			return '';
+			/*
 			var now_datetime=new Date();
 			the_datetimebigint=
 				now_datetime.getFullYear().toString()+
@@ -842,6 +844,7 @@ var bill_core={
 				this.string_add_zero(now_datetime.getHours(),2)+
 				this.string_add_zero(now_datetime.getMinutes(),2)+
 				this.string_add_zero(now_datetime.getSeconds(),2);
+				*/
 		}
 		
 		var the_match_result=the_datetimebigint.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
