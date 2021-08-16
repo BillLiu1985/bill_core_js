@@ -836,7 +836,10 @@
 						temp_opts['new_row_is_append']=temp_string;
 					}
 					
-					
+					var temp_string=jQuery(this).attr('is_required');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['is_required']=temp_string;
+					}
 					
 					jQuery(this).bill_multirow_column(
 						temp_opts
@@ -849,4 +852,3 @@
 		return get_jqobject;
 	};
 }(jQuery,bill_core));
-

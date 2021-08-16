@@ -15,6 +15,7 @@
 			'after_row_load_func':function(the_row_data){},
 			'before_row_delete_func':function(the_row_data){},
 			'next_row_index':0,
+			'is_required':'0',
 			'default_value_source':[],
 			'environment_data_source':{}
 		}
@@ -90,7 +91,7 @@
 				temp_jqobject.append(
 					'&nbsp;&nbsp;&nbsp;'+
 					'<input type="button" '+
-					'id="'+the_row_id+'_delete_row_button" value="'+opts.delete_row_button_text+'" />'+
+					'id="'+the_row_id+'_delete_row_button"  style="cursor:pointer" value="'+opts.delete_row_button_text+'" />'+
 					'<hr />'
 				);
 				if(is_for_add_row_button==='1'){
@@ -104,6 +105,14 @@
 				}
 				jQuery('#'+the_row_id+'_delete_row_button').click(
 					function(){
+						var now_rows_count=
+							jqobject_scope_methods.get_rows_count.call(
+								jQuery('#'+component_container_id)
+							);
+						if(now_rows_count==1 && opts.is_required==='1'){
+							alert('至少必須一列有值')
+							return;
+						}
 						jQuery(this).parent().remove();
 					}
 				)
@@ -590,6 +599,9 @@
 				)
 				
 				opts.after_row_load_func.call(this,the_row_data);
+			},
+			'get_rows_count':function(){	
+				return this.children('div[id^="'+this.attr('id')+'_row_"]').length;
 			}
 		};
 		
@@ -630,8 +642,8 @@
 			opts.delete_all_rows_button_id=component_id+'_delete_all_rows_button';
 			get_jqobject.append(
 				'<div  id="'+component_id+'_op_buttons_area" >'+
-					'<input type="button" id="'+opts.add_row_button_id+'" value="'+opts.add_row_button_text+'" />&nbsp;&nbsp;'+
-					'<input type="button" id="'+opts.delete_all_rows_button_id+'" value="'+opts.delete_all_rows_button_text+'" />'+
+					'<input style="cursor:pointer"  type="button" id="'+opts.add_row_button_id+'" value="'+opts.add_row_button_text+'" />&nbsp;&nbsp;'+
+					(opts.is_required==='1'?'':'<input style="cursor:pointer" type="button" id="'+opts.delete_all_rows_button_id+'" value="'+opts.delete_all_rows_button_text+'" />')+
 				'</div>'+
 				'<hr  id="'+component_id+'_rows_datum" />'
 			);
@@ -648,7 +660,10 @@
 				opts.next_row_index++;
 			}
 			if(opts.default_value_source.length==0){
-				if(opts.is_default_one_row==='1'){
+				if(
+					opts.is_default_one_row==='1' || 
+					opts.is_required==='1'
+				){
 					var new_row_data={
 						'row_type':'add'
 					};
@@ -663,7 +678,11 @@
 			jQuery('#'+opts.add_row_button_id).click(
 				function(){
 					if(opts.counts_max!=0){
-						if((opts.next_row_index-1+1)>=opts.counts_max){
+						var now_rows_count=
+							jqobject_scope_methods.get_rows_count.call(
+								get_jqobject
+							);
+						if(now_rows_count>=opts.counts_max){
 							alert('已超過列數上限:'+opts.counts_max);
 							return;
 						}
@@ -696,4 +715,3 @@
 		return get_jqobject;
 	};
 }(jQuery,bill_core));
-
