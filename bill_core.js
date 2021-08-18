@@ -488,6 +488,56 @@ var bill_core={
 		
 		return return_data;
 	},
+	'string_array_to_multivalue':function(the_array){
+		if(Array.isArray(the_array)){
+			
+		}else{
+			return '';
+		}
+		var temp_map={
+			'|':'|vertical_line|',
+			',':'|comma|'
+		}
+		var temp_array=the_array.map(
+			function(element){
+				return element.
+				replace(/[\|\,]/g,
+					function(match){
+						return temp_map[match];
+					}
+				);
+			
+			}
+		)
+		
+		return temp_array.join(',,,');
+	},
+	'string_multivalue_to_array':function(the_multivalue){
+		if(this.global_typeof(the_multivalue)==='string'){
+			
+		}else{
+			return [];
+		}
+		var temp_map={
+			'|vertical_line|':'|',
+			'|comma|':','
+		}
+		var temp_array=the_multivalue.split(',,,');
+		temp_array=temp_array.map(
+			function(element){
+				return element.
+				replace(/\|.+?\|/g,
+					function(match){
+						return temp_map[match];
+					}
+				);
+				;
+			
+			}
+		);
+		
+		return temp_array;
+	},
 	/**
 	 * 檢查輸入的變數是否為有長度字串 
 	 * @param checked_var mixed 要檢測的變數
@@ -822,7 +872,28 @@ var bill_core={
 				}
 			);
 		return return_result;
-	},	
+	},
+	 'inverse_escape_html_specialchars':function(the_html){
+		var return_result='';
+		if(this.global_typeof(the_html)!=='string'){
+			this.debug_console('bill_core.'+arguments.callee.name+' the_html error!','error');
+			return return_result;
+		}
+		var temp_map={
+			'&#039;':'\'',
+			'&quot;':'"',
+			'&amp;':'&',
+			'&lt;':'<',
+			'&gt;':'>'
+		};
+		return_result=the_html.
+			replace(/&.+?;/g,
+				function(match){
+					return temp_map[match];
+				}
+			);
+		return return_result;
+	},
 	/**
 	 * 
 	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
