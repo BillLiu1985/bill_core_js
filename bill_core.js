@@ -852,6 +852,45 @@ var bill_core={
 		)
 		
 	},
+	'string_random_word':function(wordlength,exclude_chars){
+		var return_result='';
+		var args_illegal_is_found='0';
+		if ( 
+			this.global_typeof(wordlength)==='number' && wordlength>=0
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' wordlength error!','error');
+		}
+		if ( 
+			this.global_typeof(exclude_chars)==='string'
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' exclude_chars error!','error');
+		}
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		
+		var sGenerator = "";
+
+		var possible_chars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ1234567890';
+		possible_chars=possible_chars.replace(
+			new RegExp('['+this.validate_regexp_escape(exclude_chars)+']','g'),
+			''
+		);
+		var possible_chars_count = possible_chars.length;
+
+		for (var tmp_cursor = 1; tmp_cursor <= wordlength; tmp_cursor++) {
+			sGenerator += possible_chars[this.number_int_random(0,possible_chars_count-1)];
+		}
+		return_result=sGenerator;
+		return return_result;
+		
+	},
 	 'escape_html_specialchars':function(the_html){
 		var return_result='';
 		if(this.global_typeof(the_html)!=='string'){
@@ -2412,6 +2451,36 @@ var bill_core={
 		}
 		
 		return '1';//若變數的資料型態是number，則返回'1'
+	},
+	'number_int_random':function(min_int,max_int){
+		var return_result=0;
+		var args_illegal_is_found='0';
+		if ( 
+			this.global_typeof(min_int)==='number' && this.validate_string('rnumber',min_int.toString())==='1'
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' min_int error!','error');
+		}
+		if ( 
+			this.global_typeof(max_int)==='number' && this.validate_string('rnumber',max_int.toString())==='1'
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' max_int error!','error');
+		}
+		
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		if(min_int>max_int){
+			this.debug_console('bill_core.'+arguments.callee.name+' min_int,max_int error!','error');
+			return return_result;
+		}
+		return_result=min_int+Math.floor(Math.random()*(max_int-min_int+1));
+		return return_result;
 	},
 	'jquery_outer_html':function(jqobject){
 		return jQuery('<div></div>').append(jqobject.clone()).html();
