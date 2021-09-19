@@ -47,6 +47,7 @@
 		//物件方法
 		var jqobject_scope_methods={
 			'reload':function(opts){
+				var component_id=this.attr('id');
 				if(bill_core.global_typeof(opts)!=='object'){
 					bill_core.debug_console('opts資料型態錯誤','error');
 					return;
@@ -110,28 +111,31 @@
 				
 		
 				var input_default_value=opts.default_value
-				var input_default_value_year;
-				var input_default_value_month;
-				var input_default_value_day;
-				var input_default_value_hour;
-				var input_default_value_minute;
-				var input_default_value_second;
+				var input_default_value_year='';
+				var input_default_value_month='';
+				var input_default_value_day='';
+				var input_default_value_hour='';
+				var input_default_value_minute='';
+				var input_default_value_second='';
 			
-				if( bill_core.string_is_solid(input_default_value)==='1' ){
+				if( 
+					bill_core.string_is_solid(input_default_value)==='1' &&
+					input_default_value!=='0'
+				){
 					
 					var the_match_result=input_default_value.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
 					if(the_match_result===null){
-						input_default_value_year='';
-						input_default_value_month='';
-						input_default_value_day='';
-						input_default_value_hour='';
-						input_default_value_minute='';
-						input_default_value_second='';
 					}
-					else{	
-						input_default_value_year=the_match_result[1];
-						input_default_value_month=the_match_result[2];
-						input_default_value_day=the_match_result[3];
+					else{
+						if(the_match_result[1]!=='0000'){
+							input_default_value_year=the_match_result[1];
+						}
+						if(the_match_result[2]!=='00'){
+							input_default_value_month=the_match_result[2];
+						}
+						if(the_match_result[3]!=='00'){
+							input_default_value_day=the_match_result[3];
+						}
 						input_default_value_hour=the_match_result[4];
 						input_default_value_minute=the_match_result[5];
 						input_default_value_second=the_match_result[6];
@@ -214,8 +218,39 @@
 				year_range_end=now_date_year+parseInt(opts.years_after_now,10);
 				
 				
-				jQuery('#'+component_id+'_hour,'+'#'+component_id+'_minute,'+'#'+component_id+'_second').change(
+				jQuery('#'+component_id+'_hour').change(
 					function(){
+						if(
+							bill_core.validate_string(
+								'^[0-1]{1}[0-9]{1}$|^[2]{1}[0-3]{1}$',jQuery(this).val()
+							)==='1'
+						){}else{
+							jQuery(this).val('');
+						}
+						refresh_input_value();
+					}
+				);
+				jQuery('#'+component_id+'_minute').change(
+					function(){
+						if(
+							bill_core.validate_string(
+								'^[0-5]{1}[0-9]{1}$',jQuery(this).val()
+							)==='1'
+						){}else{
+							jQuery(this).val('');
+						}
+						refresh_input_value();
+					}
+				);
+				jQuery('#'+component_id+'_second').change(
+					function(){
+						if(
+							bill_core.validate_string(
+								'^[0-5]{1}[0-9]{1}$',jQuery(this).val()
+							)==='1'
+						){}else{
+							jQuery(this).val('');
+						}
 						refresh_input_value();
 					}
 				);
@@ -314,6 +349,14 @@
 					jQuery('#'+component_id+'_day').change();
 				}
 				
+			},
+			'reset':function(){
+				var component_id=this.attr('id');
+				jQuery('#'+component_id+'_hour').val('');
+				jQuery('#'+component_id+'_minute').val('');
+				jQuery('#'+component_id+'_second').val('');
+				jQuery('#'+component_id+'_year').val('');
+				jQuery('#'+component_id+'_year').change();
 			}
 		};
 		
@@ -348,7 +391,7 @@
 		get_jqobject.data(opts);
 		opts=get_jqobject.data();
 		
-		var component_id=get_jqobject.attr('id');
+		
 		if(bill_core.global_typeof(opts.default_value)==='string'){
 		
 		}else{
