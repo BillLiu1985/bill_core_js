@@ -1935,7 +1935,15 @@ var bill_core={
 		'rcolorcode':'^#[0-9A-F]{6}$',
 		'ocolorcode':'(^#[0-9A-F]{6}$)|(^$)',
 		'rtwvatnumber':'^[0-9]{8}$',
-		'otwvatnumber':'(^[0-9]{8}$)|(^$)'
+		'otwvatnumber':'(^[0-9]{8}$)|(^$)',
+		'rflag':'^[0-1]{1}$',
+		'oflag':'(^[0-1]{1}$)|(^$)',
+		'rphonecarriernum':'^[/]{1}[0-9A-Z+\\-\\.]{7}$',
+		'ophonecarriernum':'(?:^[/]{1}[0-9A-Z+\\-\\.]{7}$)|(?:^$)',
+		'rnaturalcarriernum':'^[A-Z]{2}[0-9]{14}$',
+		'onaturalcarriernum':'(?:^[A-Z]{2}[0-9]{14}$)|(?:^$)',
+		'rdonatecode':'^[0-9]{3,7}$',
+		'odonatecode':'(?:^[0-9]{3,7}$)|(?:^$)'
 	},
 
 	/**
@@ -2025,7 +2033,15 @@ var bill_core={
 		'rcolorcode':'~輸入格式~<br />1.不得為空值<br />2.開頭為#，之後固定6碼，A至F 0至9',
 		'ocolorcode':'~輸入格式~<br />1.可為空值<br />2.開頭為#，之後固定6碼，A至F 0至9',
 		'rtwvatnumber':'~輸入格式~<br />1.不得為空值<br />2.固定8碼，0至9',
-		'otwvatnumber':'~輸入格式~<br />1.可為空值<br />2.固定8碼，0至9'
+		'otwvatnumber':'~輸入格式~<br />1.可為空值<br />2.固定8碼，0至9',
+		'rflag':'~輸入格式~<br />1.不得為空值<br />2.只能輸入0或1',
+		'oflag':'~輸入格式~<br />1.可為空值<br />2.只能輸入0或1',
+		'rphonecarriernum':'~輸入格式~<br />1.不得為空值<br />2.第1碼為/<br />3.後接7碼，大寫英文字母、數字、+、-、.',
+		'ophonecarriernum':'~輸入格式~<br />1.可為空值<br />2.第1碼為/<br />3.後接7碼，大寫英文字母、數字、+、-、.',
+		'rnaturalcarriernum':'~輸入格式~<br />1.不得為空值<br />2.前2碼為大寫英文字母，後接14碼數字',
+		'onaturalcarriernum':'~輸入格式~<br />1.可為空值<br />2.前2碼為大寫英文字母，後接14碼數字',
+		'rdonatecode':'~輸入格式~<br />1.不得為空值<br />2.數字3至7碼',
+		'odonatecode':'~輸入格式~<br />1.可為空值<br />2.數字3至7碼'
 	},
 
 	/**
@@ -2419,6 +2435,9 @@ var bill_core={
 		}
 		
 		var ajax_settings={
+			xhrFields:{
+				withCredentials: true
+			},	
 		   type: "post",
 		   url: param1,
 		   dataType:'json',
