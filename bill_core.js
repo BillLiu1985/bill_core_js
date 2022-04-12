@@ -751,10 +751,36 @@ var bill_core={
 	 *
 	 */
 	'string_add_thousand_separator_to':function(num){
-		var n = num.toString(), p = n.indexOf('.');
-		return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, function($0, i){
-			return p<0 || i<p ? ($0+',') : $0;
-		});
+		var num_string = num.toString(10);
+		var num_string_parts=num_string.split('.');
+		var return_string='';
+		if(num_string_parts.length==1){
+			if(num_string_parts[0].length>3){
+				return_string=
+					num_string_parts[0].replace(/\d(?=(?:\d{3})+$)/g, function($0){
+						return $0+',';
+					});
+			}else{
+				return_string=
+					num_string_parts[0];
+			}
+		}else if(num_string_parts.length==2){
+			
+			if(num_string_parts[0].length>3){
+				return_string=
+					num_string_parts[0].replace(/\d(?=(?:\d{3})+$)/g, function($0){
+						return $0+',';
+					})+'.'+num_string_parts[1];
+			}else{
+				return_string=
+					num_string_parts[0]+'.'+num_string_parts[1];
+			}	
+			
+		}else{
+			return_string=num_string;
+		}
+		
+		return return_string;
 	},
 
 	/**
@@ -1896,98 +1922,98 @@ var bill_core={
 		'rrequired':'^[\\s\\S]+$',
 		'orequired':'(^[\\s\\S]+$)|(^$)',
 		'rname':'^[\\s\\S]+$',
-		'oname':'(^[\\s\\S]+$)|(^$)',
+		'oname':'^[\\s\\S]+$|^$',
 		'rchineseword':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d]+$',
-		'ochineseword':'(^[\\u4e00-\\u9fa5\\uf900-\\ufa2d]+$)|(^$)',
+		'ochineseword':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d]+$|^$',
 		'rid':'^[a-zA-Z]{1}[\\s\\S]*$',
-		'oid':'(^[a-zA-Z]{1}[\\s\\S]*$)|(^$)',
+		'oid':'^[a-zA-Z]{1}[\\s\\S]*$|^$',
 		'rrelativeurl':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d\\w\\/.?=&\\- %]+$',
-		'orelativeurl':'(^[\\u4e00-\\u9fa5\\uf900-\\ufa2d\\w\\/.?=&\\- %]+$)|(^$)',
+		'orelativeurl':'^[\\u4e00-\\u9fa5\\uf900-\\ufa2d\\w\\/.?=&\\- %]+$|^$',
 		'rsubject':'^[\\s\\S]+$',
-		'osubject':'(^[\\s\\S]+$)|(^$)',
+		'osubject':'^[\\s\\S]+$|^$',
 		'raccount':'^[\\w]+$',
-		'oaccount':'(^[\\w]+$)|(^$)',
+		'oaccount':'^[\\w]+$|^$',
 		'raccount_1':'^[\\w@]{8,}$',
-		'oaccount_1':'(^[\\w@]{8,}$)|(^$)',
+		'oaccount_1':'^[\\w@]{8,}$|^$',
 		'rpassword':'^[\\w@]{6,30}$',
-		'opassword':'(^[\\w@]{6,30}$)|(^$)',
-		'rpassword_1':'^(?=.*[a-z0-9])(?=.*[a-z])(?=.*[0-9]).{6,15}$',
-		'opassword_1':'(^(?=.*[a-z0-9])(?=.*[a-z])(?=.*[0-9]).{6,15}$)|(^$)',
+		'opassword':'^[\\w@]{6,30}$|^$',
+		'rpassword_1':'^(?=[a-z0-9]+$)(?=.*[a-z])(?=.*[0-9]).{6,15}$',
+		'opassword_1':'^(?=[a-z0-9]+$)(?=.*[a-z])(?=.*[0-9]).{6,15}$|^$',
 		'rpname':'^[\\w\\u4e00-\\u9fa5\\- \\/]+$',
-		'opname':'(^[\\w\\u4e00-\\u9fa5\\- \\/]+$)|(^$)',
+		'opname':'^[\\w\\u4e00-\\u9fa5\\- \\/]+$|^$',
 		'inumber':'[^\\d]',
 		'rnumber':'^[\\d]+$',
-		'onumber':'(^[\\d]+$)|(^$)',
-		'rnumber_greater_than_0':'^[1-9]{1}[\\d]*$',
-		'onumber_greater_than_0':'(^[1-9]{1}[\\d]*$)|(^$)',
-		'rsnumber':'^[\\d\\+\\-]+$',
-		'osnumber':'(^[\\d\\+\\-]+$)|(^$)',
+		'onumber':'^[\\d]+$|^$',
+		'rnumber_greater_than_0':'^(?!=0$)[1-9][\\d]*$',
+		'onumber_greater_than_0':'^(?!=0$)[1-9][\\d]*$|^$',
+		'rsnumber':'^[\\d+\\-]+$',
+		'osnumber':'^[\\d+\\-]+$|^$',
 		'rfloat':'^[\\d.]+$',
-		'ofloat':'(^[\\d.]+$)|(^$)',
+		'ofloat':'^[\\d.]+$|^$',
 		'rpositivenumber':'^[\\d]+$',
-		'opositivenumber':'(^[\\d]+$)|(^$)',
+		'opositivenumber':'^[\\d]+$|^$',
 		'rnegativenumber':'^-[\\d]+$',
-		'onegativenumber':'(^-[\\d]+$)|(^$)',
+		'onegativenumber':'^-[\\d]+$|^$',
 		'rgrpertimes':'^[\\d]{1,3}$',
 		'rgrprice':'^[\\d]{1,5}$',
-		'ogrprice':'(^[\\d]{1,5}$)|(^$)',
-		'rtel':'^(\\([\\d]+\\)){0,1}[\\d\\-\\+ #]+$',
-		'otel':'(^(\\([\\d]+\\)){0,1}[\\d\\-\\+ #]+$)|(^$)',
-		'iemail':'[^_0-9a-zA-Z\\.\\-@]',
-		'remail':'^[_\\w\\.\\-]+@[\\w\\-]+(\\.[a-z]+)+$',
-		'oemail':'(^[_\\w\\.\\-]+@[\\w\\-]+(\\.[a-z]+)+$)|(^$)',
-		'rdatetime':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[\\d]{4}-[\\d]{2}-[\\d]{2} [2][0-3]:[0-5][\\d]:[0-5][\\d]$)',
-		'odatetime':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[\\d]{4}-[\\d]{2}-[\\d]{2} [2][0-3]:[0-5][\\d]:[0-5][\\d]$)|(^$)',
-		'rdatetime_no_second':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]$)|(^[\\d]{4}-\\d{2}-\\d{2} [2][0-3]:[0-5][\\d]$)',
-		'odatetime_no_second':'(^[\\d]{4}-[\\d]{2}-[\\d]{2} [0-1][\\d]:[0-5][\\d]$)|(^[\\d]{4}-\\d{2}-\\d{2} [2][0-3]:[0-5][\\d]$)|(^$)',
-		'rdate':'^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$',
-		'odate':'(^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$)|(^$)',
-		'rtime':'(^[0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[2][0-3]:[0-5][\\d]:[0-5][\\d]$)',
-		'otime':'(^[0-1][\\d]:[0-5][\\d]:[0-5][\\d]$)|(^[2][0-3]:[0-5][\\d]:[0-5][\\d]$)|(^$)',
-		'rmvfile':'(\\.[wW][mM]$)|(\\.[mM][pP][gG]$)|(\\.[mM][pP][eE][gG]$)|(\\.[wW][mM][vV]$)|(\\.[mM][pP]4$)|(\\.[aA][vV][iI]$)',
-		'omvfile':'(\\.[wW][mM]$)|(\\.[mM][pP][gG]$)|(\\.[mM][pP][eE][gG]$)|(\\.[wW][mM][vV]$)|(\\.[mM][pP]4$)|(\\.[aA][vV][iI]$)|(^$)',
-		'rflvfile':'(\\.[sS][wW][fF]$)|(\\.[fF][lL][vV]$)',
-		'oflvfile':'(\\.[sS][wW][fF]$)|(\\.[fF][lL][vV]$)|(^$)',
+		'ogrprice':'^[\\d]{1,5}$|^$',
+		'rtel':'^(\\([\\d]+\\)){0,1}[\\d\\-+ #]+$',
+		'otel':'^(\\([\\d]+\\)){0,1}[\\d\\-+ #]+$|^$',
+		'iemail':'[^_0-9a-zA-Z.\\-@]',
+		'remail':'^[_\\w.\\-]+@[\\w\\-]+(\\.[a-z]+)+$',
+		'oemail':'^[_\\w.\\-]+@[\\w\\-]+(\\.[a-z]+)+$|^$',
+		'rdatetime':'^[\\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1-2][0-9]|[3][0-1]) ([0-1][\\d]|[2][0-3]):[0-5][\\d]:[0-5][\\d]$',
+		'odatetime':'^[\\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1-2][0-9]|[3][0-1]) ([0-1][\\d]|[2][0-3]):[0-5][\\d]:[0-5][\\d]$|^$',
+		'rdatetime_no_second':'^[\\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1-2][0-9]|[3][0-1]) ([0-1][\\d]|[2][0-3]):[0-5][\\d]$',
+		'odatetime_no_second':'^[\\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1-2][0-9]|[3][0-1]) ([0-1][\\d]|[2][0-3]):[0-5][\\d]$|^$',
+		'rdate':'^[\\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1-2][0-9]|[3][0-1])$',
+		'odate':'^[\\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1-2][0-9]|[3][0-1])$|^$',
+		'rtime':'^([0-1][\\d]|[2][0-3]):[0-5][\\d]:[0-5][\\d]$',
+		'otime':'^([0-1][\\d]|[2][0-3]):[0-5][\\d]:[0-5][\\d]$|^$',
+		'rmvfile':'\\.[wW][mM]$|\\.[mM][pP][gG]$|\\.[mM][pP][eE][gG]$|\\.[wW][mM][vV]$|\\.[mM][pP]4$|\\.[aA][vV][iI]$',
+		'omvfile':'\\.[wW][mM]$|\\.[mM][pP][gG]$|\\.[mM][pP][eE][gG]$|\\.[wW][mM][vV]$|\\.[mM][pP]4$|\\.[aA][vV][iI]$|^$',
+		'rflvfile':'\\.[sS][wW][fF]$|\\.[fF][lL][vV]$',
+		'oflvfile':'\\.[sS][wW][fF]$|\\.[fF][lL][vV]$|^$',
 		'rcsvfile':'\\.[cC][sS][vV]$',
-		'ocsvfile':'(\\.[cC][sS][vV]$)|(^$)',
+		'ocsvfile':'\\.[cC][sS][vV]$|^$',
 		'rxlsfile':'\\.[xX][lL][sS]$',
-		'oxlsfile':'(\\.[xX][lL][sS]$)|(^$)',
+		'oxlsfile':'\\.[xX][lL][sS]$|^$',
 		'rtxtfile':'\\.[tT][xX][tT]$',
-		'otxtfile':'(\\.[tT][xX][tT]$)|(^$)',
-		'rdocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)|(\\.[cC][sS][vV]$)',
-		'odocfile':'(\\.[dD][oO][cC]$)|(\\.[dD][oO][cC][xX]$)|(\\.[pP][dD][fF]$)|(\\.[xX][lL][sS]$)|(\\.[xX][lL][sS][xX]$)|(\\.[cC][sS][vV]$)|(^$)',
-		'rpicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)',
-		'opicfile':'(\\.[jJ][pP][gG]$)|(\\.[jJ][pP][eE][gG]$)|(\\.[pP][nN][gG]$)|(\\.[gG][iI][fF]$)|(^$)',		
-		'rhtml5videofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)',
-		'ohtml5videofile':'(\\.[mM][pP][4]$)|(\\.[wW][eE][bB][mM]$)|(\\.[oO][gG][vV]$)|(^$)',
-		'rnormalfile':'(\\..+$)',
-		'onormalfile':'(\\..+$)|(^$)',
+		'otxtfile':'\\.[tT][xX][tT]$|^$',
+		'rdocfile':'\\.[dD][oO][cC]$|\\.[dD][oO][cC][xX]$|\\.[pP][dD][fF]$|\\.[xX][lL][sS]$|\\.[xX][lL][sS][xX]$|\\.[cC][sS][vV]$',
+		'odocfile':'\\.[dD][oO][cC]$|\\.[dD][oO][cC][xX]$|\\.[pP][dD][fF]$|\\.[xX][lL][sS]$|\\.[xX][lL][sS][xX]$|\\.[cC][sS][vV]$|^$',
+		'rpicfile':'\\.[jJ][pP][gG]$|\\.[jJ][pP][eE][gG]$|\\.[pP][nN][gG]$|\\.[gG][iI][fF]$',
+		'opicfile':'\\.[jJ][pP][gG]$|\\.[jJ][pP][eE][gG]$|\\.[pP][nN][gG]$|\\.[gG][iI][fF]$|^$',		
+		'rhtml5videofile':'\\.[mM][pP][4]$|\\.[wW][eE][bB][mM]$|\\.[oO][gG][vV]$',
+		'ohtml5videofile':'\\.[mM][pP][4]$|\\.[wW][eE][bB][mM]$|\\.[oO][gG][vV]$|^$',
+		'rnormalfile':'\\..+$',
+		'onormalfile':'\\..+$|^$',
 		'rlegalfile':'[\\w.]+',
-		'olegalfile':'([\\w.]+)|(^$)',
+		'olegalfile':'[\\w.]+|^$',
 		'rcontent':'^[\\s\\S]+$',
-		'ocontent':'(^[\\s\\S]+$)|(^$)',
-		'rwebsite':'^(http://|https://).+$',
-		'owebsite':'(^(http://|https://).+$)|(^$)',
+		'ocontent':'^[\\s\\S]+$|^$',
+		'rwebsite':'^http[s]?://.+$',
+		'owebsite':'^http[s]?://.+$|^$',
 		'rmoneycode':'^[\\d]{3}\\-[\\d]{12,14}$',
-		'omoneycode':'(^[\\d]{3}\\-[\\d]{12,14}$)|(^$)',
-		'ryoutubevideourl':'^http://www\\.youtube\\.com\\/watch[?]v=([\\w\\-]{11})',
-		'oyoutubevideourl':'(^http://www\\.youtube\\.com\\/watch[?]v=([\\w\\-]{11}))|(^$)',
+		'omoneycode':'^[\\d]{3}\\-[\\d]{12,14}$|^$',
+		'ryoutubevideourl':'^https://www\\.youtube\\.com\\/watch[?]v=([\\w\\-]{11})',
+		'oyoutubevideourl':'^https://www\\.youtube\\.com\\/watch[?]v=([\\w\\-]{11})|^$',
 		'rnotadminurl':'^(?!admin/).+',
-		'onotadminurl':'(^(?!admin/).+)|(^$)',
-		'rlatlng':'^[\\d.\\,]+$',
-		'olatlng':'(^[\\d.\\,]+$)|(^$)',
+		'onotadminurl':'^(?!admin/).+|^$',
+		'rlatlng':'^[\\d.,]+$',
+		'olatlng':'^[\\d.,]+$|^$',
 		'rcolorcode':'^#[0-9A-F]{6}$',
-		'ocolorcode':'(^#[0-9A-F]{6}$)|(^$)',
+		'ocolorcode':'^#[0-9A-F]{6}$|^$',
 		'rtwvatnumber':'^[0-9]{8}$',
-		'otwvatnumber':'(^[0-9]{8}$)|(^$)',
+		'otwvatnumber':'^[0-9]{8}$|^$',
 		'rflag':'^[0-1]{1}$',
-		'oflag':'(^[0-1]{1}$)|(^$)',
-		'rphonecarriernum':'^[/]{1}[0-9A-Z+\\-\\.]{7}$',
-		'ophonecarriernum':'(?:^[/]{1}[0-9A-Z+\\-\\.]{7}$)|(?:^$)',
+		'oflag':'^[0-1]{1}$|^$',
+		'rphonecarriernum':'^[/]{1}[0-9A-Z+\\-.]{7}$',
+		'ophonecarriernum':'^[/]{1}[0-9A-Z+\\-.]{7}$|^$',
 		'rnaturalcarriernum':'^[A-Z]{2}[0-9]{14}$',
-		'onaturalcarriernum':'(?:^[A-Z]{2}[0-9]{14}$)|(?:^$)',
+		'onaturalcarriernum':'^[A-Z]{2}[0-9]{14}$|^$',
 		'rdonatecode':'^[0-9]{3,7}$',
-		'odonatecode':'(?:^[0-9]{3,7}$)|(?:^$)'
+		'odonatecode':'^[0-9]{3,7}$|^$'
 	},
 
 	/**
@@ -2119,6 +2145,25 @@ var bill_core={
 		}else{
 			return '0';
 		}
+	},
+	'validate_fetch':function(validator_name,source_string){
+		if(this.global_typeof(validator_name)!=='string'){
+			alert('validator_name必須為字串');
+			return '0';
+		}
+		if(this.global_typeof(source_string)!=='string'){
+			alert('source_string必須為字串');
+			return '0';
+		}
+		
+		
+		var temp_reg_string='';
+		if(this.validate_regexp_items[validator_name]===undefined){
+			 temp_reg_string =validator_name;
+		}else{
+			 temp_reg_string = this.validate_regexp_items[validator_name];
+		}
+		return [...source_string.matchAll(temp_reg_string)];
 	},
 	'validate_remove_illegal':function(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
@@ -2743,6 +2788,7 @@ var bill_core={
 		var temp_array=num_1_string.split('.');
 		if(temp_array.length==1){
 			num_1_part_1_string=temp_array[0];
+			num_1_part_2_string='0';
 		}else{
 			num_1_part_1_string=temp_array[0];
 			num_1_part_2_string=temp_array[1];
@@ -2750,6 +2796,7 @@ var bill_core={
 		temp_array=num_2_string.split('.');
 		if(temp_array.length==1){
 			num_2_part_1_string=temp_array[0];
+			num_2_part_2_string='0';
 		}else{
 			num_2_part_1_string=temp_array[0];
 			num_2_part_2_string=temp_array[1];
@@ -2770,6 +2817,9 @@ var bill_core={
 			break;
 			case '-':
 				return_result=(temp_num_1-temp_num_2)/Math.pow(10,temp_max);
+			break;
+			case '*':
+				return_result=(temp_num_1*temp_num_2)/(Math.pow(10,temp_max)*Math.pow(10,temp_max));
 			break;
 		}
 		
