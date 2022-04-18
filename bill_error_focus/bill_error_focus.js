@@ -4,6 +4,7 @@
 		'action':'add_class',
 		'input_jquery_expression':
 			'input[type="text"][validate_fail_message],'+
+			'input[type="date"][validate_fail_message],'+
 			'input[type="password"][validate_fail_message],'+
 			'select[validate_fail_message],'+
 			'textarea[validate_fail_message]',
