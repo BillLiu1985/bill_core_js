@@ -169,13 +169,15 @@
 						for(var kindex in the_options){
 							var the_option=the_options[kindex];
 							temp_html+=
-								'<option value="'+the_option['value']+'" >'+the_option['text']+'</option>';
+								'<option value="'+bill_core.escape_html_specialchars(the_option['value'])+'" >'+bill_core.escape_html_specialchars(the_option['text'])+'</option>';
 						}
 						jQuery(this).append(temp_html);
 					}
 					
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						jQuery(this).children('option[value="'+temp_default_value+'"]').attr('selected','selected');
+						jQuery(this).children('option[value="'+
+							jQuery.escapeSelector(temp_default_value)+
+						'"]').attr('selected','selected');
 					}
 				}
 			}
