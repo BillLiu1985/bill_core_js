@@ -366,7 +366,7 @@
 						}
 						
 						if(
-							bill_core.validate_string('rnumber',temp_value)==='0'
+							bill_core.validate_single('rnumber',temp_value)==='0'
 						){
 							is_pass_validator='0';
 							return;

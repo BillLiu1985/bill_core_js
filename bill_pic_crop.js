@@ -251,7 +251,7 @@
 			jQuery('#'+component_id+'_input').change(
 				function(){
 					
-					if(bill_core.validate_string(jQuery(this).attr('reg_1'),jQuery(this).val())==='0'){
+					if(bill_core.validate_single(jQuery(this).attr('reg_1'),jQuery(this).val())==='0'){
 						jQuery(this).val('');
 						alert('檔案格式錯誤');
 						return;

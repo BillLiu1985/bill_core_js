@@ -27,13 +27,7 @@
 			return;
 		}
 		
-		//若要執行物件方法 必須先檢查該元素是否已轉化為物件
-		if( typeof(param1)=='string' ){
-			if( get_jqobject.attr('is_transformed_to_bill_checkboxs_group')!=='1' ){
-				bill_core.debug_console('請先轉換元素為bill_checkboxs_group','error');
-				return;
-			}
-		}
+		
 		
 		//物件方法
 		var jqobject_scope_methods={
@@ -42,6 +36,13 @@
 		
 		//若是呼叫物件方法
 		if( typeof(param1)=='string' ){
+
+			//若要執行物件方法 必須先檢查該元素是否已轉化為物件
+			if( get_jqobject.attr('is_transformed_to_bill_checkboxs_group')!=='1' ){
+				bill_core.debug_console('請先轉換元素為bill_checkboxs_group','error');
+				return;
+			}
+		
 			if(
 				jqobject_scope_methods[param1]===undefined || 
 				typeof(jqobject_scope_methods[param1])!=='function'
@@ -86,79 +87,86 @@
 			return;
 		}
 		
-		if( get_jqobject.attr('is_transformed_to_bill_checkboxs_group')!=='1' ){
+		if(get_jqobject.attr('is_transformed_to_bill_checkboxs_group')==='1'){
+			get_jqobject.empty();
+		}
 			
-			var temp_html='';
-			var the_options=opts.environment_data.split(',,,');
-			var the_selected=opts.default_value.split(',,,');
-			
-			//draw checkboxs
-			the_options=the_options.filter(
-				function(element, index, array){
-					if(element!=''){
-						return true;
-					}
-				}
-			);
-			the_selected=the_selected.filter(
-				function(element, index, array){
-					if(element!=''){
-						return true;
-					}
-				}
-			);
-			for(var kindex in the_options){
-				var the_option=the_options[kindex].split(';;;');
-				var the_option_value='';
-				var the_option_text='';
-				if(the_option.length===1){
-					the_option_value=the_option[0];
-					the_option_text=the_option[0];
-				}else if(the_option.length===2){
-					the_option_value=the_option[0];
-					the_option_text=the_option[1];
-				}
-				
-				if(kindex%opts.counts_width==0){
-					temp_html+='<div>';
-				}
-				
-				temp_html+=
-				'<input type="checkbox" '+
-				(( jQuery.inArray(the_option_value,the_selected)!==-1 )?'checked="checked" ':'')+
-				'value="'+the_option_value+'" />'+the_option_text+'&nbsp;';
-				
-				if(kindex%opts.counts_width==(opts.counts_width-1)){
-					temp_html+='</div>';
+		var temp_html='';
+		var the_options=opts.environment_data.split(',,,');
+		var the_selected=opts.default_value.split(',,,');
+		
+		//draw checkboxs
+		the_options=the_options.filter(
+			function(element){
+				if(element!=''){
+					return true;
 				}
 			}
-			get_jqobject.append(temp_html);
-			
-			//draw savedata element
-			temp_html=
-			'<input type="hidden" value="'+opts.default_value+'" name="'+
-			opts.input_name
-			+'" id="'+component_id+'_value" />';
-			
-			
-			get_jqobject.append(temp_html);
-			
-			//bind element event_handler
-			jQuery('#'+component_id).find(':checkbox').click(
-				function(){
-					var temp_array=[];
-					jQuery('#'+component_id).find(':checkbox:checked').each(
-						function(){
-							temp_array.push(jQuery(this).val());
-						}
-					);
-					jQuery('#'+component_id+'_value').val(temp_array.join(',,,'));
+		);
+		the_selected=the_selected.filter(
+			function(element){
+				if(element!=''){
+					return true;
 				}
-			);
+			}
+		);
+		
+		for(var kindex in the_options){
+			var the_nth=parseInt(kindex,10)+1;
+			var the_option=the_options[kindex].split(';;;');
+			var the_option_value='';
+			var the_option_text='';
+			if(the_option.length===1){
+				the_option_value=the_option[0];
+				the_option_text=bill_core.escape_get_from_option_data(the_option[0]);
+			}else if(the_option.length===2){
+				the_option_value=the_option[0];
+				the_option_text=bill_core.escape_get_from_option_data(the_option[1]);
+			}
 			
+			if( the_nth%opts.counts_width===1 ){
+				temp_html+='<div>';
+			}
 			
-			get_jqobject.attr('is_transformed_to_bill_checkboxs_group','1');	
+			temp_html+=
+			'<input type="checkbox" '+
+			(( jQuery.inArray(the_option_value,the_selected)!==-1 )?'checked="checked" ':'')+
+			'value="'+the_option_value+'" />'+the_option_text+'&nbsp;';
+			
+			if( the_nth%opts.counts_width===0 ){
+				temp_html+='</div>';
+			}
 		}
+		get_jqobject.append(temp_html);
+		
+		//draw savedata element
+		temp_html=
+		'<input type="hidden" value="'+opts.default_value+'" name="'+
+		opts.input_name
+		+'" id="'+component_id+'_value" />';
+		
+		
+		get_jqobject.append(temp_html);
+		
+		//bind element event_handler
+		get_jqobject.find(':checkbox').click(
+			function(){	
+				var temp_array=[];
+				var get_jqobject=jQuery(this).closest('[is_transformed_to_bill_checkboxs_group]');
+				var component_id=get_jqobject.attr('id');
+				get_jqobject.find(':checkbox:checked').each(
+					function(){
+						temp_array.push(jQuery(this).val());
+					}
+				);
+				
+				jQuery('#'+component_id+'_value').val(temp_array.join(',,,'));
+			}
+		);
+			
+			
+		get_jqobject.filter(':not([is_transformed_to_bill_checkboxs_group])').attr('is_transformed_to_bill_checkboxs_group','1');
+		
 		
 		return get_jqobject;
 	};

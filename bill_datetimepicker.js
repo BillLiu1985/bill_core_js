@@ -62,46 +62,63 @@
 					var selected_minute=jQuery('#'+component_id+'_minute').val();
 					var selected_second=jQuery('#'+component_id+'_second').val();
 					
-					if( bill_core.string_is_solid(selected_year)==='1' ){
-						
-					}
-					else{
-						selected_year='0000';
-					}
+					
 					
 					if( bill_core.string_is_solid(selected_month)==='1' ){
 						
 					}
 					else{
-						selected_month='00';
+						if(selected_year===''){
+							selected_month='';
+						}else{
+							selected_month='00';	
+						}	
 					}
 					
 					if( bill_core.string_is_solid(selected_day)==='1' ){
 						
 					}
 					else{
-						selected_day='00';
+						if(selected_month===''){
+							selected_day='';
+						}else{
+							selected_day='00';	
+						}
 					}
 					
 					if( bill_core.string_is_solid(selected_hour)==='1' ){
 						
 					}
 					else{
-						selected_hour='00';
+						if(selected_day===''){
+							selected_hour='';
+						}else{
+							selected_hour='00';
+						}
 					}
 					
 					if( bill_core.string_is_solid(selected_minute)==='1' ){
 						
 					}
 					else{
-						selected_minute='00';
+						if(selected_hour===''){
+							selected_minute='';
+						}else{
+							selected_minute='00';
+						}
+						
 					}
 					
 					if( bill_core.string_is_solid(selected_second)==='1' ){
 						
 					}
 					else{
-						selected_second='00';
+						if(selected_minute===''){
+							selected_second='';
+						}else{
+							selected_second='00';	
+						}
+						
 					}
 					
 					jQuery('#'+component_id+'_value').val(
@@ -127,9 +144,9 @@
 					if(the_match_result===null){
 					}
 					else{
-						if(the_match_result[1]!=='0000'){
-							input_default_value_year=the_match_result[1];
-						}
+						
+						input_default_value_year=the_match_result[1];
+						
 						if(the_match_result[2]!=='00'){
 							input_default_value_month=the_match_result[2];
 						}
@@ -213,15 +230,24 @@
 				
 				var year_range_start;
 				var year_range_end;
-
+				
+				
 				year_range_start=now_date_year-parseInt(opts.years_before_now,10);
 				year_range_end=now_date_year+parseInt(opts.years_after_now,10);
-				
+				if(bill_core.string_is_solid(input_default_value_year)==='1'){
+					var temp_year_number=parseInt(input_default_value_year,10);
+					if(temp_year_number<year_range_start){
+						year_range_start=temp_year_number;
+					}
+					if(temp_year_number>year_range_end){
+						year_range_end=temp_year_number;
+					}
+				}
 				
 				jQuery('#'+component_id+'_hour').change(
 					function(){
 						if(
-							bill_core.validate_string(
+							bill_core.validate_single(
 								'^[0-1]{1}[0-9]{1}$|^[2]{1}[0-3]{1}$',jQuery(this).val()
 							)==='1'
 						){}else{
@@ -233,7 +259,7 @@
 				jQuery('#'+component_id+'_minute').change(
 					function(){
 						if(
-							bill_core.validate_string(
+							bill_core.validate_single(
 								'^[0-5]{1}[0-9]{1}$',jQuery(this).val()
 							)==='1'
 						){}else{
@@ -245,7 +271,7 @@
 				jQuery('#'+component_id+'_second').change(
 					function(){
 						if(
-							bill_core.validate_string(
+							bill_core.validate_single(
 								'^[0-5]{1}[0-9]{1}$',jQuery(this).val()
 							)==='1'
 						){}else{
@@ -263,28 +289,13 @@
 					function(){
 						var selected_year=jQuery(this).val();
 						var month_options_html='<option value="">請選擇</option>';
-						if( bill_core.string_is_solid(jQuery(this).val()) ){
-							selected_year=parseInt( selected_year,10 );
+						if( bill_core.string_is_solid(selected_year)==='1' ){
 							var total_months=12;
-							if(selected_year===year_range_start){
-								
-								for(var month_cursor=now_date_month;month_cursor<=total_months;month_cursor++){
-									month_options_html+='<option value="'+(month_cursor<10?('0'+month_cursor):month_cursor)+'">'+(month_cursor<10?('0'+month_cursor):month_cursor)+'</option>';
-								}	
-							}
-							else if(selected_year===year_range_end){
-								if(total_months>=now_date_month){
-									total_months=now_date_month;
-								}
-								for(var month_cursor=1;month_cursor<=total_months;month_cursor++){
-									month_options_html+='<option value="'+(month_cursor<10?('0'+month_cursor):month_cursor)+'">'+(month_cursor<10?('0'+month_cursor):month_cursor)+'</option>';
-								}	
-							}
-							else{
-								for(var month_cursor=1;month_cursor<=total_months;month_cursor++){
-									month_options_html+='<option value="'+(month_cursor<10?('0'+month_cursor):month_cursor)+'">'+(month_cursor<10?('0'+month_cursor):month_cursor)+'</option>';
-								}	
-							}
+							for(var month_cursor=1;month_cursor<=total_months;month_cursor++){
+								var the_month=month_cursor<10?('0'+month_cursor):month_cursor;
+								month_options_html+='<option value="'+the_month+'">'+the_month+'</option>';
+							}	
+							
 						}
 						jQuery('#'+component_id+'_month').html(month_options_html);
 						jQuery('#'+component_id+'_month').change();
@@ -292,31 +303,18 @@
 				);
 				jQuery('#'+component_id+'_month').change(
 					function(){
-						var selected_year=parseInt(jQuery('#'+component_id+'_year').val(),10);
+						var selected_year=jQuery('#'+component_id+'_year').val();
 						var selected_month=jQuery(this).val();
 						var day_options_html='<option value="">請選擇</option>';
 						if( bill_core.string_is_solid(selected_month)==='1' ){
-							selected_month=parseInt(selected_month,10);
-							var total_days=bill_core.Date_daysInMonth(selected_year,selected_month);
-							if((selected_year==year_range_start && selected_month==now_date_month)){
-								for(var day_cursor=now_date_day;day_cursor<=total_days;day_cursor++){
-									day_options_html+='<option value="'+(day_cursor<10?('0'+day_cursor):day_cursor)+'">'+(day_cursor<10?('0'+day_cursor):day_cursor)+'</option>';
-								}
-							}
-							else if(selected_year==year_range_end && selected_month==now_date_month){
-								
-								if(total_days>=now_date_day){
-									total_days=now_date_day;
-								}
-								for(var day_cursor=1;day_cursor<=total_days;day_cursor++){
-									day_options_html+='<option value="'+(day_cursor<10?('0'+day_cursor):day_cursor)+'">'+(day_cursor<10?('0'+day_cursor):day_cursor)+'</option>';
-								}	
-							}
-							else{
-								for(var day_cursor=1;day_cursor<=total_days;day_cursor++){
-									day_options_html+='<option value="'+(day_cursor<10?('0'+day_cursor):day_cursor)+'">'+(day_cursor<10?('0'+day_cursor):day_cursor)+'</option>';
-								}	
-							}
+							var total_days=bill_core.Date_daysInMonth(
+								parseInt(selected_year,10),parseInt(selected_month,10)
+							);
+							
+							for(var day_cursor=1;day_cursor<=total_days;day_cursor++){
+								var the_day=day_cursor<10?('0'+day_cursor):day_cursor;
+								day_options_html+='<option value="'+the_day+'">'+the_day+'</option>';
+							}	
 							
 						}
 						

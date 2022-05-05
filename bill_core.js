@@ -23,8 +23,8 @@ var bill_core={
 	 * Number.NaN(錯誤數字，計算失敗),Number.POSITIVE_INFINITY(錯誤數字，超過數字最大值),Number.NEGATIVE_INFINITY(錯誤數字，小於數字最小值),number(數字),
 	 * string(字串),boolean(布林),null(null),object,function(函式),undefined(未定義),unknown(未知)
 	 * 
-	 * @param checked_var mixed 要檢測的變數
-	 * @return string 資料型態名稱
+	 * @param {mixed} checked_var - 要檢測的變數
+	 * @return {string} 資料型態名稱
 	 */
 	'global_typeof':function(checked_var){
 		if(typeof(checked_var)==='number'){
@@ -60,7 +60,7 @@ var bill_core={
 	 * 
 	 * 檢查輸入的變數是否為空
 	 *
-	 * @param mixed checked_var
+	 * @param {mixed} checked_var
 	 * @return string
 	 */
 	'global_is_empty':function(checked_var){
@@ -75,7 +75,7 @@ var bill_core={
 	 * 
 	 * 取得object的詳細內容
 	 *
-	 * @param object obj 要觀察的object
+	 * @param {object} obj - 要觀察的object
 	 * @return string
 	 */
 	'global_objToString':function(obj) {
@@ -93,19 +93,19 @@ var bill_core={
 	 * 
 	 * 根據參數及樣板字串 轉換成字串
 	 *
-	 * @param string template_string 
-	 * @param object params 物件
-	 * @return string
+	 * @param {string} template_string 
+	 * @param {object} params - 物件
+	 * @return {string}
 	 *
 	 */
 	 'global_parse_template_string':function(template_string,params){
 		if(this.global_typeof(template_string)!=='string'){
-			alert('template_string argument error');
-			return;
+			this.debug_console('template_string argument error','error');
+			return '';
 		}
 		if(this.global_typeof(params)!=='object'){
-			alert('params argument error');
-			return;
+			this.debug_console('params argument error','error');
+			return '';
 		}
 		
 		return template_string.replace(
@@ -124,7 +124,7 @@ var bill_core={
 	 * 
 	 * 偵測網頁瀏覽者之環境
 	 *
-	 * @return object
+	 * @return {object}
 	 */
 	'global_parse_http_user_agent':function() {
 		//若device不為空字串 代表裝置是手機
@@ -436,39 +436,12 @@ var bill_core={
 			);
 			
 			for(var input_name in checkbox_values){
-				var temp_array=checkbox_values[input_name].map(
-					function(element){
-						return element.
-						replace(/[\|\,]/g,
-							function(match){
-								if(match==='|'){
-									return '|vertical_line|';
-								}else if(match===','){
-									return '|comma|';
-								}
-							}
-						);
-					}
-				)
+				var temp_array=checkbox_values[input_name];
 				values[input_name]=temp_array.join(',,,');
 			}
 			
 			for(var input_name in select_values){
-				var temp_array=select_values[input_name].map(
-					function(element){
-						return element.
-						replace(/[\|\,]/g,
-							function(match){
-								if(match==='|'){
-									return '|vertical_line|';
-								}else if(match===','){
-									return '|comma|';
-								}
-							}
-						);
-					
-					}
-				)
+				var temp_array=select_values[input_name];
 				values[input_name]=temp_array.join(',,,');
 			}
 			return_data['all_inputs_jqobject']=
@@ -538,10 +511,80 @@ var bill_core={
 		
 		return temp_array;
 	},
+	'escape_get_for_multivalue':function(the_string){
+		if(this.global_typeof(the_string)==='string'){
+			
+		}else{
+			return '';
+		}
+		var temp_map={
+			'|':'|vertical_line|',
+			',':'|comma|'
+		}
+		return the_string.
+			replace(/[\|\,]/g,
+				function(match){
+					return temp_map[match];
+				}
+			);
+	},
+	'escape_get_from_multivalue':function(the_string){
+		if(this.global_typeof(the_string)==='string'){
+			
+		}else{
+			return '';
+		}
+		var temp_map={
+			'|vertical_line':'|',
+			'|comma|':','
+		}
+		return the_string.
+			replace(/\|vertical_line\||\|comma\|/g,
+				function(match){
+					return temp_map[match];
+				}
+			);
+	},
+	'escape_get_for_option_data':function(the_string){
+		if(this.global_typeof(the_string)==='string'){
+			
+		}else{
+			return '';
+		}
+		var temp_map={
+			'|':'|vertical_line|',
+			',':'|comma|',
+			';':'|semicolon|',
+		}
+		return the_string.
+			replace(/[\|\,\;]/g,
+				function(match){
+					return temp_map[match];
+				}
+			);
+	},
+	'escape_get_from_option_data':function(the_string){
+		if(this.global_typeof(the_string)==='string'){
+			
+		}else{
+			return '';
+		}
+		var temp_map={
+			'|vertical_line|':'|',
+			'|comma|':',',
+			'|semicolon|':';',
+		}
+		return the_string.
+			replace(/\|vertical_line\||\|comma\||\|semicolon\|/g,
+				function(match){
+					return temp_map[match];
+				}
+			);
+	},
 	/**
 	 * 檢查輸入的變數是否為有長度字串 
-	 * @param checked_var mixed 要檢測的變數
-	 * @return string
+	 * @param {mixed} checked_var - 要檢測的變數
+	 * @return {string}
 	 */
 	'string_is_solid':function(checked_var){
 		if(this.global_typeof(checked_var)!=='string'){
@@ -557,9 +600,9 @@ var bill_core={
 	 * 
 	 * 檢查輸入的字串是否以特定字串開頭
 	 *
-	 * @param string testword 被檢查的字串
-	 * @param string subword 該特定字串
-	 * @return string
+	 * @param {string} testword - 被檢查的字串
+	 * @param {string} subword - 該特定字串
+	 * @return {string}
 	 */
 	'string_is_start_with':function(testword,subword) {
 		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
@@ -579,9 +622,9 @@ var bill_core={
 	 * 
 	 * 檢查輸入的字串是否以特定字串結尾
 	 *
-	 * @param string testword 被檢查的字串
-	 * @param string subword 該特定字串
-	 * @return string
+	 * @param {string} testword - 被檢查的字串
+	 * @param {string} subword - 該特定字串
+	 * @return {string}
 	 */
 	'string_is_end_with':function(testword,subword) {
 		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
@@ -601,10 +644,10 @@ var bill_core={
 	 * 
 	 * 將特定字首字串及特定字尾字串的方式，去取得中間的字串
 	 *
-	 * @param string source_string 要處理的來源字串
-	 * @param string start_string 特定字首字串
-	 * @param string end_string 特定字尾字串
-	 * @return string 中間的字串
+	 * @param {string} source_string - 要處理的來源字串
+	 * @param {string} start_string - 特定字首字串
+	 * @param {string} end_string - 特定字尾字串
+	 * @return {string} 中間的字串
 	 *
 	 * 舉例:
 	 * var the_string='data_row_a80235_id';
@@ -615,16 +658,16 @@ var bill_core={
 	 */
 	 'string_fetch_specific':function(source_string,start_string,end_string){
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
-			return;
+			this.debug_console('source_string argument error','error');
+			return '';
 		}
 		if(this.global_typeof(start_string)!=='string'){
-			alert('start_string argument error');
-			return;
+			this.debug_console('start_string argument error','error');
+			return '';
 		}
 		if(this.global_typeof(end_string)!=='string'){
-			alert('end_string argument error');
-			return;
+			this.debug_console('end_string argument error','error');
+			return '';
 		}
 		
 		start_string=this.validate_regexp_escape(start_string);
@@ -644,9 +687,9 @@ var bill_core={
 	 * 
 	 * 返回指定長度的數字字串，不足長度的，向左補0
 	 *
-	 * @param number num 要處理的數字
-	 * @param number digits_count 指定的長度
-	 * @return string
+	 * @param {number} num - 要處理的數字
+	 * @param {number} digits_count - 指定的長度
+	 * @return {string}
 	 *
 	 */
 	'string_add_zero':function(num,digits_count,radix){
@@ -800,13 +843,13 @@ var bill_core={
 	 */
 	'string_remove_start':function(source_string,start_string){
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
-			return;
+			this.debug_console('source_string argument error','error');
+			return '';
 		}
 
 		if(this.global_typeof(start_string)!=='string'){
-			alert('start_string argument error');
-			return;
+			this.debug_console('start_string argument error','error');
+			return '';
 		}
 
 		start_string=this.validate_regexp_escape(start_string);
@@ -837,13 +880,13 @@ var bill_core={
 	 */
 	'string_remove_end':function(source_string,end_string){
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
-			return;
+			this.debug_console('source_string argument error','error');
+			return '';
 		}
 
 		if(this.global_typeof(end_string)!=='string'){
-			alert('end_string argument error');
-			return;
+			this.debug_console('end_string argument error','error');
+			return '';
 		}
 
 		end_string=this.validate_regexp_escape(end_string);
@@ -858,16 +901,16 @@ var bill_core={
 	},
 	 'string_replace':function(source_string,sub_string,new_sub_string){
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
-			return;
+			this.debug_console('source_string argument error','error');
+			return '';
 		}
 		if(this.global_typeof(sub_string)!=='string'){
-			alert('sub_string argument error');
-			return;
+			this.debug_console('sub_string argument error','error');
+			return '';
 		}
 		if(this.global_typeof(new_sub_string)!=='string'){
-			alert('new_sub_string argument error');
-			return;
+			this.debug_console('new_sub_string argument error','error');
+			return '';
 		}
 		
 		sub_string=this.validate_regexp_escape(sub_string);
@@ -1539,7 +1582,7 @@ var bill_core={
 		if(this.global_typeof(seconds)==='number'){
 		
 		}else{
-			alert('seconds參數資料型態錯誤');
+			this.debug_console('seconds參數資料型態錯誤','error');
 			return;
 		}
 		var milliseconds=seconds*1000;
@@ -1905,7 +1948,7 @@ var bill_core={
 	 'validate_regexp_escape':function(source_string){
 		var return_string='';
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string argument error');
+			this.debug_console('source_string argument error','error');
 			return return_string;
 		}
 		return_string=source_string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g,'\\$1');
@@ -2118,41 +2161,123 @@ var bill_core={
 	 * 
 	 * 驗證字串
 	 *
-	 * @param validator_name 驗證器名稱
-	 * @param string source_string 要驗證的字串
-	 * @return bool
+	 * @param {string} how_to_validate - 如何驗證
+	 * @param {string} source_string - 要驗證的字串
+	 * @return {bool}
 	 *
 	 *
 	 */
-	'validate_string':function(validator_name,source_string){
-		if(this.global_typeof(validator_name)!=='string'){
-			alert('validator_name必須為字串');
+	'validate_single':function(how_to_validate,source_string){
+		if(this.global_typeof(how_to_validate)!=='string'){
+			this.debug_console('how_to_validate必須為字串','error');
 			return '0';
 		}
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string必須為字串');
+			this.debug_console('source_string必須為字串','error');
+			return '0';
+		}
+		/*
+		if(
+			this.global_typeof(is_validator_name)==='undefined'
+		){
+			is_validator_name='0';
+		}
+		else{
+			if(
+				this.global_typeof(is_validator_name)!=='string' ||
+				['0','1'].indexOf(is_validator_name)===-1
+			){
+				alert('is_validator_name參數錯誤');
+				return '0';
+			}
+		}
+		*/
+		if(
+			this.validate_check_is_validator(how_to_validate)==='1'
+		){
+			validate_result = this.validate_single_by_validator(how_to_validate,source_string);
+		}else{	
+			validate_result = this.validate_single_by_rule(how_to_validate,source_string);
+		}
+		return validate_result;
+	},
+	'validate_check_is_validator':function(how_to_validate){
+		if(this.global_typeof(how_to_validate)!=='string'){
+			this.debug_console('how_to_validate必須為字串','error');
 			return '0';
 		}
 		
-		var temp_reg=null;
-		if(this.validate_regexp_items[validator_name]===undefined){
-			 temp_reg =new RegExp(validator_name);
+		var return_result;
+		
+		if(this.validate_regexp_items.hasOwnProperty(how_to_validate)){
+			return_result='1';
 		}else{
-			 temp_reg = new RegExp(this.validate_regexp_items[validator_name]);
+			if(this.hasOwnProperty('validate_custom_'+how_to_validate)){
+				return_result='1';
+			}else{
+				return_result='0';
+			}
 		}
-		if(temp_reg.test(source_string)){
-			return '1';
-		}else{
-			return '0';
-		}
+		
+		return return_result;
 	},
-	'validate_fetch':function(validator_name,source_string){
+	'validate_single_by_validator':function(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
-			alert('validator_name必須為字串');
+			this.debug_console('validator_name必須為字串','error');
 			return '0';
 		}
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string必須為字串');
+			this.debug_console('source_string必須為字串','error');
+			return '0';
+		}
+		
+		var validate_result;
+		
+		if(this.validate_regexp_items.hasOwnProperty(validator_name)){
+			var temp_reg=null;
+			temp_reg = new RegExp(this.validate_regexp_items[validator_name]);
+			if(temp_reg.test(source_string)){
+				validate_result='1';
+			}else{
+				validate_result='0';
+			}
+		}else{
+			if(this.hasOwnProperty('validate_custom_'+validator_name)){
+				validate_result=this['validate_custom_'+validator_name](source_string);
+			}else{
+				validate_result='0';
+			}
+		}
+		return validate_result;
+	},
+	'validate_single_by_rule':function(validator_rule,source_string){
+		if(this.global_typeof(validator_rule)!=='string'){
+			this.debug_console('validator_rule必須為字串','error');
+			return '0';
+		}
+		if(this.global_typeof(source_string)!=='string'){
+			this.debug_console('source_string必須為字串','error');
+			return '0';
+		}
+		
+		var validate_result;
+		var temp_reg=null;
+		temp_reg =new RegExp(validator_rule);
+		
+		if(temp_reg.test(source_string)){
+			validate_result='1';
+		}else{
+			validate_result='0';
+		}
+		return validate_result;
+	},
+	'validate_fetch':function(validator_name,source_string){
+		if(this.global_typeof(validator_name)!=='string'){
+			this.debug_console('validator_name必須為字串','error');
+			return '0';
+		}
+		if(this.global_typeof(source_string)!=='string'){
+			this.debug_console('source_string必須為字串','error');
 			return '0';
 		}
 		
@@ -2167,11 +2292,11 @@ var bill_core={
 	},
 	'validate_remove_illegal':function(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
-			alert('validator_name必須為字串');
+			this.debug_console('validator_name必須為字串','error');
 			return '0';
 		}
 		if(this.global_typeof(source_string)!=='string'){
-			alert('source_string必須為字串');
+			this.debug_console('source_string必須為字串','error');
 			return '0';
 		}
 		
@@ -2231,15 +2356,8 @@ var bill_core={
 			if(the_reg_tip===undefined){
 				the_reg_tip='請輸入正確的格式';
 			}
-			var the_reg_1_obj=null;
-			
-			if(this.validate_regexp_items[the_reg_1]===undefined){
-				the_reg_1_obj =new RegExp(the_reg_1);
-			}else{
-				the_reg_1_obj = new RegExp(this.validate_regexp_items[the_reg_1]);
-			}
-
-			if(the_reg_1_obj.test(the_value)){
+		
+			if(this.validate_single(the_reg_1,the_value)==='1'){
 				inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message','');
 			}
 			else{
@@ -2274,7 +2392,7 @@ var bill_core={
 		}
 		return return_result;
 	},
-	'validate_taiwan_identity_card':function(the_card_code){
+	'validate_custom_taiwan_identity_card':function(the_card_code){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -2549,7 +2667,13 @@ var bill_core={
 		jQuery(document.body).append(temp_form);
 		temp_form.submit().remove();
 	},
-	
+	/**
+	 *
+	 *
+	 * @param {string} param1 - 要輸出的訊息
+	 * @param {string} [param2] - 訊息分類
+	 * @return {void} 
+	 */
 	'debug_console':function(param1,param2){
 		//message
 		//message、level(嚴重性等級)：info、warn、error
@@ -2713,7 +2837,7 @@ var bill_core={
 		var return_result=0;
 		var args_illegal_is_found='0';
 		if ( 
-			this.global_typeof(min_int)==='number' && this.validate_string('rnumber',min_int.toString())==='1'
+			this.global_typeof(min_int)==='number' && this.validate_single('rnumber',min_int.toString())==='1'
 		) {
 			
 		}else{
@@ -2721,7 +2845,7 @@ var bill_core={
 			this.debug_console('bill_core.'+arguments.callee.name+' min_int error!','error');
 		}
 		if ( 
-			this.global_typeof(max_int)==='number' && this.validate_string('rnumber',max_int.toString())==='1'
+			this.global_typeof(max_int)==='number' && this.validate_single('rnumber',max_int.toString())==='1'
 		) {
 			
 		}else{
@@ -2753,7 +2877,7 @@ var bill_core={
 			max_width=400;
 		}
 		var display_img_width=the_img_jqobject[0].naturalWidth;
-		alert(display_img_width);
+	
 		if(display_img_width>max_width){
 			display_img_width=max_width;
 		}

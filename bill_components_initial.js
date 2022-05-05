@@ -21,14 +21,14 @@
 		var get_jqobject=this;
 		//先處理一般元件
 		get_jqobject.find(
-			'input[type="text"][component_type="input_text"],'+
-			'input[type="text"][component_type="input_text_number"],'+
-			'input[type="date"][component_type="input_date"],'+
-			'input[type="radio"][component_type="input_radio"],'+
-			'input[type="checkbox"][component_type="input_checkbox"],'+
-			'input[type="hidden"][component_type="input_hidden"],'+
-			'textarea[component_type="textarea"],'+
-			'select[component_type="select"]'
+			'input[type="text"][name][component_type="input_text"],'+
+			'input[type="text"][name][component_type="input_text_number"],'+
+			'input[type="date"][name][component_type="input_date"],'+
+			'input[type="radio"][name][component_type="input_radio"],'+
+			'input[type="checkbox"][name][component_type="input_checkbox"],'+
+			'input[type="hidden"][name][component_type="input_hidden"],'+
+			'textarea[name][component_type="textarea"],'+
+			'select[name][component_type="select"]'
 		).each(
 			function(){
 				var the_input_name=jQuery(this).attr('name');
@@ -95,23 +95,7 @@
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
 				
 						var temp_array=temp_default_value.split(',,,');
-						temp_array=temp_array.map(
-							function(element){
-								return element.
-								replace(/\|.+?\|/g,
-									function(match){
-										if(match==='|vertical_line|'){
-											return '|';
-										}else if(match==='|comma|'){
-											return ',';
-										}
-									}
-								);
-								;
-							
-							}
-						)
-					
+						
 						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
 							jQuery(this).attr('checked','checked');
 						}else{
@@ -186,24 +170,24 @@
 		
 		//再處理特殊元件
 		get_jqobject.find(
-			'[component_type="display_info"],'+
-			'div[component_type="bill_checkboxs_group"],'+
-			'div[component_type="bill_radios_group"],'+
-			'input[type="text"][component_type="dynDateTime"],'+
-			'div[component_type="bill_datetimepicker"],'+
-			'div[component_type="bill_taiwan_address"],'+
-			'div[component_type="bill_file_upload"],'+
-			'div[component_type="bill_file_immediate_upload"],'+
-			'div[component_type="bill_video_url"],'+
-			'div[component_type="bill_multirow_column"],'+
-			'textarea[component_type="ckeditor"],'+
-			'[component_type="bill_select_relateds"],'+
-			'[component_type="bill_pic_crop"]'
+			'[name][component_type="display_info"],'+
+			'div[name][component_type="bill_checkboxs_group"],'+
+			'div[name][component_type="bill_radios_group"],'+
+			'input[type="text"][name][component_type="dynDateTime"],'+
+			'div[name][component_type="bill_datetimepicker"],'+
+			'div[name][component_type="bill_taiwan_address"],'+
+			'div[name][component_type="bill_file_upload"],'+
+			'div[name][component_type="bill_file_immediate_upload"],'+
+			'div[name][component_type="bill_video_url"],'+
+			'div[name][component_type="bill_multirow_column"],'+
+			'textarea[name][component_type="ckeditor"],'+
+			'[name][component_type="bill_select_relateds"],'+
+			'[name][component_type="bill_pic_crop"]'
 		).each(
 			function(){
 				var the_input_name=jQuery(this).attr('name');
-				var the_element_id=jQuery(this).attr('id');
-
+				var the_element_id='component_'+bill_core.string_random_word(7,'');
+				jQuery(this).attr('id',the_element_id);
 				var temp_default_value=default_value_source[the_input_name];
 				var temp_environment_data=environment_data_source[the_input_name];
 				var the_component_type=jQuery(this).attr('component_type');
