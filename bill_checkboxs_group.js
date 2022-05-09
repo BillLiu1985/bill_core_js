@@ -152,7 +152,6 @@
 		get_jqobject.find(':checkbox').click(
 			function(){	
 				var temp_array=[];
-				var get_jqobject=jQuery(this).closest('[is_transformed_to_bill_checkboxs_group]');
 				var component_id=get_jqobject.attr('id');
 				get_jqobject.find(':checkbox:checked').each(
 					function(){

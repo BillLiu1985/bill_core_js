@@ -10,9 +10,14 @@ if(window.jQuery===undefined){
 
 var bill_core={
 	/*
-		場景目錄，每個場景目錄都有自己的js資料夾
+		js套件所在目錄URL
 	*/
-	'base_url':'',
+	'js_dir_url':'',
+	
+	/*
+		專案目錄URL
+	*/
+	'project_root_url':'',
 	/**
 	 * 對原生JS變數資料型態再做更詳細更具體的分類
 	 *
@@ -1882,7 +1887,7 @@ var bill_core={
 			return_string=the_url;
 		}
 		else{
-			return_string=this.base_url+the_url;
+			return_string=this.project_root_url+the_url;
 		}
 		return return_string;
 	},
