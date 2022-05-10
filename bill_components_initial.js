@@ -149,6 +149,7 @@
 					//the_options Ex:
 					//[{'value':'value_1','text':'text_1'},{'value':'value_2','text':'text_2'},{'value':'value_3','text':'text_3'}...]
 					if( bill_core.global_typeof(the_options)==='object' ){
+						/*
 						var temp_html='';
 						for(var kindex in the_options){
 							var the_option=the_options[kindex];
@@ -156,12 +157,23 @@
 								'<option value="'+bill_core.escape_html_specialchars(the_option['value'])+'" >'+bill_core.escape_html_specialchars(the_option['text'])+'</option>';
 						}
 						jQuery(this).append(temp_html);
+						*/
+						for(var kindex in the_options){
+							var the_option=the_options[kindex];
+							this.appendChild(
+								new Option(the_option['text'], the_option['value'])
+							);
+							
+						}
 					}
 					
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
+						this.value=temp_default_value;
+						/*
 						jQuery(this).children('option[value="'+
 							jQuery.escapeSelector(temp_default_value)+
 						'"]').attr('selected','selected');
+						*/
 					}
 				}
 			}

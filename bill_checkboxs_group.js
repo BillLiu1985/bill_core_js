@@ -30,7 +30,7 @@
 		
 		
 		//物件方法
-		var jqobject_scope_methods={
+		var jqobject_public_methods={
 			
 		};
 		
@@ -44,8 +44,8 @@
 			}
 		
 			if(
-				jqobject_scope_methods[param1]===undefined || 
-				typeof(jqobject_scope_methods[param1])!=='function'
+				jqobject_public_methods[param1]===undefined || 
+				typeof(jqobject_public_methods[param1])!=='function'
 			){
 				bill_core.debug_console('元件無此操作','error');
 				return;
@@ -57,7 +57,7 @@
 					temp_params.push(arguments[kindex]);
 				}
 			}
-			return jqobject_scope_methods[param1].apply(get_jqobject,temp_params);
+			return jqobject_public_methods[param1].apply(get_jqobject,temp_params);
 		}
 		
 		var want_set_opts={};

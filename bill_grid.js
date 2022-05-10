@@ -79,10 +79,10 @@
 		if( get_jqobject.length>1 ){
 			bill_core.debug_console('bill_grid一次只能轉換一個,轉換的元素為賦予id的div或table','error');
 			return;
-		}
-		if( get_jqobject.length==0 ){
+		}else if( get_jqobject.length==0 ){
 			return;
 		}
+		
 		if( typeof(param1)=='string '){
 			if( get_jqobject.attr('is_transformed_to_bill_grid')!=='1' ){
 				bill_core.debug_console('請先轉換元素為bill_grid','error');
@@ -480,6 +480,7 @@
 			bill_core.debug_console('bill_grid元件啟動失敗,reload_ajax_url參數資料型態錯誤','error');
 			return;
 		}
+		
 		
 		if( get_jqobject.attr('is_transformed_to_bill_grid')!=='1' ){
 
