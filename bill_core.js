@@ -244,7 +244,7 @@ var bill_core={
 		var error_msg_1s=return_data['error_msg_1s'];
 		
 		var fetch_jquery_expression_input_radio=
-			'input[type="radio"][name][name!=""]:checked';			
+			'input[type="radio"][name][name!=""]:checked:not([non_form_data])';			
 		var fetch_function_input_radio=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
@@ -260,7 +260,7 @@ var bill_core={
 		}
 		
 		var fetch_jquery_expression_textarea=
-			'textarea[name][name!=""]';
+			'textarea[name][name!=""]:not([non_form_data])';
 		var fetch_function_textarea=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
@@ -304,7 +304,7 @@ var bill_core={
 		
 		var checkbox_values={};
 		var fetch_jquery_expression_input_checkbox=
-			'input[type="checkbox"][name][name!=""]:checked';
+			'input[type="checkbox"][name][name!=""]:checked:not([non_form_data])';
 		var fetch_function_input_checkbox=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
@@ -328,7 +328,7 @@ var bill_core={
 		
 		var select_values={};
 		var fetch_jquery_expression_select=
-			'select[name][name!=""]';
+			'select[name][name!=""]:not([non_form_data])';
 		var fetch_function_select=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
@@ -372,11 +372,11 @@ var bill_core={
 		}
 		
 		var fetch_jquery_expression_others=
-			'input[type="text"][name][name!=""],'+
-			'input[type="date"][name][name!=""],'+
-			'input[type="hidden"][name][name!=""],'+
-			'input[type="password"][name][name!=""],'+
-			'input[type="file"][name][name!=""]';
+			'input[type="text"][name][name!=""]:not([non_form_data]),'+
+			'input[type="date"][name][name!=""]:not([non_form_data]),'+
+			'input[type="hidden"][name][name!=""]:not([non_form_data]),'+
+			'input[type="password"][name][name!=""]:not([non_form_data]),'+
+			'input[type="file"][name][name!=""]:not([non_form_data])';
 		var fetch_function_others=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;

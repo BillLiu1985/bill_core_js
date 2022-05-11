@@ -1,11 +1,36 @@
 ﻿(function(jQuery,bill_core){
-	//一般狀態 _preview,_file_tip,_input,_file_delete_button,
-	//上傳檔案中 _preview,_file_tip,_ingicon
-	//移除中 _preview,_file_tip,_input,_ingicon
-	//一般狀態->移除中(按下file_delete_button後)
-	//移除中->一般狀態(file delete event handler執行結束後)
-	//一般狀態->上傳檔案中(選擇要上傳的檔案後)
-	//上傳檔案中->一般狀態(上傳檔案處理完畢後)
+	/* 元件組成要素
+		可見可不見
+			'_preview',_file_tip',_input','_file_delete_button','_ingicon',
+		恆非可見
+			'_tmpfile_uploadfile_id','_op','_data', 
+	*/
+	/* 元件各種狀態
+		一般狀態(normal)
+			可見
+				'_preview','_file_tip','_input','_file_delete_button',
+			不可見
+				'_ingicon',
+
+		移除中(delete_ing)
+			可見
+				'_preview','_ingicon',
+			不可見
+				'_file_tip','_file_delete_button','_input',
+
+		上傳檔案中(upload_ing)
+			可見
+				'_preview','_ingicon',
+			不可見
+				'_file_tip','_file_delete_button','_input',
+
+	 */	
+	/* 元件狀態轉換時機
+		一般狀態->移除中(按下_file_delete_button後)
+		移除中->一般狀態(file delete event handler執行結束後)
+		一般狀態->上傳檔案中(選擇要上傳的檔案後)
+		上傳檔案中->一般狀態(上傳檔案處理完畢後)
+	*/
 	
 	//設定屬於bill_file_immediate_upload專屬的元件函式或元件設定預設值
 	//op:upload_material,delete_upload
@@ -56,19 +81,69 @@
 		
 		//物件方法
 		var jqobject_public_methods={
-			'check_is_uploading':function(){
+			'check_is_in_op':function(){
 				
 				if(
-					jQuery('#'+this.attr('id')+'_ingicon').css('display')=='none'
+					jQuery('#'+this.attr('id')+'_ingicon').css('display')!=='none'
 				){
-					return '0';
+					return '1';
 				}else{
 					
-					return '1';
+					return '0';
 				}
 			}
 		};
-		
+		var jqobject_private_methods={
+			'toggle_state':function(the_state){
+				var all_element_ids=[
+					'_preview','_file_tip','_input','_file_delete_button','_ingicon',
+				];
+				switch(the_state){
+					case 'normal':
+						var show_element_ids=[
+							'_preview','_file_tip','_input','_file_delete_button',
+						];
+						break;
+					
+					case 'delete_ing':
+						var show_element_ids=[
+							'_preview','_ingicon',
+						];
+						break;
+						
+					case 'upload_ing':
+						var show_element_ids=[
+							'_preview','_ingicon',
+						];
+						break;
+						
+					
+					default:
+						var show_element_ids=[
+							'_preview','_file_tip','_input','_file_delete_button',
+						];
+				}
+				var hide_element_ids=all_element_ids.filter(function(the_element_id){
+					if(show_element_ids.indexOf(the_element_id)===-1){
+						return true;
+					}else{
+						return false;
+					}
+				});
+				show_element_ids=show_element_ids.map(
+					function(the_element_id){
+						return '#'+component_id+the_element_id;
+					}
+				);
+				hide_element_ids=hide_element_ids.map(
+					function(the_element_id){
+						return '#'+component_id+the_element_id;
+					}
+				);
+				jQuery(show_element_ids.join(',')).show();
+				jQuery(hide_element_ids.join(',')).hide();
+			}
+		};
 		//若是呼叫物件方法
 		if(typeof(param1)=='string'){
 			if(
@@ -280,7 +355,7 @@
 			}
 			//draw input
 			final_component_html+=
-			'<input type="file" maxlength="255" size="50" id="'+component_id+'_input" name="input_file" reg_1="'+reg_1_string+'" />';  
+			'<input type="file" maxlength="255" size="50" id="'+component_id+'_input"  reg_1="'+reg_1_string+'" />';  
 	
 			
 			//draw file_delete_button
@@ -325,8 +400,11 @@
 					return;
 				}
 				
-				jQuery("#"+the_event.data.component_id+"_file_delete_button").hide();
-				jQuery("#"+the_event.data.component_id+"_ingicon").show();
+				jqobject_private_methods['toggle_state'].call(
+					jQuery(this),'upload_ing'
+				);
+				
+				
 				if(opts.layout_type==='basic'){
 				}
 				
@@ -339,7 +417,7 @@
 					'file_type':opts.file_type,
 					'_token':opts.csrf_token,
 				};
-				about_info[jQuery(this).attr('name')]=jQuery(this).prop('files')[0]
+				about_info['input_file']=jQuery(this).prop('files')[0]
 				var formdata = new FormData();
 				for(var temp_prop_name in about_info){
 					formdata.append(temp_prop_name, about_info[temp_prop_name]);
@@ -426,19 +504,23 @@
 
 							jQuery("#"+component_id+"_tmpfile_uploadfile_id").val(data.data['tmpfile_uploadfile_id']);
 							jQuery("#"+component_id+"_data").val(data.data['tmpfile_uploadfile_id']);
-							jQuery('#'+component_id+'_input').val('');	
+							jQuery('#'+component_id+'_input').val('');
+							
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 							
 						}else{
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 							alert('操作失敗，因 '+data.message);
 						}
-						
-						if(opts.layout_type==='basic'){
-
-						}							
-						jQuery('#'+component_id+'_ingicon').hide();
-						jQuery("#"+component_id+'_file_delete_button').show();
 					},
 					function(jqXHR,textStatus,errorThrown ){
+						jqobject_private_methods['toggle_state'].call(
+							jQuery(this),'normal'
+						);
 						alert(errorThrown);
 						
 					},
@@ -493,8 +575,9 @@
 				}
 
 				
-				jQuery(this).hide();
-				jQuery("#"+the_event.data.component_id+"_ingicon").show();
+				jqobject_private_methods['toggle_state'].call(
+					jQuery(this),'delete_ing'
+				);
 				
 				var about_info={
 					'updated_column_name':the_event.data.opts.input_name,
@@ -532,28 +615,24 @@
 								jQuery("#"+component_id+'_preview>embed').removeAttr('src');
 							
 							}
-							
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 						}else{
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 							alert(data.message);
 						}
-						jQuery("#"+component_id+'_ingicon').hide();
-						jQuery(this).show();
+						
 					},
 					function(jqXHR,textStatus,errorThrown ){
-						
+						jqobject_private_methods['toggle_state'].call(
+							jQuery(this),'normal'
+						);
 						alert(
 							'Ajax request 錯誤'
 						);
-						
-						/*
-						alert(
-							'textStatus：'+textStatus+'\n'+
-							'errorThrown：'+errorThrown+'\n'+
-							'responseText：'+jqXHR.responseText
-						);
-						*/
-						jQuery("#"+component_id+'_ingicon').hide();
-						jQuery(this).show();
 					},
 					'0',
 					this

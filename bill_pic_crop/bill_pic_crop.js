@@ -1,21 +1,66 @@
 ﻿(function(jQuery,bill_core){
-	//一般狀態 _preview,_file_tip,_input,_file_delete_button,
-	//上傳檔案中 _preview,_file_tip,_ingicon
-	//移除中 _preview,_file_tip,_input,_ingicon
-	//截圖狀態
-	//確定截圖中 _select_ingicon
-	//取消截圖中 _select_ingicon
-	//一般狀態->移除中(按下file delete_button後)
-	//移除中->一般狀態(file delete event handler執行結束後)
-	//一般狀態->上傳檔案中(選擇要上傳的檔案後)
-	//上傳檔案中->一般狀態(上傳檔案處理完畢後，結果為失敗時)
-	//上傳檔案中->截圖狀態(上傳檔案處理完畢後，結果為成功時)
-	//截圖狀態->確定截圖中(按下確定要截圖後)
-	//確定截圖中->截圖狀態(上傳檔案處理完畢後，結果為失敗時)
-	//確定截圖中->一般狀態(上傳檔案處理完畢後，結果為成功時)
-	//截圖狀態->取消截圖中(按下取消截圖後)
-	//取消截圖中->截圖狀態(截圖處理完畢後，結果為失敗時)
-	//取消截圖中->一般狀態(截圖處理完畢後，結果為成功時)
+	/* 元件組成要素
+		可見可不見
+			'_preview',_file_tip',_input','_file_delete_button','_ingicon',
+			'_select_ingicon','_select_cancel_button','_select_ok_button',
+			'_select_tip',
+		恆非可見
+			'_crop_x','_crop_y','_crop_width','_crop_height',
+			'_workingfile_uploadfile_id','_tmpfile_uploadfile_id','_op','_data', 
+	*/
+	/* 元件各種狀態
+		一般狀態(normal)
+			可見
+				'_preview','_file_tip','_input','_file_delete_button',
+			不可見
+				'_ingicon',
+				'_select_ingicon','_select_cancel_button','_select_ok_button','_select_tip',
+
+		移除中(delete_ing)
+			可見
+				'_preview','_ingicon',
+			不可見
+				'_file_tip','_file_delete_button','_input',
+				'_select_ingicon','_select_cancel_button','_select_ok_button','_select_tip',
+
+		上傳檔案中(upload_ing)
+			可見
+				'_preview','_ingicon',
+			不可見
+				'_file_tip','_file_delete_button','_input',
+				'_select_ingicon','_select_cancel_button','_select_ok_button','_select_tip',
+
+		截圖狀態(crop)
+			可見
+				'_preview','_select_cancel_button','_select_ok_button','_select_tip',
+			不可見
+				'_file_tip','_file_delete_button','_ingicon','_input',
+				'_select_ingicon',
+
+		截圖確定中(crop_ok_ing)
+			可見
+				'_preview','_select_ingicon',
+			不可見
+				'_file_tip','_file_delete_button','_ingicon','_input',
+				'_select_cancel_button','_select_tip','_select_ok_button',
+
+		截圖取消中(crop_cancel_ing)
+			可見
+				'_preview','_select_ingicon',	
+			不可見
+				'_file_tip','_file_delete_button','_ingicon','_input',
+				'_select_cancel_button','_select_ok_button','_select_tip',
+	 */	
+	/* 元件狀態轉換時機
+		一般狀態->移除中(按下_file_delete_button後)
+		移除中->一般狀態(file delete event handler執行結束後)
+		一般狀態->上傳檔案中(選擇要上傳的檔案後)
+		上傳檔案中->截圖狀態(上傳檔案處理完畢後)
+		截圖狀態->確定截圖中(按下確定要截圖後)
+		確定截圖中->一般狀態(截圖處理完畢後)
+		截圖狀態->取消截圖中(按下取消截圖後)
+		取消截圖中->一般狀態(取消截圖處理完畢後) 
+	*/
 	
 	
 	//設定屬於bill_pic_crop專屬的元件函式或元件設定預設值
@@ -26,6 +71,8 @@
 			'process_upload_url':'',
 			'uploading_icon_url':bill_core.js_dir_url+'bill_core_js/bill_pic_crop/image/loadinfo.net.gif',
 			'selecting_icon_url':bill_core.js_dir_url+'bill_core_js/bill_pic_crop/image/loadinfo.net.gif',
+			'error_msg_1':'',
+			'human_read_name':'',
 			'file_tip':'選擇檔案：',
 			'select_tip':'請拖曳圖片以確認擷取範圍',
 			'preview_width':400,
@@ -40,9 +87,8 @@
 	
 	//轉換元素成物件 或 執行物件方法
 	jQuery.fn.bill_pic_crop = function(param1,param2){
-		
 		var get_jqobject=this.filter('div[id]');
-		
+		var component_id=get_jqobject.attr('id');
 		//限制轉換元素的個數為1
 		if(get_jqobject.length>1){
 			bill_core.debug_console('bill_pic_crop一次只能轉換一個,轉換的元素為賦予id的div','error');
@@ -61,20 +107,89 @@
 		
 		//物件方法
 		var jqobject_public_methods={
-			'check_is_uploading':function(){
+			'check_is_in_op':function(){
 				
 				if(
-					jQuery('#'+this.attr('id')+'_ingicon').css('display')=='none' && 
-					jQuery('#'+this.attr('id')+'_select_ingicon').css('display')=='none'
+					jQuery('#'+this.attr('id')+'_ingicon').css('display')!=='none' || 
+					jQuery('#'+this.attr('id')+'_select_ingicon').css('display')!=='none' ||
+					jQuery('#'+this.attr('id')+'_select_ok_button').css('display')!=='none'
 				){
-					return '0'
+					return '1'
 				}else{
 					
-					return '1';
+					return '0';
 				}
 			}
 		};
-		
+		var jqobject_private_methods={
+			'toggle_state':function(the_state){
+				var all_element_ids=[
+					'_preview','_file_tip','_input','_file_delete_button','_ingicon',
+					'_select_ingicon','_select_cancel_button','_select_ok_button',
+					'_select_tip',
+				];
+				switch(the_state){
+					case 'normal':
+						var show_element_ids=[
+							'_preview','_file_tip','_input','_file_delete_button',
+						];
+						break;
+					
+					case 'delete_ing':
+						var show_element_ids=[
+							'_preview','_ingicon',
+						];
+						break;
+						
+					case 'upload_ing':
+						var show_element_ids=[
+							'_preview','_ingicon',
+						];
+						break;
+						
+					case 'crop':
+						var show_element_ids=[
+							'_preview','_select_cancel_button','_select_ok_button','_select_tip',
+						];
+						break;
+						
+					case 'crop_ok_ing':
+						var show_element_ids=[
+							'_preview','_select_ingicon',
+						];
+						break;
+						
+					case 'crop_cancel_ing':
+						var show_element_ids=[
+							'_preview','_select_ingicon',	
+						];
+						break;
+					default:
+						var show_element_ids=[
+							'_preview','_file_tip','_input','_file_delete_button',
+						];
+				}
+				var hide_element_ids=all_element_ids.filter(function(the_element_id){
+					if(show_element_ids.indexOf(the_element_id)===-1){
+						return true;
+					}else{
+						return false;
+					}
+				});
+				show_element_ids=show_element_ids.map(
+					function(the_element_id){
+						return '#'+component_id+the_element_id;
+					}
+				);
+				hide_element_ids=hide_element_ids.map(
+					function(the_element_id){
+						return '#'+component_id+the_element_id;
+					}
+				);
+				jQuery(show_element_ids.join(',')).show();
+				jQuery(hide_element_ids.join(',')).hide();
+			}
+		};
 		//若是呼叫物件方法
 		if(typeof(param1)=='string'){
 			if(
@@ -106,7 +221,7 @@
 		opts=get_jqobject.data();
 	
 
-		var component_id=get_jqobject.attr('id');
+		
 		if( bill_core.string_is_solid(opts.input_name)==='1' ){
 		
 		}else{
@@ -232,7 +347,7 @@
 		'<input type="hidden" value="" id="'+component_id+'_workingfile_uploadfile_id" />'+
 		'<input type="hidden" value="" id="'+component_id+'_tmpfile_uploadfile_id" />'+
 		'<input type="hidden" value="DO_NO" id="'+component_id+'_op" name="'+opts.input_name+'_op" />'+
-		'<input type="hidden" value="" id="'+component_id+'_data" name="'+opts.input_name+'" reg_1="'+reg_1_string+'" />';
+		'<input type="hidden" value="" id="'+component_id+'_data" name="'+opts.input_name+'" human_read_name="'+opts.human_read_name+'" error_msg_1="'+opts.error_msg_1+'" reg_1="'+reg_1_string+'" />';
 			
 		get_jqobject.html(final_component_html);
 		
@@ -246,18 +361,16 @@
 					alert('檔案格式錯誤');
 					return;
 				}
-				jQuery(this).attr('name','input_file');
-				
-				jQuery("#"+component_id+"_file_tip").hide();	
-				jQuery("#"+component_id+"_file_delete_button").hide();
-				jQuery("#"+component_id+"_ingicon").show();
+				jqobject_private_methods['toggle_state'].call(
+					jQuery(this),'upload_ing'
+				);
 				
 				var about_info={
 					'updated_column_name':opts.input_name,
 					'component_id':component_id,
 					'_token':opts.csrf_token,
 				};
-				about_info[jQuery(this).attr('name')]=jQuery(this).prop('files')[0]
+				about_info['input_file']=jQuery(this).prop('files')[0]
 				var formdata = new FormData();
 				for(var temp_prop_name in about_info){
 					formdata.append(temp_prop_name, about_info[temp_prop_name]);
@@ -282,7 +395,7 @@
 							jQuery("#"+component_id+"_preview").html(new_preview_html);
 
 							jQuery("#"+component_id+"_workingfile_uploadfile_id").val(data.data['workingfile_uploadfile_id']);
-							
+							jQuery('#'+component_id+'_input').val('');
 							
 							jQuery("#"+component_id+"_preview>img").imgAreaSelect({
 								'aspectRatio': opts.output_width+':'+opts.output_height,
@@ -297,44 +410,27 @@
 									jQuery("#"+component_id+"_crop_height").val(selection.height);
 								}
 							});
-							jQuery("#"+component_id+"_select_ok_button").show();
-							jQuery("#"+component_id+"_select_cancel_button").show();
-							jQuery("#"+component_id+"_select_tip").show();
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'crop'
+							);
 						}else{
-							jQuery("#"+component_id+"_file_tip").show();	
-				
-							jQuery("#"+component_id+'_file_delete_button').show();
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 							alert(data.message);	
 						}
-						jQuery('#'+component_id+'_ingicon').hide();
-						jQuery('#'+component_id+'_input').val('');
 					},
 					function(jqXHR,textStatus,errorThrown ){
+						jqobject_private_methods['toggle_state'].call(
+							jQuery(this),'normal'
+						);
 						alert(errorThrown);
-						
 					},
 					'0',
 					this
 				);
 			}
 		);
-		/*
-		jQuery('#'+component_id+'_go_to_edit_button').click(
-			function(){
-				if(jQuery('#'+component_id+'_input').val()==''){
-					alert('請選擇檔案');
-					return false;
-				}
-				
-				jQuery("#"+component_id+"_file_tip").hide();	
-				jQuery("#"+component_id+"_go_to_edit_button").hide();		
-				jQuery("#"+component_id+"_file_delete_button").hide();
-				jQuery("#"+component_id+"_ingicon").show();
-				jQuery('#'+component_id+'_input').appendTo(jQuery('#'+component_id+"_form"));
-				jQuery("#"+component_id+"_form").submit();
-			}
-		);
-		*/
 				
 		jQuery('#'+component_id+'_file_delete_button').click(
 			function(){
@@ -342,8 +438,9 @@
 					alert('無檔案可移除');
 					return;
 				}
-				jQuery(this).hide();
-				jQuery("#"+component_id+"_ingicon").show();
+				jqobject_private_methods['toggle_state'].call(
+					jQuery(this),'delete_ing'
+				);
 				
 				var about_info={
 					'updated_column_name':opts.input_name,
@@ -364,6 +461,7 @@
 							}
 							jQuery("#"+component_id+'_tmpfile_uploadfile_id').val('');
 							jQuery("#"+component_id+'_data').val('');
+							jQuery('#'+component_id+'_input').val('');
 							
 							var preview_html='';
 							preview_html=
@@ -371,30 +469,27 @@
 							+opts.preview_width+"px;height:"+(opts.preview_width*(opts.output_height/opts.output_width))+"px;\"  border=\"0\"   />";
 							
 							jQuery("#"+component_id+'_preview').html(preview_html);
-				
+							
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 						}else{
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 							alert(data['message']);
 						}
-						jQuery(this).show();
-						jQuery("#"+component_id+"_ingicon").hide();
+						
 					},
 					function(jqXHR,textStatus,errorThrown ){
-						
+						jqobject_private_methods['toggle_state'].call(
+							jQuery(this),'normal'
+						);
 						alert(
 							'Ajax request 錯誤'
 						);
-						
-						/*
-						alert(
-							'textStatus：'+textStatus+'\n'+
-							'errorThrown：'+errorThrown+'\n'+
-							'responseText：'+jqXHR.responseText
-						);
-						*/
-						jQuery(this).show();
-						jQuery("#"+component_id+"_ingicon").hide();
 					},
-					'1',
+					'0',
 					this
 				);
 				
@@ -403,10 +498,9 @@
 		
 		jQuery('#'+component_id+'_select_ok_button').click(
 			function(){
-				jQuery(this).hide();
-				jQuery("#"+component_id+"_select_cancel_button").hide();
-				jQuery("#"+component_id+"_select_tip").hide();
-				jQuery("#"+component_id+"_select_ingicon").show();
+				jqobject_private_methods['toggle_state'].call(
+					jQuery(this),'crop_ok_ing'
+				);
 				
 			
 				var about_info={
@@ -448,7 +542,7 @@
 							jQuery("#"+component_id+'_tmpfile_uploadfile_id').val(data.data['tmpfile_uploadfile_id']);
 							jQuery("#"+component_id+'_data').val(data.data['tmpfile_uploadfile_id']);
 							jQuery("#"+component_id+'_workingfile_uploadfile_id').val('');
-
+							jQuery('#'+component_id+'_input').val('');
 							
 							if(bill_core.string_is_solid(opts.default_value)==='1'){
 								jQuery("#"+component_id+'_op').val('DO_MODIFY');
@@ -458,38 +552,26 @@
 							
 							jQuery("#"+component_id+"_preview").html(preview_html);
 							
-							jQuery("#"+component_id+"_select_ingicon").hide();
-							
-							jQuery("#"+component_id+"_file_tip").show();	
-							jQuery("#"+component_id+"_file_delete_button").show();
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 							
 							
 						}else{
-							jQuery(this).show();
-							jQuery("#"+component_id+"_select_cancel_button").show();
-							jQuery("#"+component_id+"_select_tip").show();
-							jQuery("#"+component_id+"_select_ingicon").hide();
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'crop'
+							);
 							alert(data['message']);
 						}
 						
 					},
 					function(jqXHR,textStatus,errorThrown ){
-						
+						jqobject_private_methods['toggle_state'].call(
+							jQuery(this),'crop'
+						);
 						alert(
 							'Ajax request 錯誤'
 						);
-						
-						/*
-						alert(
-							'textStatus：'+textStatus+'\n'+
-							'errorThrown：'+errorThrown+'\n'+
-							'responseText：'+jqXHR.responseText
-						);
-						*/
-						jQuery(this).show();
-						jQuery("#"+component_id+"_select_cancel_button").show();
-						jQuery("#"+component_id+"_select_tip").show();
-						jQuery("#"+component_id+"_select_ingicon").hide();
 					},
 					'1',
 					this
@@ -500,11 +582,9 @@
 		
 		jQuery('#'+component_id+'_select_cancel_button').click(
 			function(){
-				jQuery(this).hide();
-				jQuery("#"+component_id+"_select_ok_button").hide();
-				jQuery("#"+component_id+"_select_tip").hide();
-				
-				jQuery("#"+component_id+"_select_ingicon").show();
+				jqobject_private_methods['toggle_state'].call(
+					jQuery(this),'crop_cancel_ing'
+				);
 				
 				var about_info={
 					'updated_column_name':opts.input_name,
@@ -558,40 +638,28 @@
 							
 							
 							jQuery("#"+component_id+'_workingfile_uploadfile_id').val('');
+							jQuery('#'+component_id+'_input').val('');
 							
-							jQuery("#"+component_id+"_select_ingicon").hide();
-
-							jQuery("#"+component_id+"_file_tip").show();	
-							
-							jQuery("#"+component_id+"_file_delete_button").show();
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'normal'
+							);
 					
 						}else{
-							jQuery(this).show();
-							jQuery("#"+component_id+"_select_ok_button").show();
-							jQuery("#"+component_id+"_select_tip").show();
-							jQuery("#"+component_id+"_select_ingicon").hide();
+							jqobject_private_methods['toggle_state'].call(
+								jQuery(this),'crop'
+							);
 							alert(data['message']);
 						}
 						
 					
 					},
 					function(jqXHR,textStatus,errorThrown ){
-						
+						jqobject_private_methods['toggle_state'].call(
+							jQuery(this),'crop'
+						);
 						alert(
 							'Ajax request 錯誤'
 						);
-						
-						/*
-						alert(
-							'textStatus：'+textStatus+'\n'+
-							'errorThrown：'+errorThrown+'\n'+
-							'responseText：'+jqXHR.responseText
-						);
-						*/
-						jQuery(this).show();
-						jQuery("#"+component_id+"_select_ok_button").show();
-						jQuery("#"+component_id+"_select_tip").show();
-						jQuery("#"+component_id+"_select_ingicon").hide();
 					},
 					'1',
 					this
