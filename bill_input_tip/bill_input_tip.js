@@ -1,7 +1,7 @@
 (function(jQuery,bill_core){
 	
 	jQuery.bill_input_tip={
-		'package_dir_url_path':bill_core.base_url+'js/bill_core_js/bill_input_tip/',
+		'package_dir_url_path':bill_core.js_dir_url+'bill_core_js/bill_input_tip/',
 		'xOffset':-20,
 		'yOffset':20,
 		'input_jquery_expression':
@@ -27,7 +27,7 @@
 				
 				jQuery('body').append(
 					'<p id="vtip">'+
-						'<img id="vtipArrow" src="'+jQuery.bill_input_tip.package_dir_url_path+'images/vtip_arrow.png"/>' + 
+						'<img id="vtipArrow" src="'+jQuery.bill_input_tip.package_dir_url_path+'image/vtip_arrow.png"/>' + 
 						display_tip +
 					'</p>'
 				);
