@@ -2721,12 +2721,18 @@ var bill_core={
 		}
 		if(param2==='name_and_value'){
 			for( var obj_attr_name in param1 ){
+				
 				var obj_attr_value=param1[obj_attr_name];
+				if(
+					typeof obj_attr_value === 'function' || 
+					typeof obj_attr_value === 'object' ||
+					typeof obj_attr_value === 'undefined'
+				){
+					continue;
+				}
 				bill_core.debug_console(
-					'attr_name:'+obj_attr_name+','+
-					'attr_name_data_type:'+this.global_typeof(obj_attr_name)+';'+
-					'attr_value:'+obj_attr_value+','+
-					'attr_value_data_type:'+this.global_typeof(obj_attr_value)
+					obj_attr_name+'('+this.global_typeof(obj_attr_name)+')'+':'+
+					obj_attr_value+'('+this.global_typeof(obj_attr_value)+')'
 				);
 			}
 		}
