@@ -2777,7 +2777,7 @@ var bill_core={
 			return;
 		}
 		var now_date=new Date();
-		bill_core.debug_console(bill_core.debug_stopwatch_op_name+' took '+(now_date.getTime()-bill_core.debug_stopwatch_date.getTime())+' ms');
+		bill_core.debug_console(bill_core.debug_stopwatch_op_name+' took '+((now_date.getTime()-bill_core.debug_stopwatch_date.getTime())/1000)+' seconds');
 	},
 	'ajax_post':function(param1,param2,param3,param4,param5,param6){
 		//destination_url、post_data、request_success_handler、request_fail_handler
