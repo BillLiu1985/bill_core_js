@@ -540,7 +540,7 @@ var bill_core={
 			return '';
 		}
 		var temp_map={
-			'|vertical_line':'|',
+			'|vertical_line|':'|',
 			'|comma|':','
 		}
 		return the_string.

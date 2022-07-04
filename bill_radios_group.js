@@ -110,11 +110,11 @@
 			var the_option_value='';
 			var the_option_text='';
 			if( the_option.length===1 ){
-				the_option_value=the_option[0];
-				the_option_text=bill_core.escape_get_for_option_data(the_option[0]);
+				the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
+				the_option_text=bill_core.escape_get_from_option_data(the_option[0]);
 			}
 			else if(the_option.length===2){
-				the_option_value=the_option[0];
+				the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
 				the_option_text=bill_core.escape_get_from_option_data(the_option[1]);
 			}
 			
@@ -129,7 +129,8 @@
 			
 			temp_html+=
 			(the_option_value==opts.default_value?'checked="checked" ':'')+
-			'value="'+the_option_value+'" '+opts.radio_extra_attrs+' />'+the_option_text+'&nbsp;';
+			'value="'+bill_core.escape_html_specialchars(the_option_value)+'" '+
+			opts.radio_extra_attrs+' />'+bill_core.escape_html_specialchars(the_option_text)+'&nbsp;';
 			
 			if( the_nth%opts.counts_width===0 ){
 				temp_html+='</div>';

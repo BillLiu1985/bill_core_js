@@ -95,6 +95,16 @@
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
 				
 						var temp_array=temp_default_value.split(',,,');
+						temp_array=temp_array.filter(
+							function(element){
+								if(element!=''){
+									return true;
+								}
+							}
+						);
+						temp_array=temp_array.map(function(currentValue){
+							return bill_core.escape_get_from_multivalue(currentValue);
+						});
 						
 						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
 							jQuery(this).attr('checked','checked');

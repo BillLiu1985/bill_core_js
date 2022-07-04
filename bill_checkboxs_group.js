@@ -110,17 +110,19 @@
 				}
 			}
 		);
-		
+		the_selected=the_selected.map(function(currentValue){
+			return bill_core.escape_get_from_multivalue(currentValue);
+		});
 		for(var kindex in the_options){
 			var the_nth=parseInt(kindex,10)+1;
 			var the_option=the_options[kindex].split(';;;');
 			var the_option_value='';
 			var the_option_text='';
 			if(the_option.length===1){
-				the_option_value=the_option[0];
+				the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
 				the_option_text=bill_core.escape_get_from_option_data(the_option[0]);
 			}else if(the_option.length===2){
-				the_option_value=the_option[0];
+				the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
 				the_option_text=bill_core.escape_get_from_option_data(the_option[1]);
 			}
 			
@@ -131,7 +133,7 @@
 			temp_html+=
 			'<input type="checkbox" '+
 			(( jQuery.inArray(the_option_value,the_selected)!==-1 )?'checked="checked" ':'')+
-			'value="'+the_option_value+'" />'+the_option_text+'&nbsp;';
+			'value="'+bill_core.escape_html_specialchars(the_option_value)+'" />'+bill_core.escape_html_specialchars(the_option_text)+'&nbsp;';
 			
 			if( the_nth%opts.counts_width===0 ){
 				temp_html+='</div>';
@@ -141,9 +143,9 @@
 		
 		//draw savedata element
 		temp_html=
-		'<input type="hidden" value="'+opts.default_value+'" name="'+
-		opts.input_name
-		+'" id="'+component_id+'_value" />';
+		'<input type="hidden" value="'+bill_core.escape_html_specialchars(opts.default_value)+'" name="'+
+		bill_core.escape_html_specialchars(opts.input_name)
+		+'" id="'+bill_core.escape_html_specialchars(component_id)+'_value" />';
 		
 		
 		get_jqobject.append(temp_html);
@@ -155,11 +157,11 @@
 				var component_id=get_jqobject.attr('id');
 				get_jqobject.find(':checkbox:checked').each(
 					function(){
-						temp_array.push(jQuery(this).val());
+						temp_array.push(bill_core.escape_get_for_multivalue(jQuery(this).val()));
 					}
 				);
 				
-				jQuery('#'+component_id+'_value').val(temp_array.join(',,,'));
+				jQuery('#'+jQuery.escapeSelector(component_id)+'_value').val(temp_array.join(',,,'));
 			}
 		);
 			
