@@ -2386,7 +2386,7 @@ var bill_core={
 		}
 		return return_result;
 	},
-	'validate_custom_taiwan_identity_card':function(the_card_code){
+	'validate_custom_rtaiwan_identity_card':function(the_card_code){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -2401,6 +2401,159 @@ var bill_core={
 		if(args_illegal_is_found==='1'){
 			return return_result;
 		}
+		var temp_reg=new RegExp('^([A-Z])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])$');
+		var fetch_words=temp_reg.exec(the_card_code);
+		if(fetch_words===null){
+			return return_result;
+		}else{
+			var temp_obj={};
+			switch(fetch_words[1]){
+				case 'A':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=0;
+					break;
+				case 'B':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=1;
+					break;
+				case 'C':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=2;
+					break;
+				case 'D':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=3;
+					break;
+				case 'E':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=4;
+					break;
+				case 'F':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=5;
+					break;
+				case 'G':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=6;
+					break;
+				case 'H':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=7;
+					break;
+				case 'I':
+					temp_obj['the_1']=3;
+					temp_obj['the_2']=4;
+					break;
+				case 'J':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=8;
+					break;
+				case 'K':
+					temp_obj['the_1']=1;
+					temp_obj['the_2']=9;
+					break;
+				case 'L':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=0;
+					break;
+				case 'M':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=1;
+					break;
+				case 'N':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=2;
+					break;
+				case 'O':
+					temp_obj['the_1']=3;
+					temp_obj['the_2']=5;
+					break;
+				case 'P':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=3;
+					break;
+				case 'Q':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=4;
+					break;
+				case 'R':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=5;
+					break;
+				case 'S':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=6;
+					break;
+				case 'T':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=7;
+					break;
+				case 'U':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=8;
+					break;
+				case 'V':
+					temp_obj['the_1']=2;
+					temp_obj['the_2']=9;
+					break;
+				case 'W':
+					temp_obj['the_1']=3;
+					temp_obj['the_2']=2;
+					break;
+				case 'X':
+					temp_obj['the_1']=3;
+					temp_obj['the_2']=0;
+					break;
+				case 'Y':
+					temp_obj['the_1']=3;
+					temp_obj['the_2']=1;
+					break;
+				case 'Z':
+					temp_obj['the_1']=3;
+					temp_obj['the_2']=3;
+					break;
+				default:
+			}
+			temp_obj['the_3']=parseInt(fetch_words[2],10);
+			temp_obj['the_4']=parseInt(fetch_words[3],10);
+			temp_obj['the_5']=parseInt(fetch_words[4],10);
+			temp_obj['the_6']=parseInt(fetch_words[5],10);
+			temp_obj['the_7']=parseInt(fetch_words[6],10);
+			temp_obj['the_8']=parseInt(fetch_words[7],10);
+			temp_obj['the_9']=parseInt(fetch_words[8],10);
+			temp_obj['the_10']=parseInt(fetch_words[9],10);
+			temp_obj['the_11']=parseInt(fetch_words[10],10);
+			var coefficients=[0,1,9,8,7,6,5,4,3,2,1,1];
+			var total_sum=0;
+			for(var tmp_cursor=1;tmp_cursor<=11;tmp_cursor++){
+				var var_name="the_"+tmp_cursor;
+				total_sum+=temp_obj[var_name]*coefficients[tmp_cursor];
+			}
+			if(total_sum%10==0){
+				return_result='1';
+			}
+		}
+		return return_result;
+	},
+	'validate_custom_otaiwan_identity_card':function(the_card_code){
+		var return_result='0';
+		var args_illegal_is_found='0';
+		if ( 
+			this.global_typeof(the_card_code)==='string'
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' the_card_code error!','error');
+		}
+		
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		if(the_card_code===''){
+			return '1';
+		}
+		
 		var temp_reg=new RegExp('^([A-Z])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])([0-9])$');
 		var fetch_words=temp_reg.exec(the_card_code);
 		if(fetch_words===null){
