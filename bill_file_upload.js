@@ -5,6 +5,9 @@
 	jQuery.bill_file_upload={
 		'defaults':{
 			'preview_base_url':'',
+			'preview_url':'',
+			'preview_url_prefix':'',
+			'preview_url_suffix':'',
 			'input_name':'',
 			//normal,pic,html5video,flash
 			'file_type':'pic',
@@ -232,6 +235,55 @@
 						'<a href="'+opts.preview_base_url+opts.default_value+'" target="_blank"><i class="fa fa-file-photo-o" aria-hidden="true"></i>'+opts.value_alt+'</a>';
 					}
 				}
+			}else if(opts.layout_type==='hdsystem'){
+				if(opts.file_type=='normal'){
+					
+					if( 
+						bill_core.string_is_solid(opts.process_download_url)==='1' &&
+						bill_core.string_is_solid(opts.default_value)==='1'
+					){
+						final_component_html+=
+						'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
+					}else{
+						final_component_html+=
+						'暫無檔案';
+					}
+					
+					
+				}
+				else if(opts.file_type=='pic'){
+						var temp_style_string='';
+						if( 
+							bill_core.number_is_solid(opts.preview_width)==='1' &&
+							opts.preview_width>0
+						){
+							temp_style_string+='width:'+opts.preview_width+'px;';
+						}
+						
+						
+						if( 
+							bill_core.number_is_solid(opts.preview_height)==='1' &&
+							opts.preview_height>0
+						){
+							temp_style_string+='height:'+opts.preview_height+'px;';
+						}
+						
+						
+						if(temp_style_string!=''){
+							temp_style_string='style="'+temp_style_string+'"';
+						}
+						if( bill_core.string_is_solid(opts.default_value)==='1'){
+							
+							final_component_html+=
+							'<img border="0" '+temp_style_string+' src="'+
+							opts.preview_base_url+'?obj_id='+encodeURIComponent(opts.default_value)+opts.preview_url_suffix+'" />';
+						}
+						else{
+							final_component_html+=
+							'<img border="0" '+temp_style_string+'  alt="無圖檔"  />';
+						}
+				}
+				
 			}
 			final_component_html+=
 				'</div>';
@@ -327,7 +379,28 @@
 					final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
 				}
 			}
-			
+			else if(opts.layout_type==='hdsystem'){
+				if( bill_core.string_is_solid(opts.file_tip)==='1' ){
+					final_component_html+=
+					'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+				}
+				final_component_html+=
+				'<input type="file" '+temp_attrs_string+' value="" />';
+				
+				if( bill_core.string_is_solid(opts.default_value)==='1' ){
+					final_component_html+=
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO"  />不變'+
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
+					if(opts.is_required==='1'){
+						
+					}else{
+						final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+					}
+				}
+				else{
+					final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+				}
+			}
 			get_jqobject.html(final_component_html);
 			
 			
