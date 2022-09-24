@@ -235,6 +235,12 @@
 					if( bill_core.global_typeof(temp_string)==='string' ){
 						temp_opts['counts_width']=parseInt(temp_string,10);
 					}
+					
+					var temp_string=jQuery(this).attr('layout_type');
+					if( bill_core.global_typeof(temp_string)==='string' ){
+						temp_opts['layout_type']=temp_string;
+					}
+					
 					jQuery(this).bill_checkboxs_group(
 						temp_opts
 					);
@@ -456,7 +462,17 @@
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						var temp_parts=temp_string.split(',,,');
 						bill_core.array_keep_solid_string_value( temp_parts );
-						if(temp_parts.length>=2){
+						if(temp_parts.length>=4){
+							if(temp_parts[0]==='no_data'){
+								temp_opts['default_value']='';
+							}else{
+								temp_opts['default_value']=temp_parts[0];
+							}
+							
+							temp_opts['value_alt']=temp_parts[1];
+							temp_opts['obj_id']=temp_parts[2];
+							temp_opts['column']=temp_parts[3];
+						}else if(temp_parts.length>=2){
 							temp_opts['default_value']=temp_parts[0];
 							temp_opts['value_alt']=temp_parts[1];
 						}else{
@@ -475,9 +491,19 @@
 						temp_opts['layout_type']=temp_string;
 					}
 					
+					temp_string=jQuery(this).attr('preview_url_prefix');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['preview_url_prefix']=temp_string;
+					}
+					
 					temp_string=jQuery(this).attr('preview_base_url');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
 						temp_opts['preview_base_url']=temp_string;
+					}
+					
+					temp_string=jQuery(this).attr('preview_url_suffix');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['preview_url_suffix']=temp_string;
 					}
 					
 					temp_string=jQuery(this).attr('process_download_url');
@@ -526,7 +552,15 @@
 						temp_opts['preview_height']=parseInt(temp_string,10);
 					}
 					
+					temp_string=jQuery(this).attr('button_text_no_choose');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['button_text_no_choose']=temp_string;
+					}
 					
+					temp_string=jQuery(this).attr('button_text_after_choose');
+					if( bill_core.string_is_solid(temp_string)==='1' ){
+						temp_opts['button_text_after_choose']=temp_string;
+					}
 					
 					jQuery(this).bill_file_upload(
 						temp_opts

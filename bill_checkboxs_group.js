@@ -10,7 +10,8 @@
 			//value1,,,value2,,,value3
 			'environment_data':'',
 			//value1,,,value2,,,value3
-			'default_value':''
+			'default_value':'',
+			'layout_type':'basic',
 		}
 	};
 	
@@ -113,32 +114,58 @@
 		the_selected=the_selected.map(function(currentValue){
 			return bill_core.escape_get_from_multivalue(currentValue);
 		});
-		for(var kindex in the_options){
-			var the_nth=parseInt(kindex,10)+1;
-			var the_option=the_options[kindex].split(';;;');
-			var the_option_value='';
-			var the_option_text='';
-			if(the_option.length===1){
-				the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
-				the_option_text=bill_core.escape_get_from_option_data(the_option[0]);
-			}else if(the_option.length===2){
-				the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
-				the_option_text=bill_core.escape_get_from_option_data(the_option[1]);
+		if(opts.layout_type==='basic'){
+			for(var kindex in the_options){
+				var the_nth=parseInt(kindex,10)+1;
+				var the_option=the_options[kindex].split(';;;');
+				var the_option_value='';
+				var the_option_text='';
+				if(the_option.length===1){
+					the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
+					the_option_text=bill_core.escape_get_from_option_data(the_option[0]);
+				}else if(the_option.length===2){
+					the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
+					the_option_text=bill_core.escape_get_from_option_data(the_option[1]);
+				}
+				
+				if( the_nth%opts.counts_width===1 ){
+					temp_html+='<div>';
+				}
+				
+				temp_html+=
+				'<input type="checkbox" '+
+				(( jQuery.inArray(the_option_value,the_selected)!==-1 )?'checked="checked" ':'')+
+				'value="'+bill_core.escape_html_specialchars(the_option_value)+'" />'+bill_core.escape_html_specialchars(the_option_text)+'&nbsp;';
+				
+				if( the_nth%opts.counts_width===0 ){
+					temp_html+='</div>';
+				}
 			}
-			
-			if( the_nth%opts.counts_width===1 ){
-				temp_html+='<div>';
-			}
-			
-			temp_html+=
-			'<input type="checkbox" '+
-			(( jQuery.inArray(the_option_value,the_selected)!==-1 )?'checked="checked" ':'')+
-			'value="'+bill_core.escape_html_specialchars(the_option_value)+'" />'+bill_core.escape_html_specialchars(the_option_text)+'&nbsp;';
-			
-			if( the_nth%opts.counts_width===0 ){
-				temp_html+='</div>';
+		}else{
+			for(var kindex in the_options){
+				var the_nth=parseInt(kindex,10)+1;
+				var the_option=the_options[kindex].split(';;;');
+				var the_option_value='';
+				var the_option_text='';
+				if(the_option.length===1){
+					the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
+					the_option_text=bill_core.escape_get_from_option_data(the_option[0]);
+				}else if(the_option.length===2){
+					the_option_value=bill_core.escape_get_from_option_data(the_option[0]);
+					the_option_text=bill_core.escape_get_from_option_data(the_option[1]);
+				}
+				
+				temp_html+=
+				'<div style="float:left;margin-right:10px;">'+
+					'<input type="checkbox" '+
+				(( jQuery.inArray(the_option_value,the_selected)!==-1 )?'checked="checked" ':'')+
+				'value="'+bill_core.escape_html_specialchars(the_option_value)+'" />'+
+					'<span>'+bill_core.escape_html_specialchars(the_option_text)+'</span>'+
+				'</div>';
+				
 			}
 		}
+			
 		get_jqobject.append(temp_html);
 		
 		//draw savedata element
@@ -161,7 +188,11 @@
 					}
 				);
 				
-				jQuery('#'+jQuery.escapeSelector(component_id)+'_value').val(temp_array.join(',,,'));
+				if(jQuery.escapeSelector===undefined){
+					jQuery('#'+component_id+'_value').val(temp_array.join(',,,'));
+				}else{
+					jQuery('#'+jQuery.escapeSelector(component_id)+'_value').val(temp_array.join(',,,'));
+				}
 			}
 		);
 			

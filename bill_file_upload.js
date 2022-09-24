@@ -5,7 +5,6 @@
 	jQuery.bill_file_upload={
 		'defaults':{
 			'preview_base_url':'',
-			'preview_url':'',
 			'preview_url_prefix':'',
 			'preview_url_suffix':'',
 			'input_name':'',
@@ -22,7 +21,11 @@
 			'file_tip':'',
 			'preview_width':0,
 			'preview_height':0,
-			'default_value':''
+			'default_value':'',
+			'button_text_no_choose':'檔案上傳',
+			'button_text_after_choose':'重新選擇',
+			'obj_id':'',
+			'column':'',
 		}
 	};
 	
@@ -107,9 +110,10 @@
 			
 
 			var final_component_html='';
-			final_component_html+=
-				'<div id="'+component_id+'_preview">';
+			
 			if(opts.layout_type==='basic'){
+				final_component_html+=
+				'<div id="'+component_id+'_preview">';
 				if(opts.file_type=='normal'){
 					
 					if( 
@@ -227,31 +231,26 @@
 						'暫無檔案';
 					}						
 				}
-			}else if(opts.layout_type==='haiduau'){
-				if(opts.file_type=='pic'){
-						
-					if( bill_core.string_is_solid(opts.default_value)==='1'){
-						final_component_html+=
-						'<a href="'+opts.preview_base_url+opts.default_value+'" target="_blank"><i class="fa fa-file-photo-o" aria-hidden="true"></i>'+opts.value_alt+'</a>';
-					}
-				}
-			}else if(opts.layout_type==='hdsystem'){
+				final_component_html+=
+				'</div>';
+			}else if(opts.layout_type==='basic_1'){
+				final_component_html+=
+				'<div id="'+component_id+'_preview">';
 				if(opts.file_type=='normal'){
 					
 					if( 
-						bill_core.string_is_solid(opts.process_download_url)==='1' &&
+					
 						bill_core.string_is_solid(opts.default_value)==='1'
 					){
 						final_component_html+=
-						'<a href="'+opts.process_download_url+'?obj_id='+encodeURIComponent(opts.default_value)+'">下載檔案</a>';
+						'<a href="'+opts.preview_base_url+'?obj_id='+encodeURIComponent(opts.obj_id)+'&column='+encodeURIComponent(opts.column)+'">下載檔案</a>';
 					}else{
 						final_component_html+=
 						'暫無檔案';
 					}
 					
 					
-				}
-				else if(opts.file_type=='pic'){
+				}else if(opts.file_type=='pic'){
 						var temp_style_string='';
 						if( 
 							bill_core.number_is_solid(opts.preview_width)==='1' &&
@@ -276,7 +275,7 @@
 							
 							final_component_html+=
 							'<img border="0" '+temp_style_string+' src="'+
-							opts.preview_base_url+'?obj_id='+encodeURIComponent(opts.default_value)+opts.preview_url_suffix+'" />';
+							opts.preview_base_url+'?obj_id='+encodeURIComponent(opts.obj_id)+'&column='+encodeURIComponent(opts.column)+'" />';
 						}
 						else{
 							final_component_html+=
@@ -284,9 +283,78 @@
 						}
 				}
 				
-			}
-			final_component_html+=
+				final_component_html+=
 				'</div>';
+			}else if(opts.layout_type==='haiduau'){
+				final_component_html+=
+				'<div id="'+component_id+'_preview">';
+				if(opts.file_type=='pic'){
+						
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						final_component_html+=
+						'<a href="'+opts.preview_base_url+opts.default_value+'" target="_blank"><i class="fa fa-file-photo-o" aria-hidden="true"></i>'+opts.value_alt+'</a>';
+					}
+				}
+				final_component_html+=
+				'</div>';
+			}else if(opts.layout_type==='hdsystem'){
+				if(opts.file_type=='normal'){
+					if( bill_core.string_is_solid(opts.file_tip)==='1' ){
+						final_component_html+=
+						'<label id="'+component_id+'_file_tip" for="photoInputFile">'+opts.file_tip+'</label>';
+					}
+					if( 
+						bill_core.string_is_solid(opts.default_value)==='1'
+					){
+						final_component_html+=
+						'<a href="'+
+							opts.preview_base_url+'?obj_id='+encodeURIComponent(opts.obj_id)+'&column='+encodeURIComponent(opts.column)+'">下載檔案</a>';
+					}else{
+						final_component_html+=
+						'';
+					}
+					
+					
+				}
+				else if(opts.file_type=='pic'){
+					if( bill_core.string_is_solid(opts.file_tip)==='1' ){
+						final_component_html+=
+						'<label id="'+component_id+'_file_tip" for="photoInputFile">'+opts.file_tip+'</label>';
+					}
+					var temp_style_string='';
+					if( 
+						bill_core.number_is_solid(opts.preview_width)==='1' &&
+						opts.preview_width>0
+					){
+						temp_style_string+='width:'+opts.preview_width+'px;';
+					}
+					
+					
+					if( 
+						bill_core.number_is_solid(opts.preview_height)==='1' &&
+						opts.preview_height>0
+					){
+						temp_style_string+='height:'+opts.preview_height+'px;';
+					}
+					
+					
+					if(temp_style_string!=''){
+						temp_style_string='style="'+temp_style_string+'"';
+					}
+					if( bill_core.string_is_solid(opts.default_value)==='1'){
+						
+						final_component_html+=
+						'<img border="0" '+temp_style_string+' src="'+
+						opts.preview_base_url+'?obj_id='+encodeURIComponent(opts.obj_id)+'&column='+encodeURIComponent(opts.column)+'" />';
+					}
+					else{
+						final_component_html+=
+						'<img border="0" '+temp_style_string+'  alt="無圖檔"  />';
+					}
+				}
+				
+			}
+			
 			
 			
 			
@@ -357,6 +425,27 @@
 				else{
 					final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
 				}
+			}else if(opts.layout_type==='basic_1'){
+				if( bill_core.string_is_solid(opts.file_tip)==='1' ){
+					final_component_html+=
+					'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+				}
+				final_component_html+=
+				'<input type="file" '+temp_attrs_string+' value="" />';
+				
+				if( bill_core.string_is_solid(opts.default_value)==='1' ){
+					final_component_html+=
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO"  />不變'+
+					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
+					if(opts.is_required==='1'){
+						
+					}else{
+						final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+					}
+				}
+				else{
+					final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+				}
 			}else if(opts.layout_type==='haiduau'){
 				if( bill_core.string_is_solid(opts.file_tip)==='1' ){
 					final_component_html+=
@@ -380,13 +469,12 @@
 				}
 			}
 			else if(opts.layout_type==='hdsystem'){
-				if( bill_core.string_is_solid(opts.file_tip)==='1' ){
-					final_component_html+=
-					'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
-				}
-				final_component_html+=
-				'<input type="file" '+temp_attrs_string+' value="" />';
 				
+				final_component_html+=
+				'<label class="btn btn-info">'+
+					'<input  style="display:none;" type="file" '+temp_attrs_string+' value="" >'+
+					'<span class="icon-upload"></span>&nbsp;<span id="'+component_id+'_button_text">'+opts.button_text_no_choose+'</span>'+
+				'</label>';
 				if( bill_core.string_is_solid(opts.default_value)==='1' ){
 					final_component_html+=
 					'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO"  />不變'+
@@ -409,6 +497,8 @@
 			jQuery('input:radio[name="'+opts.input_name+'_op"]').change(
 				function(){
 					var value_jqobject=jQuery('#'+component_id+'_value');
+					var button_text_jqobject=jQuery('#'+component_id+'_button_text');
+					
 					var value_jqobject_reg_1=value_jqobject.attr('reg_1');
 
 					if( jQuery(this).val()=='DO_NO' ){
@@ -423,6 +513,7 @@
 							);
 						}
 						value_jqobject.val('');
+						button_text_jqobject.html(opts.button_text_no_choose);
 					}
 					else if( jQuery(this).val()=='DO_MODIFY' ){
 						
@@ -436,6 +527,7 @@
 								'reg_1',value_jqobject_reg_1.replace(/\|\(\^\$\)$/g,'')
 							);
 						}
+						button_text_jqobject.html(opts.button_text_after_choose);
 					}
 					else if( jQuery(this).val()=='DO_DELETE' ){
 						
@@ -452,21 +544,26 @@
 							);
 						}
 						value_jqobject.val('');
+						button_text_jqobject.html(opts.button_text_no_choose);
 					}
 					
 				}
 			);
 			jQuery('#'+component_id+'_value').change(
 				function(){
+					var button_text_jqobject=jQuery('#'+component_id+'_button_text');	
 					if(bill_core.string_is_solid(opts.default_value)==='1'){
 						if($(this).val()!==''){
+							
 							jQuery("input:radio[name='"+opts.input_name+"_op'][value='DO_MODIFY']").click();
 						}
 					}else{
 						
 						if($(this).val()===''){
+							button_text_jqobject.html(opts.button_text_no_choose);
 							jQuery("#"+component_id+'_op').val('DO_NO');
 						}else{
+							button_text_jqobject.html(opts.button_text_after_choose);
 							jQuery("#"+component_id+'_op').val('DO_ADD');
 						}
 					}
