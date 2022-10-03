@@ -1,8 +1,20 @@
 (function(jQuery,bill_core){
-	if( bill_core.global_typeof(jQuery.ui)=='undefined' ){
-		console.error('jqueryui元件未啟動');
-		return;
+	{
+		let never_used_is_found='0';
+		if(jQuery===undefined){
+			console.error('jquery never used');
+		}
+		if(jQuery.ui===undefined){
+			console.error('jqueryui never used');
+		}
+		if(bill_core===undefined){
+			console.error('bill_core never used');
+		}
+		if(never_used_is_found==='1'){
+			return;
+		}
 	}
+	
 	jQuery.bill_dialog={
 		'alert':function(content_html,options){
 			if( bill_core.string_is_solid(content_html)==='1' ){
@@ -118,4 +130,4 @@
 			$('body').append(page_temp_html);
 		}
 	);
-}(jQuery,bill_core));
+})(jQuery,bill_core);

@@ -68,11 +68,11 @@
 				return;
 			}
 			jQuery(jquery_expression).off(
-				'.bill_input'
+				'.bill_input_tip'
 				,
 				jQuery.bill_input_tip.input_jquery_expression
 			)
-		}
+		},
 	};
 	
 	

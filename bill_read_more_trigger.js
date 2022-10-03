@@ -18,7 +18,7 @@
 		'tasks':[],
 		'register':function(task_data){
 			if(
-				global_typeof(task_data)==='object' && 
+				global_typeof(task_data)==='pure_object' && 
 				global_typeof(task_data['element_id'])==='string' && 
 				global_string_is_solid(task_data['element_id']) &&
 				global_typeof(task_data['content'])==='function' 

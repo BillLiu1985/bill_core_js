@@ -20,7 +20,7 @@
 		'tasks':[],
 		'register':function(task_data){
 			if(
-				global_typeof(task_data)==='object' && 
+				global_typeof(task_data)==='pure_object' && 
 				global_typeof(task_data['window_start_width'])==='number' && 
 				global_typeof(task_data['window_end_width'])==='number' &&
 				task_data['window_end_width']>=task_data['window_start_width'] &&

@@ -198,7 +198,7 @@
 			bill_core.debug_console('bill_file_immediate_upload元件啟動失敗,file_type參數錯誤','error');
 			return;
 		}
-		if( bill_core.global_typeof(opts.white_extensions)==='object' ){
+		if( bill_core.global_typeof(opts.white_extensions)==='array_object' ){
 		
 		}else{
 			bill_core.debug_console('bill_file_upload元件啟動失敗,white_extensions參數錯誤','error');

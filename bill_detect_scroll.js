@@ -20,7 +20,7 @@
 		'tasks':[],
 		'register':function(task_data){
 			if(
-				global_typeof(task_data)==='object' && 
+				global_typeof(task_data)==='pure_object' && 
 				global_typeof(task_data['scroll_start_top'])==='number' && 
 				global_typeof(task_data['scroll_end_top'])==='number' &&
 				task_data['scroll_end_top']>=task_data['scroll_start_top'] &&

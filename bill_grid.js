@@ -556,5 +556,5 @@
 		}
 		return get_jqobject;
 	};
-}(jQuery,bill_core));
+})(jQuery,bill_core);
 

@@ -48,9 +48,13 @@ var bill_core={
 			return 'boolean';
 		}else if(typeof(checked_var)==='object'){
 			if(checked_var===null){
-				return 'null';
+				return 'null_object';
+			}else if(checked_var.constructor.name==='Array'){
+				return 'array_object';
+			}else if(checked_var.constructor.name==='Object'){
+				return 'pure_object';
 			}else{
-				return 'object';
+				return 'other_object';
 			}
 		}else if(typeof(checked_var)==='function'){
 			return 'function';
@@ -108,7 +112,7 @@ var bill_core={
 			this.debug_console('template_string argument error','error');
 			return '';
 		}
-		if(this.global_typeof(params)!=='object'){
+		if(this.global_typeof(params)!=='pure_object'){
 			this.debug_console('params argument error','error');
 			return '';
 		}
@@ -442,12 +446,12 @@ var bill_core={
 			
 			for(var input_name in checkbox_values){
 				var temp_array=checkbox_values[input_name];
-				values[input_name]=temp_array.join(',,,');
+				values[input_name]=temp_array.join(',');
 			}
 			
 			for(var input_name in select_values){
 				var temp_array=select_values[input_name];
-				values[input_name]=temp_array.join(',,,');
+				values[input_name]=temp_array.join(',');
 			}
 			return_data['all_inputs_jqobject']=
 				fetch_target_input_radio.
@@ -472,45 +476,24 @@ var bill_core={
 		}else{
 			return '';
 		}
-		var temp_map={
-			'|':'|vertical_line|',
-			',':'|comma|'
-		}
 		var temp_array=the_array.map(
 			function(element){
-				return element.
-				replace(/[\|\,]/g,
-					function(match){
-						return temp_map[match];
-					}
-				);
-			
+				return bill_core.escape_get_for_multivalue(element);
 			}
 		)
 		
-		return temp_array.join(',,,');
+		return temp_array.join(',');
 	},
 	'string_multivalue_to_array':function(the_multivalue){
-		if(this.global_typeof(the_multivalue)==='string'){
-			
+		if(this.string_is_solid(the_multivalue)==='1'){
 		}else{
 			return [];
 		}
-		var temp_map={
-			'|vertical_line|':'|',
-			'|comma|':','
-		}
-		var temp_array=the_multivalue.split(',,,');
+	
+		var temp_array=the_multivalue.split(',');
 		temp_array=temp_array.map(
 			function(element){
-				return element.
-				replace(/\|.+?\|/g,
-					function(match){
-						return temp_map[match];
-					}
-				);
-				;
-			
+				return bill_core.escape_get_from_multivalue(element);
 			}
 		);
 		
@@ -550,7 +533,52 @@ var bill_core={
 				}
 			);
 	},
-	'escape_get_for_option_data':function(the_string){
+	'string_options_data_to_string':function(the_array){
+		if(Array.isArray(the_array)){
+			
+		}else{
+			return '';
+		}
+		var temp_array=the_array.map(
+			function(element){
+				var the_option_value=bill_core.escape_get_for_options_data_string(
+					element.value
+				);
+				var the_option_text=bill_core.escape_get_for_options_data_string(
+					element.text
+				);
+				return the_option_value+';'+the_option_text;
+			}
+		)
+		
+		return temp_array.join(',');
+	},
+	'string_string_to_options_data':function(the_string){
+		if(this.string_is_solid(the_string)==='1'){
+			
+		}else{
+			return [];
+		}
+		var temp_array=the_string.split(',');
+		temp_array=temp_array.map(
+			function(element){
+				var temp_array=element.split(';');
+				var the_option_value=bill_core.escape_get_from_options_data_string(
+					temp_array[0]
+				);
+				var the_option_text=bill_core.escape_get_from_options_data_string(
+					temp_array[1]
+				);
+				return {
+					'value':the_option_value,
+					'text':the_option_text,
+				};
+			}
+		);
+		
+		return temp_array;
+	},
+	'escape_get_for_options_data_string':function(the_string){
 		if(this.global_typeof(the_string)==='string'){
 			
 		}else{
@@ -568,7 +596,7 @@ var bill_core={
 				}
 			);
 	},
-	'escape_get_from_option_data':function(the_string){
+	'escape_get_from_options_data_string':function(the_string){
 		if(this.global_typeof(the_string)==='string'){
 			
 		}else{
@@ -1735,7 +1763,7 @@ var bill_core={
 	 */
 	 'url_set_params':function(the_url,updated_params){
 		var result_string='';
-		if(this.string_is_solid(the_url)==='1' && this.global_typeof(updated_params)==='object'){
+		if(this.string_is_solid(the_url)==='1' && this.global_typeof(updated_params)==='pure_object'){
 		
 		}else{
 			return result_string;
@@ -2306,14 +2334,14 @@ var bill_core={
 		var return_result={
 			'fails':{}
 		};
-		if(this.global_typeof(inputs_data)!=='object'){
+		if(this.global_typeof(inputs_data)!=='pure_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
 			return_result['fails']=null;
 			return return_result;
 		}
 		if( 
-			this.global_typeof(inputs_data['reg_1s'])!=='object' &&
-			this.global_typeof(inputs_data['reg_1s'])!=='null'
+			this.global_typeof(inputs_data['reg_1s'])!=='pure_object' &&
+			this.global_typeof(inputs_data['reg_1s'])!=='null_object'
 		
 		){
 			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
@@ -2689,7 +2717,7 @@ var bill_core={
 		return return_result;
 	},
 	'array_keep_solid_string_value':function(the_array){
-		if(this.global_typeof(the_array)!=='object'){
+		if(this.global_typeof(the_array)!=='array_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_array error!','error');
 			return;
 		}
@@ -2706,7 +2734,7 @@ var bill_core={
 		return;
 	},
 	'object_keep_solid_string_value':function(the_object){
-		if(this.global_typeof(the_object)!=='object'){
+		if(this.global_typeof(the_object)!=='pure_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_object error!','error');
 			return;
 		}
@@ -2770,7 +2798,7 @@ var bill_core={
 			console.error('bill_core.'+arguments.callee.name+' params error!');
 			return;
 		}
-		if(this.global_typeof(data)!=='object'){
+		if(this.global_typeof(data)!=='pure_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' data error!','error');
 			return;
 		}
@@ -2849,7 +2877,7 @@ var bill_core={
 		//object,string
 		//param1 要debug的物件,param2 資訊的種類 name_and_value,json
 		//若為陣列物件，則其內建的屬性不會顯示出來
-		if(this.global_typeof(param1)!=='object'){
+		if(this.global_typeof(param1)!=='pure_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' params1 error!','error');
 			return;
 		}
@@ -2932,7 +2960,7 @@ var bill_core={
 		
 		if(
 			this.global_typeof(param1)=='string' && 
-			this.global_typeof(param2)=='object' && 
+			(this.global_typeof(param2)=='pure_object' || this.global_typeof(param2)=='other_object') && 
 			this.global_typeof(param3)=='function' &&
 			this.global_typeof(param4)=='function'
 		){	
@@ -2940,12 +2968,12 @@ var bill_core={
 			console.error('bill_core.'+arguments.callee.name+' params error!');
 			return;
 		}
-		var is_sync='1';
+		var is_sync='0';
 		var context=null;
 		if(arguments.length>=5 && (param5==='0' || param5==='1')){
 			is_sync=param5;
 		}
-		if(arguments.length>=6 && this.global_typeof(param6)=='object'){
+		if(arguments.length>=6 && this.global_typeof(param6)=='pure_object'){
 			context=param6;
 		}
 		

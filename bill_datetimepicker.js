@@ -1,7 +1,15 @@
 ﻿(function(jQuery,bill_core){
-	if(bill_core===undefined){
-		console.error('bill_core元件未啟動');
-		return;
+	{
+		let never_used_is_found='0';
+		if(jQuery===undefined){
+			console.error('jquery never used');
+		}
+		if(bill_core===undefined){
+			console.error('bill_core never used');
+		}
+		if(never_used_is_found==='1'){
+			return;
+		}
 	}
 	
 	//設定屬於bill_datetimepicker專屬的元件函式或元件設定預設值
@@ -24,109 +32,69 @@
 	};
 	
 	//轉換元素成物件 或 執行物件方法
-	jQuery.fn.bill_datetimepicker = function(param1,param2){
-		var get_jqobject=this.filter('div[id]');
+	jQuery.fn.bill_datetimepicker = function(param1,...other_params){
+		var return_result=this;
+		if( 
+			arguments.length>=1
+		){
+			
+		}else if( 
+			arguments.length===0
+		){
+			param1={};
+		}
 		
+		var args_illegal_is_found='0';
+		if( 
+			bill_core.global_typeof(param1)!=='pure_object' &&
+			bill_core.global_typeof(param1)!=='string'
+		){	
+			args_illegal_is_found='1';
+			bill_core.debug_console('bill_core.'+arguments.callee.name+' param1 error!','error');
+		}
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
 		//限制轉換元素的個數為1
-		if(get_jqobject.length>1){
-			bill_core.debug_console('bill_datetimepicker一次只能轉換一個,轉換的元素為賦予id的div','error');
-			return;
-		}else if(get_jqobject.length==0){
-			return;
+		if(this.length>1){
+			bill_core.debug_console('bill_datetimepicker一次只能轉換一個元素');
+			return return_result;
+		}else if(this.length==1){
+			if(this.is('div[id]')){
+			}else{
+				bill_core.debug_console('bill_datetimepicker轉換的元素必須為賦予id的div');
+				return return_result;
+			}
+		}else if(this.length==0){
+			return return_result;
 		}
 		
 		//若要執行物件方法 必須先檢查該元素是否已轉化為物件
 		if(typeof(param1)=='string'){
 			if(get_jqobject.attr('is_transformed_to_bill_datetimepicker')!=='1'){
 				bill_core.debug_console('請先轉換元素為bill_datetimepicker','error');
-				return;
+				return return_result;
 			}
 			
 		}
 		
-		//物件方法
-		var jqobject_scope_methods={
-			'reload':function(opts){
-				var component_id=this.attr('id');
-				if(bill_core.global_typeof(opts)!=='object'){
-					bill_core.debug_console('opts資料型態錯誤','error');
-					return;
-				}
-
-				function refresh_input_value(){
-					
-					var selected_year=jQuery('#'+component_id+'_year').val();
-					var selected_month=jQuery('#'+component_id+'_month').val();
-					var selected_day=jQuery('#'+component_id+'_day').val();
-					var selected_hour=jQuery('#'+component_id+'_hour').val();
-					var selected_minute=jQuery('#'+component_id+'_minute').val();
-					var selected_second=jQuery('#'+component_id+'_second').val();
-					
-					
-					
-					if( bill_core.string_is_solid(selected_month)==='1' ){
-						
-					}
-					else{
-						if(selected_year===''){
-							selected_month='';
-						}else{
-							selected_month='00';	
-						}	
-					}
-					
-					if( bill_core.string_is_solid(selected_day)==='1' ){
-						
-					}
-					else{
-						if(selected_month===''){
-							selected_day='';
-						}else{
-							selected_day='00';	
-						}
-					}
-					
-					if( bill_core.string_is_solid(selected_hour)==='1' ){
-						
-					}
-					else{
-						if(selected_day===''){
-							selected_hour='';
-						}else{
-							selected_hour='00';
-						}
-					}
-					
-					if( bill_core.string_is_solid(selected_minute)==='1' ){
-						
-					}
-					else{
-						if(selected_hour===''){
-							selected_minute='';
-						}else{
-							selected_minute='00';
-						}
-						
-					}
-					
-					if( bill_core.string_is_solid(selected_second)==='1' ){
-						
-					}
-					else{
-						if(selected_minute===''){
-							selected_second='';
-						}else{
-							selected_second='00';	
-						}
-						
-					}
-					
-					jQuery('#'+component_id+'_value').val(
-						selected_year+selected_month+selected_day+selected_hour+selected_minute+selected_second
-					);
-				}
-				
+		var get_jqobject=this;
+		var component_id=get_jqobject.attr('id');
+		if( bill_core.global_typeof(param1)=='pure_object' ){
+			var want_set_opts=param1;
+			
+			get_jqobject.data(
+				jQuery.extend( true,{}, jQuery.bill_datetimepicker.defaults, want_set_opts )
+			);	
+		}
+		var opts=get_jqobject.data();
 		
+		//物件方法
+		var jqobject_private_methods={
+			'initial':function(){
+				get_jqobject.empty();
+				get_jqobject.css('display','inline-block');
+				get_jqobject.attr('is_transformed_to_bill_datetimepicker','1');
 				var input_default_value=opts.default_value
 				var input_default_value_year='';
 				var input_default_value_month='';
@@ -220,7 +188,7 @@
 				temp_html+=	'<input type="hidden" id="'+component_id+'_value" name="'+opts.input_name+'" value="'+input_default_value+'" />';
 					
 				
-				this.html(temp_html);
+				get_jqobject.html(temp_html);
 				
 				var now_date = new Date();
 				//getMonth() returns a 0-based number.
@@ -253,7 +221,7 @@
 						){}else{
 							jQuery(this).val('');
 						}
-						refresh_input_value();
+						jqobject_private_methods.refresh_input_value();
 					}
 				);
 				jQuery('#'+component_id+'_minute').change(
@@ -265,7 +233,7 @@
 						){}else{
 							jQuery(this).val('');
 						}
-						refresh_input_value();
+						jqobject_private_methods.refresh_input_value();
 					}
 				);
 				jQuery('#'+component_id+'_second').change(
@@ -277,7 +245,7 @@
 						){}else{
 							jQuery(this).val('');
 						}
-						refresh_input_value();
+						jqobject_private_methods.refresh_input_value();
 					}
 				);
 				jQuery('#'+component_id+'_hour').val(input_default_value_hour);
@@ -324,7 +292,7 @@
 				);
 				jQuery('#'+component_id+'_day').change(
 					function(){
-						refresh_input_value();
+						jqobject_private_methods.refresh_input_value();
 					}
 				);
 				
@@ -348,8 +316,81 @@
 				}
 				
 			},
+			'refresh_input_value':function(){
+					
+				var selected_year=jQuery('#'+component_id+'_year').val();
+				var selected_month=jQuery('#'+component_id+'_month').val();
+				var selected_day=jQuery('#'+component_id+'_day').val();
+				var selected_hour=jQuery('#'+component_id+'_hour').val();
+				var selected_minute=jQuery('#'+component_id+'_minute').val();
+				var selected_second=jQuery('#'+component_id+'_second').val();
+				
+				if( bill_core.string_is_solid(selected_month)==='1' ){
+					
+				}
+				else{
+					if(selected_year===''){
+						selected_month='';
+					}else{
+						selected_month='00';	
+					}	
+				}
+				
+				if( bill_core.string_is_solid(selected_day)==='1' ){
+					
+				}
+				else{
+					if(selected_month===''){
+						selected_day='';
+					}else{
+						selected_day='00';	
+					}
+				}
+				
+				if( bill_core.string_is_solid(selected_hour)==='1' ){
+					
+				}
+				else{
+					if(selected_day===''){
+						selected_hour='';
+					}else{
+						selected_hour='00';
+					}
+				}
+				
+				if( bill_core.string_is_solid(selected_minute)==='1' ){
+					
+				}
+				else{
+					if(selected_hour===''){
+						selected_minute='';
+					}else{
+						selected_minute='00';
+					}
+					
+				}
+				
+				if( bill_core.string_is_solid(selected_second)==='1' ){
+					
+				}
+				else{
+					if(selected_minute===''){
+						selected_second='';
+					}else{
+						selected_second='00';	
+					}
+					
+				}
+				
+				jQuery('#'+component_id+'_value').val(
+					selected_year+selected_month+selected_day+selected_hour+selected_minute+selected_second
+				);
+			},
+			
+		};
+		var jqobject_public_methods={
+			
 			'reset':function(){
-				var component_id=this.attr('id');
 				jQuery('#'+component_id+'_hour').val('');
 				jQuery('#'+component_id+'_minute').val('');
 				jQuery('#'+component_id+'_second').val('');
@@ -362,46 +403,17 @@
 		
 		if(typeof(param1)=='string'){
 			if(
-				jqobject_scope_methods[param1]===undefined || 
-				typeof(jqobject_scope_methods[param1])!=='function'
+				jqobject_public_methods[param1]===undefined
 			){
 				bill_core.debug_console('元件無此操作','error');
-				return;
+				return get_jqobject;
 			}
 			
-			var temp_params=[];
-			for(var kindex in arguments){
-				if(kindex!=='0'){
-					temp_params.push(arguments[kindex]);
-				}
-			}
-			return jqobject_scope_methods[param1].apply(get_jqobject,temp_params);
+			return jqobject_public_methods[param1].apply(get_jqobject,other_params);
 		}
 		
-		var want_set_opts={};
-		if(bill_core.global_typeof(param1)==='undefined'){
-		}
-		else{
-			want_set_opts=param1;
-		}
+		jqobject_private_methods.initial();
 		
-		var opts = jQuery.extend( true,{}, jQuery.bill_datetimepicker.defaults, want_set_opts );
-		get_jqobject.data(opts);
-		opts=get_jqobject.data();
-		
-		
-		if(bill_core.global_typeof(opts.default_value)==='string'){
-		
-		}else{
-			bill_core.debug_console('bill_datetimepicker元件啟動失敗,default_value參數資料型態錯誤','error');
-			return;
-		}
-		
-		if(get_jqobject.attr('is_transformed_to_bill_datetimepicker')!=='1'){
-			jqobject_scope_methods.reload.call(get_jqobject,opts);
-			get_jqobject.css('display','inline-block');				
-			get_jqobject.attr('is_transformed_to_bill_datetimepicker','1');	
-		}
 		return get_jqobject;
 	};
 })(jQuery,bill_core);

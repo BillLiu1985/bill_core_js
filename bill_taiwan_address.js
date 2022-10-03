@@ -67,7 +67,7 @@
 		//物件方法
 		var jqobject_scope_methods={
 			'set_value':function(value_object){
-				if(bill_core.global_typeof(value_object)!=='object'){
+				if(bill_core.global_typeof(value_object)!=='pure_object'){
 					return;
 				}
 				var input_id_prefix=this.attr('id')+'_';
@@ -121,7 +121,7 @@
 		
 		var component_id=get_jqobject.attr('id');
 		
-		if(bill_core.global_typeof(opts.default_value)==='object'){
+		if(bill_core.global_typeof(opts.default_value)==='pure_object'){
 		
 		}else{
 			bill_core.debug_console('bill_taiwan_address元件啟動失敗,default_value參數資料型態錯誤','error');
