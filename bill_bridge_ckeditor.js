@@ -1,5 +1,4 @@
 ﻿(function(jQuery,bill_core,CKEDITOR){
-	
 	//設定屬於bill_checkboxs_group專屬的元件函式或元件設定預設值
 	jQuery.bill_bridge_ckeditor={
 		'defaults':{
