@@ -108,9 +108,14 @@
 		var jqobject_private_methods={};
 		var jqobject_public_methods={
 			'draw_row':function(the_row_data,is_for_add_row_button){	
-
+				var processed_the_row_data={};
+				
 				var the_row_index=the_row_data['row_index'];
 				var the_row_id=component_id+'_row_'+the_row_index;	
+				for(let colname in the_row_data){
+					processed_the_row_data[opts.column_name+"["+the_row_index+"]["+colname+"]"]=the_row_data[colname];
+				}
+				
 				
 				var temp_jqobject=jQuery('#'+opts.row_template_id).clone();
 				temp_jqobject.attr('id',the_row_id);
@@ -167,9 +172,9 @@
 				)
 				
 				//先處理一般元件
-				jQuery('#'+the_row_id).bill_components_initial(the_row_data,opts.environment_data_source);
+				jQuery('#'+the_row_id).bill_components_initial(processed_the_row_data,opts.environment_data_source);
 				
-				opts.after_row_load_func.call(this,the_row_data);
+				opts.after_row_load_func.call(this,processed_the_row_data);
 			},
 			'get_rows_count':function(){	
 				return this.children('div[id^="'+this.attr('id')+'_row_"]').length;

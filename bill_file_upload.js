@@ -14,7 +14,7 @@
 	//設定屬於bill_file_upload專屬的元件函式或元件設定預設值
 	jQuery.bill_file_upload={
 		'defaults':{
-			'preview_url_base':'',
+			'preview_base_url':'',
 			'input_name':'',
 			//normal,pic,html5video,flash
 			'file_type':'pic',
@@ -106,8 +106,14 @@
 				bill_core.debug_console('bill_file_upload元件啟動失敗,white_extensions參數錯誤','error');
 				return get_jqobject;
 			}
-			if( bill_core.global_typeof(want_set_opts.default_value)==='string' ){
 			
+			if( 
+				bill_core.global_typeof(want_set_opts.default_value)==='string' ||
+				bill_core.global_typeof(want_set_opts.default_value)==='undefined'
+			){
+				if(bill_core.global_typeof(want_set_opts.default_value)==='undefined'){
+					want_set_opts.default_value='';
+				}
 			}else{
 				bill_core.debug_console('bill_file_upload元件啟動失敗,default_value參數錯誤','error');
 				return get_jqobject;
@@ -135,8 +141,9 @@
 						'_value':temp_parts[0],
 					})
 				}else{
-					bill_core.debug_console('bill_file_upload元件啟動失敗,defaut_value參數錯誤','error');
-					return get_jqobject;
+					jQuery.extend( true,want_set_opts,{
+						'_value':'',
+					})
 				}
 			}
 			
@@ -192,6 +199,8 @@
 							if(temp_style_string!=''){
 								temp_style_string='style="'+temp_style_string+'"';
 							}
+							
+							
 							if( bill_core.string_is_solid(opts._value)==='1'){
 								
 								final_component_html+=
@@ -374,7 +383,7 @@
 					
 					if( bill_core.string_is_solid(opts.file_tip)==='1' ){
 						final_component_html+=
-						'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span>';
+						'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span><br />';
 					}
 					final_component_html+=
 					'<input type="file" '+temp_attrs_string+' value="" />';

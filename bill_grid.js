@@ -255,6 +255,7 @@
 				var the_grid=get_jqobject;
 				var grid_id=the_grid.attr('id');
 				var about_grid=the_grid.data();
+				
 				bill_core.ajax_post(
 					about_grid['record_toggle_is_show_ajax_url'],
 					{
