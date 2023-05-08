@@ -12,12 +12,12 @@
 			if( bill_core.string_is_end_with(folder_path,'/')==='0' ){
 				folder_path=folder_path+'/';
 			}			
-			original_config.filebrowserBrowseUrl=folder_path+'kcfinder/browse.php?type=files&lng=zh-tw';
-			original_config.filebrowserImageBrowseUrl=folder_path+'kcfinder/browse.php?type=images&lng=zh-tw';
-			original_config.filebrowserFlashBrowseUrl=folder_path+'kcfinder/browse.php?type=flash&lng=zh-tw';
-			original_config.filebrowserUploadUrl=folder_path+'kcfinder/upload.php?type=files&lng=zh-tw';
-			original_config.filebrowserImageUploadUrl=folder_path+'kcfinder/upload.php?type=images&lng=zh-tw';
-			original_config.filebrowserFlashUploadUrl=folder_path+'kcfinder/upload.php?type=flash&lng=zh-tw';
+			original_config.filebrowserBrowseUrl=folder_path+'kcfinder/browse.php?type=files';
+			original_config.filebrowserImageBrowseUrl=folder_path+'kcfinder/browse.php?type=images';
+			original_config.filebrowserFlashBrowseUrl=folder_path+'kcfinder/browse.php?type=flash';
+			original_config.filebrowserUploadUrl=folder_path+'kcfinder/upload.php?type=files';
+			original_config.filebrowserImageUploadUrl=folder_path+'kcfinder/upload.php?type=images';
+			original_config.filebrowserFlashUploadUrl=folder_path+'kcfinder/upload.php?type=flash';
 		},
 		'real_objs':{
 			
