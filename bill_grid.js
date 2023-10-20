@@ -297,9 +297,7 @@
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
 						'obj_id':record_id,
-						'cat_id':about_grid['search_items']['cat_id'],
-						'p_cat_id':about_grid['search_items']['p_cat_id'],
-						'parent_id':about_grid['search_items']['parent_id']
+						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
 						if(response_data.code==='1'){
@@ -327,9 +325,7 @@
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
 						'obj_id':record_id,
-						'cat_id':about_grid['search_items']['cat_id'],
-						'p_cat_id':about_grid['search_items']['p_cat_id'],
-						'parent_id':about_grid['search_items']['parent_id']
+						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
 						if(response_data.code==='1'){
