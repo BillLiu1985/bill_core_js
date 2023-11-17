@@ -24,6 +24,8 @@
 			'counts_max':10,
 			'is_default_one_row':'1',
 			'delete_row_button_text':'刪除',
+			'move_up_row_button_text':'上移',
+			'move_down_row_button_text':'下移',
 			'add_row_button_text':'新增一筆',
 			'delete_all_rows_button_text':'刪除全部',
 			'new_row_is_append':'1',
@@ -99,18 +101,25 @@
 			the_row_data={
 				//add or modify
 				'row_type':'add',
-				'row_index':'0',
 				'column_name_1':'column_value_1',
 				'column_name_2':'column_value_2',
 				......
 			}
 		*/
-		var jqobject_private_methods={};
+		var jqobject_private_methods={
+			'rearrange_row_ascend_sort':function(){
+				get_jqobject.children('div[id^="'+component_id+'_row_"]').each(
+					function(the_index,the_element){
+						jQuery(the_element).find('input[id$="_row_ascend_sort"]').val(the_index+1);
+					}
+				);
+			},
+		};
 		var jqobject_public_methods={
 			'draw_row':function(the_row_data,is_for_add_row_button){	
 				var processed_the_row_data={};
 				
-				var the_row_index=the_row_data['row_index'];
+				var the_row_index=opts._next_row_index;
 				var the_row_id=component_id+'_row_'+the_row_index;	
 				for(let colname in the_row_data){
 					processed_the_row_data[opts.column_name+"["+the_row_index+"]["+colname+"]"]=the_row_data[colname];
@@ -121,13 +130,15 @@
 				temp_jqobject.attr('id',the_row_id);
 				temp_jqobject.show();
 				temp_jqobject.find(
-					'input[type="text"][name],'+
-					'input[type="radio"][name],'+
-					'input[type="checkbox"][name],'+
-					'input[type="hidden"][name],'+
-					'textarea[name],'+
-					'select[name],'+
-					'div[name]'
+					'input[type="text"][name][name!=""],'+
+					'input[type="date"][name][name!=""],'+
+					'input[type="radio"][name][name!=""],'+
+					'input[type="checkbox"][name][name!=""],'+
+					'input[type="hidden"][name][name!=""],'+
+					'textarea[name][name!=""],'+
+					'select[name][name!=""],'+
+					'div[name][name!=""],'+
+					'span[name][name!=""]'
 				).each(
 					function(){
 						var original_input_name=jQuery(this).attr('name');
@@ -145,39 +156,58 @@
 				temp_jqobject.append(
 					'&nbsp;&nbsp;&nbsp;'+
 					'<input type="button" '+
+					'id="'+the_row_id+'_move_up_row_button"  style="cursor:pointer" value="'+opts.move_up_row_button_text+'" />'+
+					'&nbsp;&nbsp;&nbsp;'+
+					'<input type="button" '+
+					'id="'+the_row_id+'_move_down_row_button"  style="cursor:pointer" value="'+opts.move_down_row_button_text+'" />'+
+					'&nbsp;&nbsp;&nbsp;'+
+					'<input type="button" '+
 					'id="'+the_row_id+'_delete_row_button"  style="cursor:pointer" value="'+opts.delete_row_button_text+'" />'+
 					'<hr />'
 				);
 				if(is_for_add_row_button==='1'){
 					if(opts.new_row_is_append==='1'){
-						this.append(bill_core.jquery_outer_html(temp_jqobject));
+						get_jqobject.append(bill_core.jquery_outer_html(temp_jqobject));
 					}else{
 						jQuery(bill_core.jquery_outer_html(temp_jqobject)).insertAfter('#'+component_id+'_rows_datum');
 					}
 				}else{
-					this.append(bill_core.jquery_outer_html(temp_jqobject));
+					get_jqobject.append(bill_core.jquery_outer_html(temp_jqobject));
 				}
 				jQuery('#'+the_row_id+'_delete_row_button').click(
 					function(){
 						var now_rows_count=
-							jqobject_public_methods.get_rows_count.call(
-								jQuery('#'+component_id)
-							);
+							jqobject_public_methods.get_rows_count();
 						if(now_rows_count==1 && opts.is_required==='1'){
 							alert('至少必須一列有值')
 							return;
 						}
 						jQuery(this).parent().remove();
+						jqobject_private_methods.rearrange_row_ascend_sort();
+					}
+				);
+				jQuery('#'+the_row_id+'_move_up_row_button').click(
+					function(){
+						var row_container_jqobject=jQuery(this).parent();
+						row_container_jqobject.insertBefore(row_container_jqobject.prev());
+						jqobject_private_methods.rearrange_row_ascend_sort();
+					}
+				);
+				jQuery('#'+the_row_id+'_move_down_row_button').click(
+					function(){
+						var row_container_jqobject=jQuery(this).parent();
+						row_container_jqobject.insertAfter(row_container_jqobject.next());
+						jqobject_private_methods.rearrange_row_ascend_sort();
 					}
 				)
 				
 				//先處理一般元件
 				jQuery('#'+the_row_id).bill_components_initial(processed_the_row_data,opts.environment_data_source);
 				
-				opts.after_row_load_func.call(this,processed_the_row_data);
+				opts.after_row_load_func.call(get_jqobject,processed_the_row_data);
 			},
 			'get_rows_count':function(){	
-				return this.children('div[id^="'+this.attr('id')+'_row_"]').length;
+				return get_jqobject.children('div[id^="'+component_id+'_row_"]').length;
 			}
 		};
 		if( bill_core.global_typeof(param1)=='string' ){
@@ -204,12 +234,11 @@
 			);
 			
 			for(let new_row_data of opts.default_value_source){
-				new_row_data['row_index']=opts._next_row_index;
-				jqobject_public_methods.draw_row.call(
-					get_jqobject,
+				
+				jqobject_public_methods.draw_row(
 					new_row_data
 				);
-				opts._next_row_index++;
+				opts._next_row_index=opts._next_row_index+1;
 			}
 			if(opts.default_value_source.length==0){
 				if(
@@ -217,40 +246,38 @@
 					opts.is_required==='1'
 				){
 					var new_row_data={
-						'row_type':'add'
+						'row_type':'add',
+						'row_ascend_sort':'1',
 					};
-					new_row_data['row_index']=opts._next_row_index;
-					jqobject_public_methods.draw_row.call(
-						get_jqobject,
+				
+					jqobject_public_methods.draw_row(
 						new_row_data
 					);
-					opts._next_row_index++;
+					opts._next_row_index=opts._next_row_index+1;
 				}
 			}
 			jQuery('#'+opts._add_row_button_id).click(
 				function(){
 					if(opts.counts_max!=0){
 						var now_rows_count=
-							jqobject_public_methods.get_rows_count.call(
-								get_jqobject
-							);
+							jqobject_public_methods.get_rows_count();
 						if(now_rows_count>=opts.counts_max){
 							alert('已超過列數上限:'+opts.counts_max);
 							return;
 						}
 					}
 					var new_row_data={
-						'row_type':'add'
+						'row_type':'add',
+						'row_ascend_sort':(now_rows_count+1).toString(),
 					};
 					
-					new_row_data['row_index']=opts._next_row_index;
 					
-					jqobject_public_methods.draw_row.call(
-						get_jqobject,
+					
+					jqobject_public_methods.draw_row(
 						new_row_data,
 						'1'
 					);
-					opts._next_row_index++;
+					opts._next_row_index=opts._next_row_index+1
 				}
 			)
 			
@@ -258,7 +285,7 @@
 			
 			jQuery('#'+opts._delete_all_rows_button_id).click(
 				function(){
-					jQuery('#'+component_id).find('[id$="_delete_row_button"]').click();
+					get_jqobject.find('[id$="_delete_row_button"]').click();
 				}
 			);
 			get_jqobject.attr('is_transformed_to_bill_multirow_column','1');

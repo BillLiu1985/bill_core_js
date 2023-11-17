@@ -349,7 +349,7 @@
 					var temp_reg_parts=[];
 					for(var the_white_extension of opts.white_extensions){
 					
-						var temp_reg_string='(\\.';
+						var temp_reg_string='(?:\\.';
 						var temp_chars=the_white_extension.split('');
 						for(var temp_char of temp_chars){
 							temp_reg_string+='['+temp_char.toLowerCase()+temp_char.toUpperCase()+']';
@@ -360,7 +360,7 @@
 					if(opts.is_required=='1'){
 						
 					}else{
-						temp_reg_parts.push('(^$)');
+						temp_reg_parts.push('(?:^$)');
 					}
 					temp_attrs_string+=' reg_1="'+temp_reg_parts.join('|')+'" ';
 				}
@@ -399,7 +399,11 @@
 						}
 					}
 					else{
-						final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+						if(opts.is_required==='1'){
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_ADD" />';
+						}else{
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+						}
 					}
 				}else if(opts.layout_type==='basic_1'){
 					if( bill_core.string_is_solid(opts.file_tip)==='1' ){
@@ -420,7 +424,11 @@
 						}
 					}
 					else{
-						final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+						if(opts.is_required==='1'){
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_ADD" />';
+						}else{
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+						}
 					}
 				}
 				get_jqobject.html(final_component_html);
@@ -439,9 +447,9 @@
 									'reg_1',value_jqobject_reg_1.replace(/^r/g,'o')
 								);
 							}
-							else if( bill_core.string_is_end_with(value_jqobject_reg_1,'|(^$)')==='0' ){
+							else if( bill_core.string_is_end_with(value_jqobject_reg_1,'|(?:^$)')==='0' ){
 								value_jqobject.attr(
-									'reg_1',value_jqobject_reg_1.replace(/$/g,'|(^$)')
+									'reg_1',value_jqobject_reg_1.replace(/$/g,'|(?:^$)')
 								);
 							}
 							value_jqobject.val('');
@@ -469,10 +477,10 @@
 									'reg_1',value_jqobject_reg_1.replace(/^r/g,'o')
 								);
 							}
-							else if( bill_core.string_is_end_with(value_jqobject_reg_1,'|(^$)')==='0' ){
+							else if( bill_core.string_is_end_with(value_jqobject_reg_1,'|(?:^$)')==='0' ){
 								
 								value_jqobject.attr(
-									'reg_1',value_jqobject_reg_1.replace(/$/g,'|(^$)')
+									'reg_1',value_jqobject_reg_1.replace(/$/g,'|(?:^$)')
 								);
 							}
 							value_jqobject.val('');
@@ -485,19 +493,26 @@
 					function(){
 						var button_text_jqobject=jQuery('#'+component_id+'_button_text');	
 						if(bill_core.string_is_solid(opts._value)==='1'){
-							if($(this).val()!==''){
+							//有舊檔的情況下
+							if($(this).val()===''){
 								
+							}else{
 								jQuery("input:radio[name='"+opts.input_name+"_op'][value='DO_MODIFY']").click();
 							}
 						}else{
-							
-							if($(this).val()===''){
-								button_text_jqobject.html(opts.button_text_no_choose);
-								jQuery("#"+component_id+'_op').val('DO_NO');
+							//無舊檔的情況下
+							if(opts.is_required=='1'){
+						
 							}else{
-								button_text_jqobject.html(opts.button_text_after_choose);
-								jQuery("#"+component_id+'_op').val('DO_ADD');
+								if($(this).val()===''){
+									button_text_jqobject.html(opts.button_text_no_choose);
+									jQuery("#"+component_id+'_op').val('DO_NO');
+								}else{
+									button_text_jqobject.html(opts.button_text_after_choose);
+									jQuery("#"+component_id+'_op').val('DO_ADD');
+								}
 							}
+							
 						}
 					}
 				);

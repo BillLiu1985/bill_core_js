@@ -1,29 +1,48 @@
 (function(jQuery,bill_core){
 	
 	jQuery.bill_components_initial={
+		'defaults':{
+			'default_value_source':{},
+			'environment_data':{},
+			'container_id':'',
+		}	
 	};
 	
 	//轉換元素成物件 或 執行物件方法
-	jQuery.fn.bill_components_initial = function(param1,param2){
+	jQuery.fn.bill_components_initial = function(param1,param2,param3){
 		var return_result=this;
-		
 		if( 
-			arguments.length>=2
+			arguments.length===3
 		){
 			var default_value_source=param1;
 			var environment_data_source=param2;
-			
+			var container_id=param3;
+		}
+		else if( 
+			arguments.length===2
+		){
+			var default_value_source=param1;
+			var environment_data_source=param2;
+			var container_id='';
 		}else if( 
 			arguments.length===1
 		){
-			var default_value_source=param1;
-			var environment_data_source={};
-			
+			if(bill_core.global_typeof(param1)==='string'){
+				var default_value_source={};
+				var environment_data_source={};
+				var container_id=param1;
+			}
+			else if(bill_core.global_typeof(param1)==='pure_object'){
+				var default_value_source=param1;
+				var environment_data_source={};
+				var container_id='';
+			}
 		}else if( 
 			arguments.length===0
 		){
 			var default_value_source={};
 			var environment_data_source={};
+			var container_id='';
 		}
 		
 		var args_illegal_is_found='0';
@@ -39,6 +58,12 @@
 			args_illegal_is_found='1';
 			bill_core.debug_console('bill_core.'+arguments.callee.name+' environment_data_source error!','error');
 		}
+		if( 
+			bill_core.global_typeof(container_id)!=='string'
+		){	
+			args_illegal_is_found='1';
+			bill_core.debug_console('bill_core.'+arguments.callee.name+' container_id error!','error');
+		}
 		if(args_illegal_is_found==='1'){
 			return return_result;
 		}
@@ -46,20 +71,30 @@
 		var get_jqobject=this;
 		//先處理一般元件
 		get_jqobject.find(
-			'input[type="text"][name][component_type="input_text"],'+
-			'input[type="text"][name][component_type="input_text_number"],'+
-			'input[type="date"][name][component_type="input_date"],'+
-			'input[type="radio"][name][component_type="input_radio"],'+
-			'input[type="checkbox"][name][component_type="input_checkbox"],'+
-			'input[type="hidden"][name][component_type="input_hidden"],'+
-			'textarea[name][component_type="textarea"],'+
-			'select[name][component_type="select"]'
+			'input[type="text"][name][name!=""][component_type="input_text"],'+
+			'input[type="text"][name][name!=""][component_type="input_text_number"],'+
+			'input[type="date"][name][name!=""][component_type="input_date"],'+
+			'input[type="radio"][name][name!=""][component_type="input_radio"],'+
+			'input[type="checkbox"][name][name!=""][component_type="input_checkbox"],'+
+			'input[type="hidden"][name][name!=""][component_type="input_hidden"],'+
+			'textarea[name][name!=""][component_type="textarea"],'+
+			'select[name][name!=""][component_type="select"]'
 		).each(
 			function(){
 				var the_input_name=jQuery(this).attr('name');
 				var temp_default_value=default_value_source[the_input_name];
 				var temp_environment_data=environment_data_source[the_input_name];
 				var the_component_type=jQuery(this).attr('component_type');
+				
+				var the_input_id=jQuery(this).attr('id');
+				if( bill_core.string_is_solid(the_input_id)==='1' ){
+					
+				}else{
+					if( bill_core.string_is_solid(container_id)==='1' ){
+						jQuery(this).attr('id',container_id+'_'+the_input_name);
+					}
+				}
+				the_input_id=jQuery(this).attr('id');
 				
 				if( the_component_type==='input_text' ){
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
@@ -223,28 +258,35 @@
 		
 		//再處理特殊元件
 		get_jqobject.find(
-			'[name][component_type="display_info"],'+
-			'div[name][component_type="bill_checkboxs_group"],'+
-			'div[name][component_type="bill_radios_group"],'+
-			'input[type="text"][name][component_type="dynDateTime"],'+
-			'div[name][component_type="bill_datetimepicker"],'+
-			'div[name][component_type="bill_taiwan_address"],'+
-			'div[name][component_type="bill_file_upload"],'+
-			'div[name][component_type="bill_file_immediate_upload"],'+
-			'div[name][component_type="bill_video_url"],'+
-			'div[name][component_type="bill_multirow_column"],'+
-			'textarea[name][component_type="ckeditor"],'+
-			'[name][component_type="bill_select_relateds"],'+
-			'[name][component_type="bill_pic_crop"]'
+			'[name][name!=""][component_type="display_info"],'+
+			'div[name][name!=""][component_type="bill_checkboxs_group"],'+
+			'div[name][name!=""][component_type="bill_radios_group"],'+
+			'input[type="text"][name][name!=""][component_type="dynDateTime"],'+
+			'div[name][name!=""][component_type="bill_datetimepicker"],'+
+			'div[name][name!=""][component_type="bill_taiwan_address"],'+
+			'div[name][name!=""][component_type="bill_file_upload"],'+
+			'div[name][name!=""][component_type="bill_file_immediate_upload"],'+
+			'div[name][name!=""][component_type="bill_video_url"],'+
+			'div[name][name!=""][component_type="bill_multirow_column"],'+
+			'textarea[name][name!=""][component_type="ckeditor"],'+
+			'[name][name!=""][component_type="bill_select_relateds"],'+
+			'[name][name!=""][component_type="bill_pic_crop"]'
 		).each(
 			function(){
 				var the_input_name=jQuery(this).attr('name');
-				var the_element_id=jQuery(this).attr('id');
-				if(bill_core.string_is_solid(the_element_id)==='1'){
+				
+				var the_input_id=jQuery(this).attr('id');
+				if( bill_core.string_is_solid(the_input_id)==='1' ){
 				}else{
-					the_element_id='component_'+bill_core.string_random_word(7,'');
-					jQuery(this).attr('id',the_element_id);
+					if( bill_core.string_is_solid(container_id)==='1' ){
+						jQuery(this).attr('id',container_id+'_'+the_input_name);
+					}else{
+						the_input_id='components_container_'+bill_core.string_random_word(7,'');
+						jQuery(this).attr('id',the_input_id);
+					}
 				}
+				the_input_id=jQuery(this).attr('id');
+				
 				var temp_default_value=default_value_source[the_input_name];
 				var temp_environment_data=environment_data_source[the_input_name];
 				var the_component_type=jQuery(this).attr('component_type');
@@ -743,9 +785,9 @@
 						final_ckeditor_config,final_ckeditor_config['baseHref']+'third_party/'
 					);
 					
-					jQuery.bill_bridge_ckeditor.real_objs[the_element_id] = 
-					CKEDITOR.replace(the_element_id,final_ckeditor_config);
-					jQuery.bill_bridge_ckeditor.real_objs[the_element_id].on("instanceReady", 
+					jQuery.bill_bridge_ckeditor.real_objs[the_input_id] = 
+					CKEDITOR.replace(the_input_id,final_ckeditor_config);
+					jQuery.bill_bridge_ckeditor.real_objs[the_input_id].on("instanceReady", 
 						function(event)
 						{
 							event.editor.setData(temp_default_value);	
@@ -759,7 +801,7 @@
 						(temp_default_value=='' || temp_default_value==undefined )
 					){
 						
-						jQuery.bill_bridge_ckeditor.real_objs[the_element_id].on("instanceReady", 
+						jQuery.bill_bridge_ckeditor.real_objs[the_input_id].on("instanceReady", 
 							function(event)
 							{
 								if(jQuery('#'+event.listenerData).length>0){

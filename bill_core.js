@@ -377,6 +377,7 @@ var bill_core={
 		
 		var fetch_jquery_expression_others=
 			'input[type="text"][name][name!=""]:not([non_form_data]),'+
+			'input[type="tel"][name][name!=""]:not([non_form_data]),'+
 			'input[type="date"][name][name!=""]:not([non_form_data]),'+
 			'input[type="hidden"][name][name!=""]:not([non_form_data]),'+
 			'input[type="password"][name][name!=""]:not([non_form_data]),'+
@@ -779,7 +780,7 @@ var bill_core={
 			return return_result;
 		}
 		if(the_string.length>=need_length){
-			return_result=the_string.substr(the_string,need_length);
+			return_result=the_string;
 			return return_result;
 		}
 		var pad_counts=need_length-the_string.length;
@@ -1111,7 +1112,7 @@ var bill_core={
 			var the_parsed_second=the_match_result[6];
 		
 			return the_format.replace('Y',the_parsed_year).
-			replace('y',the_parsed_year.substr(-2)).
+			replace('y',the_parsed_year.slice(-2)).
 			replace('m',the_parsed_month).
 			replace('n',this.string_remove_start(the_parsed_month,'0')).
 			replace('M',the_parsed_month_alias_1).
@@ -1592,7 +1593,7 @@ var bill_core={
 		var the_parsed_second=this.string_add_zero(source_Date.getSeconds(),2);
 	
 		return the_format.replace('Y',the_parsed_year).
-		replace('y',the_parsed_year.substr(-2)).
+		replace('y',the_parsed_year.slice(-2)).
 		replace('m',the_parsed_month).
 		replace('n',this.string_remove_start(the_parsed_month,'0')).
 		replace('M',the_parsed_month_alias_1).
@@ -1620,10 +1621,15 @@ var bill_core={
 		}
 		var milliseconds=seconds*1000;
 		var start = new Date().getTime();
-		for (var i = 0; i < 1e7; i++) {
-			if ((new Date().getTime() - start) >= milliseconds){
-			break;
+		var now_time=new Date().getTime();
+		while(true) {
+			//this.debug_console('now_time：'+now_time+',start：'+start+',milliseconds：'+milliseconds);
+			//this.debug_console('now_time-start：'+(now_time-start)+',milliseconds：'+milliseconds);
+			if (now_time - start >= milliseconds){
+				
+				break;
 			}
+			now_time=new Date().getTime();
 		}
 	},
 
@@ -2898,12 +2904,16 @@ var bill_core={
 					typeof obj_attr_value === 'object' ||
 					typeof obj_attr_value === 'undefined'
 				){
-					continue;
+					bill_core.debug_console(
+						obj_attr_name+'('+this.global_typeof(obj_attr_name)+')'+':'+
+						'('+this.global_typeof(obj_attr_value)+')'
+					);
+				}else{
+					bill_core.debug_console(
+						obj_attr_name+'('+this.global_typeof(obj_attr_name)+')'+':'+
+						obj_attr_value+'('+this.global_typeof(obj_attr_value)+')'
+					);
 				}
-				bill_core.debug_console(
-					obj_attr_name+'('+this.global_typeof(obj_attr_name)+')'+':'+
-					obj_attr_value+'('+this.global_typeof(obj_attr_value)+')'
-				);
 			}
 		}
 		else if(param2==='json'){
@@ -3131,5 +3141,131 @@ var bill_core={
 		
 		return return_result;
 
+	},
+	'_lock_objs_collection':{},
+	'lock_create':function(name,type){
+		var return_result='0';
+		var args_illegal_is_found='0';
+		
+		if ( 
+			this.global_typeof(name)==='string' &&
+			name!==''
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' name error!','error');
+		}
+		
+		if ( 
+			this.global_typeof(type)==='string' &&
+			jQuery.inArray( type,['enable_wait','disable_wait'] )!==-1
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' type error!','error');
+		}
+		
+
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		
+		this['_lock_objs_collection'][name]={
+			'type':type,
+			'queue_for_get':[]
+		};
+		return_result='1';
+		return return_result;
+	},
+	'lock_get':function(name,can_wait_time){
+		var return_result='0';
+		var args_illegal_is_found='0';
+		if ( 
+			this.global_typeof(name)==='string' &&
+			jQuery.inArray( 
+				name,
+				Object.getOwnPropertyNames(this._lock_objs_collection)
+			)!==-1
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' name error!','error');
+		}
+		
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		var the_lock_obj=this._lock_objs_collection[name];
+		if(the_lock_obj.type==='enable_wait'){
+			if ( 
+				this.global_typeof(can_wait_time)==='number'
+			) {
+				
+			}else{
+				args_illegal_is_found='1';
+				this.debug_console('bill_core.'+arguments.callee.name+' can_wait_time error!','error');
+			}
+		}
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		
+		var op_id='op_'+this.string_random_word(5,'');
+		the_lock_obj.queue_for_get.push(op_id);
+		if(the_lock_obj.type==='enable_wait'){
+			do{
+				if(	
+					the_lock_obj.queue_for_get[0]===op_id
+				){
+					return_result='1';
+					break;
+				}
+				this.time_sleep(1);
+				can_wait_time=can_wait_time-1;
+			}while(can_wait_time>0);
+			
+		}else if(the_lock_obj.type==='disable_wait'){
+			if(	
+				the_lock_obj.queue_for_get.length>0 &&
+				the_lock_obj.queue_for_get[0]===op_id
+			){
+				return_result='1';
+			}
+		}
+		
+		return return_result;
+	},
+	'lock_release':function(name){
+		var return_result='0';
+		var args_illegal_is_found='0';
+		if ( 
+			this.global_typeof(name)==='string' &&
+			jQuery.inArray( 
+				name,
+				Object.getOwnPropertyNames(this._lock_objs_collection)
+			)!==-1
+		) {
+			
+		}else{
+			args_illegal_is_found='1';
+			this.debug_console('bill_core.'+arguments.callee.name+' name error!','error');
+		}
+		
+		if(args_illegal_is_found==='1'){
+			return return_result;
+		}
+		
+		var the_lock_obj=this._lock_objs_collection[name];
+
+		if(the_lock_obj.type==='enable_wait'){
+			the_lock_obj.queue_for_get.shift();
+		}else if(the_lock_obj.type==='disable_wait'){
+			the_lock_obj.queue_for_get.splice(0);
+		}
+		return_result='1';
+		return return_result;
 	}
 }
