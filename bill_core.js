@@ -2983,7 +2983,10 @@ var bill_core={
 		if(arguments.length>=5 && (param5==='0' || param5==='1')){
 			is_sync=param5;
 		}
-		if(arguments.length>=6 && this.global_typeof(param6)=='other_object'){
+		if(
+			arguments.length>=6 && 
+			(this.global_typeof(param6)=='pure_object' || this.global_typeof(param6)=='other_object')
+		){
 			context=param6;
 		}
 		
@@ -3011,7 +3014,10 @@ var bill_core={
 			ajax_settings['async']=true;
 		}
 		
-		if(this.global_typeof(context)=='other_object'){
+		if(
+			this.global_typeof(context)=='pure_object' ||
+			this.global_typeof(context)=='other_object'
+		){
 			ajax_settings['context']=context;
 			
 		}

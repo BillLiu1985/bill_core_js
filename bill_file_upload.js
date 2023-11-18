@@ -180,6 +180,7 @@
 					}
 					else if(opts.file_type=='pic'){
 							var temp_style_string='';
+							var temp_alt_string='';
 							if( 
 								bill_core.number_is_solid(opts.preview_width)==='1' &&
 								opts.preview_width>0
@@ -202,10 +203,14 @@
 							
 							
 							if( bill_core.string_is_solid(opts._value)==='1'){
-								
+								if( 
+									bill_core.string_is_solid(opts._value_alt)==='1'
+								){
+									temp_alt_string+='alt="'+opts._value_alt+'"';
+								}
 								final_component_html+=
 								'<img border="0" '+temp_style_string+' src="'+
-								opts.preview_base_url+opts._value+'" />';
+								opts.preview_base_url+opts._value+'" '+temp_alt_string+'  />';
 							}
 							else{
 								final_component_html+=
