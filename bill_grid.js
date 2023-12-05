@@ -35,8 +35,9 @@
 			'is_initial_load_data':'1',
 			'reload_ajax_url':'',
 			'record_delete_ajax_url':'',
-			'record_sort_up_ajax_url':'',
-			'record_sort_down_ajax_url':'',
+			'record_move_up_ajax_url':'',
+			'record_move_down_ajax_url':'',
+			'record_move_to_ajax_url':'',
 			'record_sort_all_ajax_url':'',
 			'record_toggle_is_enabled_ajax_url':'',
 			'record_toggle_is_show_ajax_url':'',
@@ -114,7 +115,7 @@
 					}
 				}
 				about_grid['make_heading_part_func'].call(the_grid,jqobject_private_methods['draw_button']);				
-				about_grid['make_list_part_func'].call(the_grid,data['list_records'],jqobject_private_methods['draw_button']);
+				about_grid['make_list_part_func'].call(the_grid,data['list_records'],jqobject_private_methods['draw_button'],data['position_options_info']);
 				about_grid['make_pager_part_func'].call(the_grid,data['data_status'],jqobject_private_methods['draw_button']);
 				about_grid['after_draw_func'].call(the_grid,jqobject_private_methods['draw_button']);
 				
@@ -288,15 +289,15 @@
 					this
 				);	
 			},
-			'record_sort_up':function(record_id){
+			'record_move_up':function(record_position){
 				var the_grid=get_jqobject;
 				var grid_id=the_grid.attr('id');
 				var about_grid=the_grid.data();
 				bill_core.ajax_post(
-					about_grid['record_sort_up_ajax_url'],
+					about_grid['record_move_up_ajax_url'],
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
-						'obj_id':record_id,
+						'record_position':record_position,
 						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
@@ -316,15 +317,44 @@
 					this
 				);
 			},
-			'record_sort_down':function(record_id){
+			'record_move_down':function(record_position){
 				var the_grid=get_jqobject;
 				var grid_id=the_grid.attr('id');
 				var about_grid=the_grid.data();
 				bill_core.ajax_post(
-					about_grid['record_sort_down_ajax_url'],
+					about_grid['record_move_down_ajax_url'],
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
-						'obj_id':record_id,
+						'record_position':record_position,
+						'search_items':about_grid['search_items']
+					},
+					function(response_data,textStatus,jqXHR){
+						if(response_data.code==='1'){
+							jqobject_private_methods['reload']();
+						}
+						else{
+							alert(response_data.message);
+							this.attr('disabled',false);
+						}
+					},
+					function(jqXHR,textStatus,errorThrown ){
+						alert(errorThrown);
+						this.attr('disabled',false);
+					},
+					'0',
+					this
+				);
+			},
+			'record_move_to':function(record_position,destination_position){
+				var the_grid=get_jqobject;
+				var grid_id=the_grid.attr('id');
+				var about_grid=the_grid.data();
+				bill_core.ajax_post(
+					about_grid['record_move_to_ajax_url'],
+					{
+						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
+						'record_position':record_position,
+						'destination_position':destination_position,
 						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
@@ -354,7 +384,7 @@
 				var is_pass_validator='1';
 				jQuery('[name="custom_grid_record_sort_all_input"]').each(
 					function(){
-						var temp_id=jQuery(this).closest('*[record_id]').attr('record_id');
+						var temp_id=jQuery(this).closest('*[data-record_id]').data('record_id');
 						var temp_value=jQuery(this).val();
 						if(
 							is_pass_validator==='0'
@@ -494,7 +524,7 @@
 				
 					jqobject_private_methods['record_delete'].call(
 						jQuery(this),
-						jQuery(this).closest('*[record_id]').attr('record_id')
+						jQuery(this).closest('*[data-record_id]').data('record_id')
 					);
 				}
 			});
@@ -503,7 +533,7 @@
 				jQuery(this).attr('disabled',true);			
 				jqobject_private_methods['record_toggle_is_enabled'].call(
 					jQuery(this),
-					jQuery(this).closest('*[record_id]').attr('record_id')
+					jQuery(this).closest('*[data-record_id]').data('record_id')
 				);
 				
 			});
@@ -512,26 +542,41 @@
 				jQuery(this).attr('disabled',true);			
 				jqobject_private_methods['record_toggle_is_show'].call(
 					jQuery(this),
-					jQuery(this).closest('*[record_id]').attr('record_id')
+					jQuery(this).closest('*[data-record_id]').data('record_id')
 				);
 				
 			});
 			
 			
-			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_up_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_move_up_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);
-				jqobject_private_methods['record_sort_up'].call(
+				jqobject_private_methods['record_move_up'].call(
 					jQuery(this),
-					jQuery(this).closest('*[record_id]').attr('record_id')
+					jQuery(this).closest('*[data-record_id]').attr('data-record_position')
 				);
 			});
 			
-			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_down_button'+'"]',function(){
+			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_move_down_button'+'"]',function(){
 				jQuery(this).attr('disabled',true);
-				jqobject_private_methods['record_sort_down'].call(
+				jqobject_private_methods['record_move_down'].call(
 					jQuery(this),
-					jQuery(this).closest('*[record_id]').attr('record_id')
+					jQuery(this).closest('*[data-record_id]').attr('data-record_position')
 				);
+			});
+			
+			jQuery(document).on('change','[name="'+get_jqobject.attr('id')+'_record_move_to_button'+'"]',function(e){
+				var record_position=jQuery(this).closest('*[data-record_id]').attr('data-record_position');
+				var destination_position=jQuery(this).val();
+				if(destination_position!==record_position && destination_position!==''){
+					jQuery(this).attr('disabled',true);
+					jqobject_private_methods['record_move_to'].call(
+						jQuery(this),
+						record_position,
+						destination_position,
+					);
+				}else{
+					jQuery(this).val('');
+				}
 			});
 			
 			jQuery(document).on('click','[name="'+get_jqobject.attr('id')+'_record_sort_all_button'+'"]',function(){

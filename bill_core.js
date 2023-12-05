@@ -3273,5 +3273,26 @@ var bill_core={
 		}
 		return_result='1';
 		return return_result;
-	}
+	},
+	'html_make_options':function(options_info,selected_value){
+		var result_html='';
+		if(
+			this.global_typeof(options_info)==='array_object' &&
+			this.global_typeof(selected_value)==='string'
+		){
+		
+		}else{
+			return result_html;
+		}
+		
+		for(let the_option_info of options_info){
+			if(the_option_info['value']==='selected_value'){
+				result_html+="<option value='"+the_option_info['value']+"' selected='selected'>"+the_option_info['text']+"</option>";
+			}else{
+				result_html+="<option value='"+the_option_info['value']+"'>"+the_option_info['text']+"</option>";
+			}
+		}
+		
+		return result_html;
+	},
 }
