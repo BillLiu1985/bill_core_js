@@ -123,7 +123,9 @@
 				var the_row_id=component_id+'_row_'+the_row_index;	
 				for(let colname in the_row_data){
 					processed_the_row_data[opts.column_name+"["+the_row_index+"]["+colname+"]"]=the_row_data[colname];
+					
 				}
+				
 				
 				
 				var temp_jqobject=jQuery('#'+opts.row_template_id).clone();
@@ -200,7 +202,6 @@
 						jqobject_private_methods.rearrange_row_ascend_sort();
 					}
 				)
-				
 				//先處理一般元件
 				jQuery('#'+the_row_id).bill_components_initial(processed_the_row_data,opts.environment_data_source);
 				
@@ -258,9 +259,11 @@
 			}
 			jQuery('#'+opts._add_row_button_id).click(
 				function(){
-					if(opts.counts_max!=0){
-						var now_rows_count=
+					var now_rows_count=
 							jqobject_public_methods.get_rows_count();
+					
+					if(opts.counts_max!=0){
+						
 						if(now_rows_count>=opts.counts_max){
 							alert('已超過列數上限:'+opts.counts_max);
 							return;
