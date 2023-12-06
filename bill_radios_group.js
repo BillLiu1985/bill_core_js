@@ -102,7 +102,7 @@
 			want_set_opts._environment_data_type=bill_core.global_typeof(want_set_opts.environment_data);
 			
 			get_jqobject.data(
-				jQuery.extend( false,{}, jQuery.bill_radios_group.defaults, want_set_opts )
+				jQuery.extend({}, jQuery.bill_radios_group.defaults, want_set_opts )
 			);	
 		}
 		var opts=get_jqobject.data();

@@ -90,7 +90,7 @@
 		if( bill_core.global_typeof(param1)=='pure_object' ){
 			var want_set_opts=param1;
 			get_jqobject.data(
-				jQuery.extend( true,{}, jQuery.bill_multirow_column.defaults, want_set_opts )
+				jQuery.extend({}, jQuery.bill_multirow_column.defaults, want_set_opts )
 			);	
 		}
 		var opts=get_jqobject.data();

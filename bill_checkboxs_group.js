@@ -104,7 +104,7 @@
 			want_set_opts._environment_data_type=bill_core.global_typeof(want_set_opts.environment_data);
 			want_set_opts._default_value_type=bill_core.global_typeof(want_set_opts.default_value);
 			get_jqobject.data(
-				jQuery.extend( false,{}, jQuery.bill_checkboxs_group.defaults, want_set_opts )
+				jQuery.extend({}, jQuery.bill_checkboxs_group.defaults, want_set_opts )
 			);	
 		}
 		var opts=get_jqobject.data();

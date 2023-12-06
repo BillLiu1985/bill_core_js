@@ -556,13 +556,16 @@
 					var temp_opts={
 						'input_name':the_input_name
 					};
-					var temp_string='';
 					
-					
-					temp_string=temp_default_value;
-					if( bill_core.string_is_solid(temp_string)==='1' ){
-						temp_opts['default_value']=temp_string;
+					if( 
+						bill_core.string_is_solid(temp_default_value)==='1' || 
+						bill_core.global_typeof(temp_default_value)==='array_object'
+					){
+						
+						temp_opts['default_value']=temp_default_value;
 					}					
+					
+					var temp_string='';
 					
 					temp_string=jQuery(this).attr('file_type');
 					if( bill_core.string_is_solid(temp_string)==='1' ){
@@ -804,7 +807,7 @@
 						want_set_ckeditor_config['baseHref']=temp_string;
 					}
 					
-					jQuery.extend( true,final_ckeditor_config, jQuery.bill_bridge_ckeditor.defaults,want_set_ckeditor_config  );
+					jQuery.extend(final_ckeditor_config, jQuery.bill_bridge_ckeditor.defaults,want_set_ckeditor_config  );
 					jQuery.bill_bridge_ckeditor.setkcfinder(
 						final_ckeditor_config,final_ckeditor_config['baseHref']+'third_party/'
 					);

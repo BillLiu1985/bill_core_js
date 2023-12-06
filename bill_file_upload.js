@@ -33,6 +33,7 @@
 			'_value_alt':'',
 			'_obj_id':'',
 			'_column':'',
+			'_default_value_type':'',
 		}
 	};
 	
@@ -90,6 +91,8 @@
 			
 			var want_set_opts=param1;
 			
+			want_set_opts._default_value_type=bill_core.global_typeof(want_set_opts.default_value);
+			
 			if( bill_core.string_is_solid(want_set_opts.input_name)==='1' ){
 		
 			}else{
@@ -108,10 +111,11 @@
 			}
 			
 			if( 
-				bill_core.global_typeof(want_set_opts.default_value)==='string' ||
-				bill_core.global_typeof(want_set_opts.default_value)==='undefined'
+				want_set_opts._default_value_type==='string' ||
+				want_set_opts._default_value_type==='undefined' ||
+				want_set_opts._default_value_type==='array_object' 
 			){
-				if(bill_core.global_typeof(want_set_opts.default_value)==='undefined'){
+				if(want_set_opts._default_value_type==='undefined'){
 					want_set_opts.default_value='';
 				}
 			}else{
@@ -120,35 +124,62 @@
 			}
 			
 			{
-				let temp_parts=bill_core.string_multivalue_to_array(
-					want_set_opts.default_value
-				);
-			
-				if(temp_parts.length===4){
-					jQuery.extend( true,want_set_opts,{
-						'_value':temp_parts[0],
-						'_value_alt':temp_parts[1],
-						'_obj_id':temp_parts[2],
-						'_column':temp_parts[3],
-					})
-				}else if(temp_parts.length===2){
-					jQuery.extend( true,want_set_opts,{
-						'_value':temp_parts[0],
-						'_value_alt':temp_parts[1],
-					})
-				}else if(temp_parts.length===1){
-					jQuery.extend( true,want_set_opts,{
-						'_value':temp_parts[0],
-					})
-				}else{
-					jQuery.extend( true,want_set_opts,{
-						'_value':'',
-					})
+				
+				if(want_set_opts._default_value_type==='string'){
+					let temp_parts=bill_core.string_multivalue_to_array(
+						want_set_opts.default_value
+					);
+				
+					if(temp_parts.length===4){
+						jQuery.extend( want_set_opts,{
+							'_value':temp_parts[0],
+							'_value_alt':temp_parts[1],
+							'_obj_id':temp_parts[2],
+							'_column':temp_parts[3],
+						})
+					}else if(temp_parts.length===2){
+						jQuery.extend(want_set_opts,{
+							'_value':temp_parts[0],
+							'_value_alt':temp_parts[1],
+						})
+					}else if(temp_parts.length===1){
+						jQuery.extend( want_set_opts,{
+							'_value':temp_parts[0],
+						})
+					}else{
+						jQuery.extend( want_set_opts,{
+							'_value':'',
+						})
+					}
+				}else if(want_set_opts._default_value_type==='array_object'){
+					
+					if(want_set_opts.default_value.length===4){
+						jQuery.extend( want_set_opts,{
+							'_value':want_set_opts.default_value[0],
+							'_value_alt':want_set_opts.default_value[1],
+							'_obj_id':want_set_opts.default_value[2],
+							'_column':want_set_opts.default_value[3],
+						})
+					}else if(want_set_opts.default_value.length===2){
+						jQuery.extend( want_set_opts,{
+							'_value':want_set_opts.default_value[0],
+							'_value_alt':want_set_opts.default_value[1],
+						})
+						
+					}else if(want_set_opts.default_value.length===1){
+						jQuery.extend( want_set_opts,{
+							'_value':want_set_opts.default_value[0],
+						})
+					}else{
+						jQuery.extend( want_set_opts,{
+							'_value':'',
+						})
+					}
 				}
 			}
 			
 			get_jqobject.data(
-				jQuery.extend( true,{}, jQuery.bill_file_upload.defaults, want_set_opts )
+				jQuery.extend( {}, jQuery.bill_file_upload.defaults, want_set_opts )
 			);
 			
 		}

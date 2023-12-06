@@ -171,7 +171,7 @@
 			want_set_opts=param1;
 		}
 		
-		var opts = jQuery.extend( true,{}, jQuery.bill_file_immediate_upload.defaults, want_set_opts );
+		var opts = jQuery.extend({}, jQuery.bill_file_immediate_upload.defaults, want_set_opts );
 		get_jqobject.data(opts);
 		opts=get_jqobject.data();
 		

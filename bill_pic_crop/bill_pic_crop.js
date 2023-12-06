@@ -158,7 +158,7 @@
 				);
 				
 				if(temp_parts.length===2){
-					jQuery.extend( true,want_set_opts,{
+					jQuery.extend(want_set_opts,{
 						'_value':temp_parts[0],
 						'_before_crop':temp_parts[1],
 					})
@@ -169,7 +169,7 @@
 			}
 			
 			get_jqobject.data(
-				jQuery.extend( true,{}, jQuery.bill_pic_crop.defaults, want_set_opts )
+				jQuery.extend({}, jQuery.bill_pic_crop.defaults, want_set_opts )
 			);	
 		}
 		var opts=get_jqobject.data();

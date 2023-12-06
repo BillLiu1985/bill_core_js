@@ -84,7 +84,7 @@
 			var want_set_opts=param1;
 			
 			get_jqobject.data(
-				jQuery.extend( true,{}, jQuery.bill_datetimepicker.defaults, want_set_opts )
+				jQuery.extend({}, jQuery.bill_datetimepicker.defaults, want_set_opts )
 			);	
 		}
 		var opts=get_jqobject.data();
