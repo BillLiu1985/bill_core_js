@@ -74,8 +74,6 @@
 			'input[type="text"][name][name!=""][component_type="input_text"],'+
 			'input[type="text"][name][name!=""][component_type="input_text_number"],'+
 			'input[type="date"][name][name!=""][component_type="input_date"],'+
-			'input[type="radio"][name][name!=""][component_type="input_radio"],'+
-			'input[type="checkbox"][name][name!=""][component_type="input_checkbox"],'+
 			'input[type="hidden"][name][name!=""][component_type="input_hidden"],'+
 			'textarea[name][name!=""][component_type="textarea"],'+
 			'select[name][name!=""][component_type="select"]'
@@ -141,39 +139,7 @@
 						jQuery(this).attr('value',temp_default_value);
 					}
 				}
-				else if( the_component_type==='input_radio' ){
-					if( bill_core.global_typeof(temp_default_value)==='string' ){
 				
-						if(jQuery(this).attr('value')==temp_default_value){
-							jQuery(this).attr('checked','checked');
-						}else{
-							jQuery(this).removeAttr('checked');
-						}
-					}
-				}
-				else if( the_component_type==='input_checkbox' ){
-					if( bill_core.global_typeof(temp_default_value)==='string' ){
-				
-						var temp_array=temp_default_value.split(',');
-						temp_array=temp_array.filter(
-							function(element){
-								if(element!=''){
-									return true;
-								}
-							}
-						);
-						temp_array=temp_array.map(function(currentValue){
-							return bill_core.escape_get_from_multivalue(currentValue);
-						});
-						
-						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
-							jQuery(this).attr('checked','checked');
-						}else{
-							jQuery(this).removeAttr('checked');
-						}
-						
-					}
-				}
 				else if(the_component_type=='input_date'){
 					
 					
@@ -219,12 +185,9 @@
 					//the_options Ex:
 					//[{'value':'value_1','text':'text_1'},{'value':'value_2','text':'text_2'},{'value':'value_3','text':'text_3'}...]
 					if( 
-						bill_core.global_typeof(the_options)==='array_object' || 
-						bill_core.global_typeof(the_options)==='pure_object'
+						bill_core.global_typeof(the_options)==='array_object'
 					){
-						if(bill_core.global_typeof(the_options)==='pure_object'){
-							the_options=Object.values(the_options);
-						}
+						
 						/*
 						var temp_html='';
 						for(var kindex in the_options){
@@ -244,17 +207,69 @@
 					}
 					
 					if( bill_core.global_typeof(temp_default_value)==='string' ){
-						this.value=temp_default_value;
-						/*
-						jQuery(this).children('option[value="'+
-							jQuery.escapeSelector(temp_default_value)+
-						'"]').attr('selected','selected');
-						*/
+						//this.value=temp_default_value;
+						let temp_array=bill_core.string_multivalue_to_array(temp_default_value);
+						
+						for(let the_value of temp_array){
+							jQuery(this).children('option[value="'+
+								jQuery.escapeSelector(the_value)+
+							'"]').attr('selected','selected');
+						}
+						
+					}else if( bill_core.global_typeof(temp_default_value)==='array_object' ){
+						for(let the_value of temp_default_value){
+							jQuery(this).children('option[value="'+
+								jQuery.escapeSelector(the_value)+
+							'"]').attr('selected','selected');
+						}
 					}
 				}
 			}
 		);
-		
+		get_jqobject.find(
+			'input[type="radio"][name][name!=""][component_type="input_radio"],'+
+			'input[type="checkbox"][name][name!=""][component_type="input_checkbox"]'
+		).each(
+			function(){
+				var the_input_name=jQuery(this).attr('name');
+				var temp_default_value=default_value_source[the_input_name];
+				var temp_environment_data=environment_data_source[the_input_name];
+				var the_component_type=jQuery(this).attr('component_type');
+				
+				
+				
+				if( the_component_type==='input_radio' ){
+					if( bill_core.global_typeof(temp_default_value)==='string' ){
+				
+						if(jQuery(this).attr('value')==temp_default_value){
+							jQuery(this).attr('checked','checked');
+						}else{
+							jQuery(this).removeAttr('checked');
+						}
+					}
+				}
+				else if( the_component_type==='input_checkbox' ){
+					if( bill_core.global_typeof(temp_default_value)==='string' ){
+				
+						let temp_array=bill_core.string_multivalue_to_array(temp_default_value);
+						
+						if(jQuery.inArray(  jQuery(this).attr('value'), temp_array )!==-1){
+							jQuery(this).attr('checked','checked');
+						}else{
+							jQuery(this).removeAttr('checked');
+						}
+						
+					}else if(bill_core.global_typeof(temp_default_value)==='array_object'){
+						if(jQuery.inArray(  jQuery(this).attr('value'), temp_default_value )!==-1){
+							jQuery(this).attr('checked','checked');
+						}else{
+							jQuery(this).removeAttr('checked');
+						}
+					}
+				}
+				
+			}
+		);
 		
 		//再處理特殊元件
 		get_jqobject.find(
@@ -301,10 +316,16 @@
 					var temp_opts={
 						'input_name':the_input_name
 					};
-					if( bill_core.global_typeof(temp_environment_data)==='string' ){
+					if( 
+						bill_core.global_typeof(temp_environment_data)==='string' ||
+						bill_core.global_typeof(temp_environment_data)==='array_object'
+					){
 						temp_opts['environment_data']=temp_environment_data;
 					}
-					if( bill_core.global_typeof(temp_default_value)==='string' ){
+					if( 
+						bill_core.global_typeof(temp_default_value)==='string' ||
+						bill_core.global_typeof(temp_default_value)==='array_object'
+					){
 						temp_opts['default_value']=temp_default_value;
 					}
 					
@@ -326,7 +347,10 @@
 					var temp_opts={
 						'input_name':the_input_name
 					};
-					if( bill_core.global_typeof(temp_environment_data)==='string' ){
+					if( 
+						bill_core.global_typeof(temp_environment_data)==='string' ||
+						bill_core.global_typeof(temp_environment_data)==='array_object'
+					){
 						temp_opts['environment_data']=temp_environment_data;
 					}
 					if( bill_core.global_typeof(temp_default_value)==='string' ){

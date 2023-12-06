@@ -17,10 +17,12 @@
 		'defaults':{
 			'input_name':'',
 			'counts_width':5,
-			//value_1;text_1,value_2;text_2,value_3;text_3
-			//value1,value2,value3
+			//(string) "value_1;text_1,value_2;text_2,value_3;text_3"
+			//(string) "value1,value2,value3"
+			//(array_object) [{"value":"value_1","text":"text_1"},{"value":"value_2","text":"text_2"},{"value":"value_3","text":"text_3"}]
 			'environment_data':'',
-			//value3
+			'_environment_data_type':'',
+			//(string) "value3"
 			'default_value':'',
 			'radio_extra_attrs':''
 		}
@@ -78,22 +80,29 @@
 		if( bill_core.global_typeof(param1)=='pure_object' ){
 			var want_set_opts=param1;
 			
-			if(bill_core.global_typeof( want_set_opts.default_value)==='string'){
+			if(
+				bill_core.global_typeof( want_set_opts.default_value)==='string'
+			){
 		
 			}else{
 				bill_core.debug_console('bill_radios_group元件啟動失敗,default_value參數資料型態錯誤','error');
 				return get_jqobject;
 			}
 			
-			if(bill_core.global_typeof( want_set_opts.environment_data)==='string'){
+			if(
+				bill_core.global_typeof( want_set_opts.environment_data)==='string' ||
+				bill_core.global_typeof( want_set_opts.environment_data)==='array_object'
+			){
 			
 			}else{
 				bill_core.debug_console('bill_radios_group元件啟動失敗,environment_data參數資料型態錯誤','error');
 				return get_jqobject;
 			}
-		
+			
+			want_set_opts._environment_data_type=bill_core.global_typeof(want_set_opts.environment_data);
+			
 			get_jqobject.data(
-				jQuery.extend( true,{}, jQuery.bill_radios_group.defaults, want_set_opts )
+				jQuery.extend( false,{}, jQuery.bill_radios_group.defaults, want_set_opts )
 			);	
 		}
 		var opts=get_jqobject.data();
@@ -105,10 +114,16 @@
 				get_jqobject.attr('is_transformed_to_bill_radios_group','1');
 				
 				var temp_html='';
-				var the_options=bill_core.string_string_to_options_data(
-					opts.environment_data
-				);
 				
+				if(opts._environment_data_type==='string'){
+					var the_options=bill_core.string_string_to_options_data(
+						opts.environment_data
+					);
+				}else if(opts._environment_data_type==='array_object'){
+					var the_options=opts.environment_data;
+				}else{
+					var the_options=[];
+				}
 				//draw radios
 				
 				for(var kindex in the_options){

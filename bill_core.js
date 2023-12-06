@@ -447,12 +447,12 @@ var bill_core={
 			
 			for(var input_name in checkbox_values){
 				var temp_array=checkbox_values[input_name];
-				values[input_name]=temp_array.join(',');
+				values[input_name]=bill_core.string_array_to_multivalue(temp_array);
 			}
 			
 			for(var input_name in select_values){
 				var temp_array=select_values[input_name];
-				values[input_name]=temp_array.join(',');
+				values[input_name]=bill_core.string_array_to_multivalue(temp_array);
 			}
 			return_data['all_inputs_jqobject']=
 				fetch_target_input_radio.
