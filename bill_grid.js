@@ -289,7 +289,7 @@
 					this
 				);	
 			},
-			'record_move_up':function(record_position){
+			'record_move_up':function(record_id){
 				var the_grid=get_jqobject;
 				var grid_id=the_grid.attr('id');
 				var about_grid=the_grid.data();
@@ -297,7 +297,7 @@
 					about_grid['record_move_up_ajax_url'],
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
-						'record_position':record_position,
+						'obj_id':record_id,
 						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
@@ -317,7 +317,7 @@
 					this
 				);
 			},
-			'record_move_down':function(record_position){
+			'record_move_down':function(record_id){
 				var the_grid=get_jqobject;
 				var grid_id=the_grid.attr('id');
 				var about_grid=the_grid.data();
@@ -325,7 +325,7 @@
 					about_grid['record_move_down_ajax_url'],
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
-						'record_position':record_position,
+						'obj_id':record_id,
 						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
@@ -345,7 +345,7 @@
 					this
 				);
 			},
-			'record_move_to':function(record_position,destination_position){
+			'record_move_to':function(record_id,destination_id){
 				var the_grid=get_jqobject;
 				var grid_id=the_grid.attr('id');
 				var about_grid=the_grid.data();
@@ -353,8 +353,8 @@
 					about_grid['record_move_to_ajax_url'],
 					{
 						'CSRF_TOKEN':about_grid['CSRF_TOKEN'],
-						'record_position':record_position,
-						'destination_position':destination_position,
+						'obj_id':record_id,
+						'destination_id':destination_id,
 						'search_items':about_grid['search_items']
 					},
 					function(response_data,textStatus,jqXHR){
@@ -524,7 +524,7 @@
 				
 					jqobject_private_methods['record_delete'].call(
 						jQuery(this),
-						jQuery(this).closest('*[data-record_id]').data('record_id')
+						jQuery(this).closest('*[data-record_id]').attr('data-record_id')
 					);
 				}
 			});
@@ -533,7 +533,7 @@
 				jQuery(this).attr('disabled',true);			
 				jqobject_private_methods['record_toggle_is_enabled'].call(
 					jQuery(this),
-					jQuery(this).closest('*[data-record_id]').data('record_id')
+					jQuery(this).closest('*[data-record_id]').attr('data-record_id')
 				);
 				
 			});
@@ -542,7 +542,7 @@
 				jQuery(this).attr('disabled',true);			
 				jqobject_private_methods['record_toggle_is_show'].call(
 					jQuery(this),
-					jQuery(this).closest('*[data-record_id]').data('record_id')
+					jQuery(this).closest('*[data-record_id]').attr('data-record_id')
 				);
 				
 			});
@@ -552,7 +552,7 @@
 				jQuery(this).attr('disabled',true);
 				jqobject_private_methods['record_move_up'].call(
 					jQuery(this),
-					jQuery(this).closest('*[data-record_id]').attr('data-record_position')
+					jQuery(this).closest('*[data-record_id]').attr('data-record_id')
 				);
 			});
 			
@@ -560,19 +560,19 @@
 				jQuery(this).attr('disabled',true);
 				jqobject_private_methods['record_move_down'].call(
 					jQuery(this),
-					jQuery(this).closest('*[data-record_id]').attr('data-record_position')
+					jQuery(this).closest('*[data-record_id]').attr('data-record_id')
 				);
 			});
 			
 			jQuery(document).on('change','[name="'+get_jqobject.attr('id')+'_record_move_to_button'+'"]',function(e){
-				var record_position=jQuery(this).closest('*[data-record_id]').attr('data-record_position');
-				var destination_position=jQuery(this).val();
-				if(destination_position!==record_position && destination_position!==''){
+				var record_id=jQuery(this).closest('*[data-record_id]').attr('data-record_id');
+				var destination_id=jQuery(this).val();
+				if(destination_id!==record_id && destination_id!==''){
 					jQuery(this).attr('disabled',true);
 					jqobject_private_methods['record_move_to'].call(
 						jQuery(this),
-						record_position,
-						destination_position,
+						record_id,
+						destination_id,
 					);
 				}else{
 					jQuery(this).val('');

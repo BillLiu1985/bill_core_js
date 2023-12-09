@@ -3286,7 +3286,7 @@ var bill_core={
 		}
 		
 		for(let the_option_info of options_info){
-			if(the_option_info['value']==='selected_value'){
+			if(the_option_info['value']===selected_value){
 				result_html+="<option value='"+the_option_info['value']+"' selected='selected'>"+the_option_info['text']+"</option>";
 			}else{
 				result_html+="<option value='"+the_option_info['value']+"'>"+the_option_info['text']+"</option>";
