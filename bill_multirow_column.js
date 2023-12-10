@@ -129,18 +129,30 @@
 				
 				
 				var temp_jqobject=jQuery('#'+opts.row_template_id).clone();
+				temp_jqobject.append(
+					"<input "+
+						"type='hidden' "+
+						"component_type='input_hidden' "+
+						"name='row_type' "+
+					"/> "+
+					"<input  "+
+						"type='hidden' "+
+						"component_type='input_hidden'  "+
+						"name='row_ascend_sort' "+
+					"/>"
+				);
 				temp_jqobject.attr('id',the_row_id);
 				temp_jqobject.show();
 				temp_jqobject.find(
-					'input[type="text"][name][name!=""],'+
-					'input[type="date"][name][name!=""],'+
-					'input[type="radio"][name][name!=""],'+
-					'input[type="checkbox"][name][name!=""],'+
-					'input[type="hidden"][name][name!=""],'+
-					'textarea[name][name!=""],'+
-					'select[name][name!=""],'+
-					'div[name][name!=""],'+
-					'span[name][name!=""]'
+					'input[type="text"][component_type="input_text"][name][name!=""],'+
+					'input[type="date"][component_type="input_date"][name][name!=""],'+
+					'input[type="radio"][component_type="input_radio"][name][name!=""],'+
+					'input[type="checkbox"][component_type="input_checkbox"][name][name!=""],'+
+					'input[type="hidden"][component_type="input_hidden"][name][name!=""],'+
+					'textarea[component_type="textarea"][name][name!=""],'+
+					'select[component_type="select"][name][name!=""],'+
+					'div[component_type="bill_file_upload"][name][name!=""],'+
+					'span[component_type="display_info"][name][name!=""]'
 				).each(
 					function(){
 						var original_input_name=jQuery(this).attr('name');
