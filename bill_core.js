@@ -286,17 +286,17 @@ var bill_core={
 			
 			values[the_input_name]=the_input_value;
 			
-			if( bill_core.global_typeof(the_input_human_read_name)==='string' ){
+			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
 				human_read_names[the_input_name]=the_input_human_read_name;
 			}else{
 				human_read_names[the_input_name]=null;
 			}
-			if( bill_core.global_typeof(the_input_reg_1)==='string' ){
+			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
 				reg_1s[the_input_name]=the_input_reg_1;
 			}else{
 				reg_1s[the_input_name]=null;
 			}
-			if( bill_core.global_typeof(the_input_error_msg_1)==='string' ){
+			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
 				error_msg_1s[the_input_name]=the_input_error_msg_1;
 			}else{
 				error_msg_1s[the_input_name]=null;
@@ -357,17 +357,53 @@ var bill_core={
 				}
 			)
 			
-			if( bill_core.global_typeof(the_input_human_read_name)==='string' ){
+			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
 				human_read_names[the_input_name]=the_input_human_read_name;
 			}else{
 				human_read_names[the_input_name]=null;
 			}
-			if( bill_core.global_typeof(the_input_reg_1)==='string' ){
+			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
 				reg_1s[the_input_name]=the_input_reg_1;
 			}else{
 				reg_1s[the_input_name]=null;
 			}
-			if( bill_core.global_typeof(the_input_error_msg_1)==='string' ){
+			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
+				error_msg_1s[the_input_name]=the_input_error_msg_1;
+			}else{
+				error_msg_1s[the_input_name]=null;
+			}
+			
+		}
+		
+		var fetch_jquery_expression_input_file=
+			'input[type="file"][name][name!=""]:not([non_form_data])';
+		var fetch_function_input_file=function(){
+			var the_input_jqobject=jQuery(this);
+			var the_input_name;
+			var the_input_human_read_name;
+			var the_input_reg_1;
+			var the_input_error_msg_1;
+			var the_input_value;
+			
+			the_input_name=the_input_jqobject.attr('name');
+			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
+			the_input_reg_1=the_input_jqobject.attr('reg_1');
+			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
+			
+			the_input_value=the_input_jqobject.prop('files');
+			values[the_input_name]=the_input_value;
+				
+			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
+				human_read_names[the_input_name]=the_input_human_read_name;
+			}else{
+				human_read_names[the_input_name]=null;
+			}
+			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
+				reg_1s[the_input_name]=the_input_reg_1;
+			}else{
+				reg_1s[the_input_name]=null;
+			}
+			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
 				error_msg_1s[the_input_name]=the_input_error_msg_1;
 			}else{
 				error_msg_1s[the_input_name]=null;
@@ -380,8 +416,7 @@ var bill_core={
 			'input[type="tel"][name][name!=""]:not([non_form_data]),'+
 			'input[type="date"][name][name!=""]:not([non_form_data]),'+
 			'input[type="hidden"][name][name!=""]:not([non_form_data]),'+
-			'input[type="password"][name][name!=""]:not([non_form_data]),'+
-			'input[type="file"][name][name!=""]:not([non_form_data])';
+			'input[type="password"][name][name!=""]:not([non_form_data])';
 		var fetch_function_others=function(){
 			var the_input_jqobject=jQuery(this);
 			var the_input_name;
@@ -398,17 +433,17 @@ var bill_core={
 			the_input_value=the_input_jqobject.val();
 			values[the_input_name]=the_input_value;
 				
-			if( bill_core.global_typeof(the_input_human_read_name)==='string' ){
+			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
 				human_read_names[the_input_name]=the_input_human_read_name;
 			}else{
 				human_read_names[the_input_name]=null;
 			}
-			if( bill_core.global_typeof(the_input_reg_1)==='string' ){
+			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
 				reg_1s[the_input_name]=the_input_reg_1;
 			}else{
 				reg_1s[the_input_name]=null;
 			}
-			if( bill_core.global_typeof(the_input_error_msg_1)==='string' ){
+			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
 				error_msg_1s[the_input_name]=the_input_error_msg_1;
 			}else{
 				error_msg_1s[the_input_name]=null;
@@ -428,23 +463,38 @@ var bill_core={
 			var fetch_target_textarea=source_range.filter(fetch_jquery_expression_textarea);
 			var fetch_target_input_checkbox=source_range.filter(fetch_jquery_expression_input_checkbox);
 			var fetch_target_select=source_range.filter(fetch_jquery_expression_select);
+			var fetch_target_input_file=source_range.filter(fetch_jquery_expression_input_file);
 			var fetch_target_others=source_range.filter(fetch_jquery_expression_others);
-			source_range.each(
+			fetch_target_input_radio.each(
 				function(){
-					if(jQuery(this).is(fetch_target_input_radio)){
-						fetch_function_input_radio.call(this)
-					}else if(jQuery(this).is(fetch_target_textarea)){
-						fetch_function_textarea.call(this)
-					}else if(jQuery(this).is(fetch_target_input_checkbox)){
-						fetch_function_input_checkbox.call(this)
-					}else if(jQuery(this).is(fetch_target_select)){
-						fetch_function_select.call(this)
-					}else if(jQuery(this).is(fetch_target_others)){
-						fetch_function_others.call(this)
-					}
+					fetch_function_input_radio.call(this)
 				}
 			);
-			
+			fetch_target_textarea.each(
+				function(){
+					fetch_function_textarea.call(this)
+				}
+			);
+			fetch_target_input_checkbox.each(
+				function(){
+					fetch_function_input_checkbox.call(this)
+				}
+			);
+			fetch_target_select.each(
+				function(){
+					fetch_function_select.call(this)
+				}
+			);
+			fetch_target_input_file.each(
+				function(){
+					fetch_function_input_file.call(this)
+				}
+			);
+			fetch_target_others.each(
+				function(){
+					fetch_function_others.call(this)
+				}
+			);
 			for(var input_name in checkbox_values){
 				var temp_array=checkbox_values[input_name];
 				values[input_name]=bill_core.string_array_to_multivalue(temp_array);
@@ -459,6 +509,7 @@ var bill_core={
 				add(fetch_target_textarea).
 				add(fetch_target_input_checkbox).
 				add(fetch_target_select).
+				add(fetch_target_input_file).
 				add(fetch_target_others);
 		}
 		
@@ -2340,16 +2391,21 @@ var bill_core={
 		var return_result={
 			'fails':{}
 		};
-		if(this.global_typeof(inputs_data)!=='pure_object'){
+		if(this.global_typeof(inputs_data)==='pure_object'){
+			
+		}else{
 			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
 			return_result['fails']=null;
 			return return_result;
 		}
+		
 		if( 
-			this.global_typeof(inputs_data['reg_1s'])!=='pure_object' &&
-			this.global_typeof(inputs_data['reg_1s'])!=='null_object'
+			this.global_typeof(inputs_data['reg_1s'])==='pure_object' ||
+			this.global_typeof(inputs_data['reg_1s'])==='null_object'
 		
 		){
+			
+		}else{
 			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
 			return_result['fails']=null;
 			return return_result;
@@ -2359,57 +2415,80 @@ var bill_core={
 		var values=inputs_data['values'];
 		var human_read_names=inputs_data['human_read_names'];
 		var error_msg_1s=inputs_data['error_msg_1s'];
-	
-		if( this.global_typeof(reg_1s)==='null' ){
+		if(this.global_typeof(reg_1s)==='null_object'){
 			return_result['fails']=null;
 			return return_result;
 		}
-		
 		
 		for(var the_input_name in reg_1s ){
 			var the_reg_1=reg_1s[the_input_name];
 			var the_value=values[the_input_name];
 			var the_human_read_name=human_read_names[the_input_name];
 			var the_error_msg_1=error_msg_1s[the_input_name];
-			if(this.global_typeof(the_value)!=='string'){
+			if(this.global_typeof(the_reg_1)==='null_object'){
+				continue;
+			}
+			
+			if(
+				this.global_typeof(the_value)==='string' || 
+				this.global_typeof(the_value)==='other_object'
+			){}
+			else{
 				this.debug_console('bill_core.'+arguments.callee.name+' input '+the_input_name+' error!','error');
 				return_result['fails']=null;
 				break;
 			}
-			if(this.string_is_solid(the_reg_1)==='0'){
-				continue;
-			}
+			
 			
 			var the_reg_tip=this.validate_regexp_tips[the_reg_1];
 			if(the_reg_tip===undefined){
 				the_reg_tip='請輸入正確的格式';
 			}
 		
-			if(this.validate_single(the_reg_1,the_value)==='1'){
+			var the_value_for_validate='';
+			if(the_value.constructor.name==='FileList'){
+				let temp_array=[];
+				for(let temp_File of the_value){
+					temp_array.push(temp_File.name);
+				}
+				if(temp_array.length>1){
+					the_value_for_validate=this.string_array_to_multivalue(temp_array);
+				}else if(temp_array.length===1){
+					the_value_for_validate=temp_array[0];
+				}else{
+					the_value_for_validate='';
+				}
+			}else{
+				the_value_for_validate=the_value;
+			}
+			
+			if(this.validate_single(the_reg_1,the_value_for_validate)==='1'){
 				inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message','');
 			}
 			else{
 				if( return_result.fails.hasOwnProperty(the_input_name)===false ){
 					return_result.fails[the_input_name]={
-						'value':'',
-						'human_read_name':'',
-						'validate_fail_message':''
+						'value':null,
+						'human_read_name':null,
+						'validate_fail_message':null,
 					};
 				}
-				return_result.fails[the_input_name]['value']=the_value;
-				if(this.string_is_solid(the_human_read_name)==='1'){
+				return_result.fails[the_input_name]['value']=the_value_for_validate;
+				
+				if(this.global_typeof(the_human_read_name)==='null_object')
+				{
+					return_result.fails[the_input_name]['human_read_name']=the_input_name;	
+				}else{
 					return_result.fails[the_input_name]['human_read_name']=the_human_read_name;
 				}
-				else{
-					return_result.fails[the_input_name]['human_read_name']=the_input_name;
-				}
-				if(this.string_is_solid(the_error_msg_1)==='1'){
-					return_result.fails[the_input_name]['validate_fail_message']=the_error_msg_1;
-					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_error_msg_1);
-				}
-				else{
+				
+				if(this.global_typeof(the_error_msg_1)==='null_object'){
 					return_result.fails[the_input_name]['validate_fail_message']=the_reg_tip;
 					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_reg_tip);
+				}
+				else{
+					return_result.fails[the_input_name]['validate_fail_message']=the_error_msg_1;
+					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_error_msg_1);
 				}
 				
 			}
@@ -3294,5 +3373,38 @@ var bill_core={
 		}
 		
 		return result_html;
+	},
+	'transform_input_values_data_to_FormData':function(input_values_data){
+		var formdata = new FormData();
+		for(let the_input_name in input_values_data){
+			let the_input_value=input_values_data[the_input_name];
+			let final_input_name=null;
+			let final_input_value=null;
+			if(the_input_value.constructor.name==='FileList'){
+				if(the_input_value.length==0){
+					
+				}else if(the_input_value.length==1){
+					final_input_name=the_input_name;
+					final_input_value=the_input_value[0];
+					formdata.append(final_input_name,final_input_value);
+				}else if(the_input_value.length>1){
+					let temp_next_index=0;
+					for(let temp_file of the_input_value){
+						final_input_name=the_input_name+'['+temp_next_index+']';
+						final_input_value=temp_file;
+						formdata.append(final_input_name,final_input_value);
+						
+						temp_next_index=temp_next_index+1;
+					}
+				}else{
+					
+				}
+			}else{
+				final_input_name=the_input_name;
+				final_input_value=the_input_value;
+				formdata.append(final_input_name,final_input_value);
+			}
+		}
+		return formdata;
 	},
 }
