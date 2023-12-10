@@ -34,6 +34,8 @@
 			'_obj_id':'',
 			'_column':'',
 			'_default_value_type':'',
+			'_is_in_row':'0',
+			'_input_name_op':'',
 		}
 	};
 	
@@ -99,6 +101,16 @@
 				bill_core.debug_console('bill_file_upload元件啟動失敗,input_name參數錯誤','error');
 				return get_jqobject;
 			}
+			let temp_result=bill_core.validate_fetch(
+				'^(\\w+\\[.+?\\])\\[(.+?)\\]$',
+			want_set_opts.input_name);
+			if(temp_result.length>0){
+				want_set_opts._input_name_op=temp_result[0][1]+'['+temp_result[0][2]+'_op]';
+			}else{
+				want_set_opts._input_name_op=want_set_opts.input_name+'_op';
+				want_set_opts._is_in_row='1';
+			}
+			
 			if( jQuery.inArray(want_set_opts.file_type,['normal','pic','html5video','flash'])===-1 ){
 				bill_core.debug_console('bill_file_upload元件啟動失敗,file_type參數錯誤','error');
 				return get_jqobject;
@@ -426,19 +438,19 @@
 					
 					if( bill_core.string_is_solid(opts._value)==='1' ){
 						final_component_html+=
-						'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO"  />不變'+
-						'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
+						'<input type="radio"  name="'+opts._input_name_op+'" value="DO_NO"  />不變'+
+						'<input type="radio"  name="'+opts._input_name_op+'" value="DO_MODIFY" />變更';
 						if(opts.is_required==='1'){
 							
 						}else{
-							final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+							final_component_html+='<input type="radio"  name="'+opts._input_name_op+'" value="DO_DELETE" />刪除';	
 						}
 					}
 					else{
 						if(opts.is_required==='1'){
-							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_ADD" />';
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts._input_name_op+'" value="DO_ADD" />';
 						}else{
-							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts._input_name_op+'" value="DO_NO" />';	
 						}
 					}
 				}else if(opts.layout_type==='basic_1'){
@@ -451,26 +463,26 @@
 					
 					if( bill_core.string_is_solid(opts._value)==='1' ){
 						final_component_html+=
-						'<input type="radio"  name="'+opts.input_name+'_op" value="DO_NO"  />不變'+
-						'<input type="radio"  name="'+opts.input_name+'_op" value="DO_MODIFY" />變更';
+						'<input type="radio"  name="'+opts._input_name_op+'" value="DO_NO"  />不變'+
+						'<input type="radio"  name="'+opts._input_name_op+'" value="DO_MODIFY" />變更';
 						if(opts.is_required==='1'){
 							
 						}else{
-							final_component_html+='<input type="radio"  name="'+opts.input_name+'_op" value="DO_DELETE" />刪除';	
+							final_component_html+='<input type="radio"  name="'+opts._input_name_op+'" value="DO_DELETE" />刪除';	
 						}
 					}
 					else{
 						if(opts.is_required==='1'){
-							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_ADD" />';
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts._input_name_op+'"value="DO_ADD" />';
 						}else{
-							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts.input_name+'_op" value="DO_NO" />';	
+							final_component_html+='<input type="hidden" id="'+component_id+'_op"  name="'+opts._input_name_op+'" value="DO_NO" />';	
 						}
 					}
 				}
 				get_jqobject.html(final_component_html);
 				
 				//bind element event_handler
-				get_jqobject.find('input:radio[name="'+opts.input_name+'_op"]').change(
+				get_jqobject.find('input:radio[name="'+opts._input_name_op+'"]').change(
 					function(){
 						var value_jqobject=jQuery('#'+component_id+'_value');
 						var button_text_jqobject=jQuery('#'+component_id+'_button_text');
@@ -533,7 +545,7 @@
 							if($(this).val()===''){
 								
 							}else{
-								jQuery("input:radio[name='"+opts.input_name+"_op'][value='DO_MODIFY']").click();
+								jQuery("input:radio[name='"+opts._input_name_op+"'][value='DO_MODIFY']").click();
 							}
 						}else{
 							//無舊檔的情況下
@@ -553,7 +565,7 @@
 					}
 				);
 				
-				get_jqobject.find('input:radio[name="'+opts.input_name+'_op"][value="DO_NO"]').click();
+				get_jqobject.find('input:radio[name="'+opts._input_name_op+'"][value="DO_NO"]').click();
 					
 			},
 		};
