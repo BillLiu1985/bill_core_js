@@ -431,7 +431,7 @@
 					
 					if( bill_core.string_is_solid(opts.file_tip)==='1' ){
 						final_component_html+=
-						'<span id="'+component_id+'_file_tip">'+opts.file_tip+'</span><br />';
+						'<span id="'+component_id+'_file_tip" style="color: #E91E63;font-size: 13px;">'+opts.file_tip+'</span><br />';
 					}
 					final_component_html+=
 					'<input type="file" '+temp_attrs_string+' value="" />';

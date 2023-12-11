@@ -35,6 +35,7 @@
 			'default_value_source':[],
 			'environment_data_source':{},
 			'_next_row_index':0,
+			'_jquery_expression_for_template':'',
 		}
 	};
 	
@@ -94,8 +95,16 @@
 			);	
 		}
 		var opts=get_jqobject.data();
-		
-		
+		opts._jquery_expression_for_template=
+			'input[type="text"][component_type="input_text"][name][name!=""],'+
+			'input[type="date"][component_type="input_date"][name][name!=""],'+
+			'input[type="radio"][component_type="input_radio"][name][name!=""],'+
+			'input[type="checkbox"][component_type="input_checkbox"][name][name!=""],'+
+			'input[type="hidden"][component_type="input_hidden"][name][name!=""],'+
+			'textarea[component_type="textarea"][name][name!=""],'+
+			'select[component_type="select"][name][name!=""],'+
+			'div[component_type="bill_file_upload"][name][name!=""],'+
+			'span[component_type="display_info"][name][name!=""]';
 		
 		/*
 			the_row_data={
@@ -118,14 +127,15 @@
 		var jqobject_public_methods={
 			'draw_row':function(the_row_data,is_for_add_row_button){	
 				var processed_the_row_data={};
+				var processed_the_environment_data={};
+				
 				
 				var the_row_index=opts._next_row_index;
 				var the_row_id=component_id+'_row_'+the_row_index;	
 				for(let colname in the_row_data){
 					processed_the_row_data[opts.column_name+"["+the_row_index+"]["+colname+"]"]=the_row_data[colname];
-					
+					processed_the_environment_data[opts.column_name+"["+the_row_index+"]["+colname+"]"]=opts.environment_data_source[colname];
 				}
-				
 				
 				
 				var temp_jqobject=jQuery('#'+opts.row_template_id).clone();
@@ -144,15 +154,7 @@
 				temp_jqobject.attr('id',the_row_id);
 				temp_jqobject.show();
 				temp_jqobject.find(
-					'input[type="text"][component_type="input_text"][name][name!=""],'+
-					'input[type="date"][component_type="input_date"][name][name!=""],'+
-					'input[type="radio"][component_type="input_radio"][name][name!=""],'+
-					'input[type="checkbox"][component_type="input_checkbox"][name][name!=""],'+
-					'input[type="hidden"][component_type="input_hidden"][name][name!=""],'+
-					'textarea[component_type="textarea"][name][name!=""],'+
-					'select[component_type="select"][name][name!=""],'+
-					'div[component_type="bill_file_upload"][name][name!=""],'+
-					'span[component_type="display_info"][name][name!=""]'
+					opts._jquery_expression_for_template
 				).each(
 					function(){
 						var original_input_name=jQuery(this).attr('name');
@@ -215,7 +217,7 @@
 					}
 				)
 				//先處理一般元件
-				jQuery('#'+the_row_id).bill_components_initial(processed_the_row_data,opts.environment_data_source);
+				jQuery('#'+the_row_id).bill_components_initial(processed_the_row_data,processed_the_environment_data);
 				
 				opts.after_row_load_func.call(get_jqobject,processed_the_row_data);
 			},
@@ -239,7 +241,7 @@
 			opts._add_row_button_id=component_id+'_add_row_button';
 			opts._delete_all_rows_button_id=component_id+'_delete_all_rows_button';
 			get_jqobject.append(
-				'<div  id="'+component_id+'_op_buttons_area" >'+
+				'<div  id="'+component_id+'_op_buttons_area" style="text-align: center;font-size: 13px;width: 200px;margin: auto;margin-top: 15px;border-radius: 5px;line-height: 30px;" >'+
 					'<input style="cursor:pointer"  type="button" id="'+opts._add_row_button_id+'" value="'+opts.add_row_button_text+'" />&nbsp;&nbsp;'+
 					(opts.is_required==='1'?'':'<input style="cursor:pointer" type="button" id="'+opts._delete_all_rows_button_id+'" value="'+opts.delete_all_rows_button_text+'" />')+
 				'</div>'+
@@ -285,7 +287,11 @@
 						'row_type':'add',
 						'row_ascend_sort':(now_rows_count+1).toString(),
 					};
-					
+					jQuery('#'+opts.row_template_id).find(opts._jquery_expression_for_template).each(
+						function(){
+							new_row_data[jQuery(this).attr('name')]='';
+						}
+					);
 					
 					
 					jqobject_public_methods.draw_row(
