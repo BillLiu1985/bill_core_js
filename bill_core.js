@@ -1,22 +1,4 @@
-
-/**
- * 建置網站常會用到的js函式庫
- * 引用該檔案前，需先引用jquery元件
- */
-if(window.jQuery===undefined){
-	console.error('jquery never used');
-}
-
-var bill_core={
-	/*
-		js套件所在目錄URL
-	*/
-	'js_dir_url':'',
-	
-	/*
-		專案目錄URL
-	*/
-	'project_root_url':'',
+class bill_core{	
 	/**
 	 * 對原生JS變數資料型態再做更詳細更具體的分類
 	 *
@@ -30,7 +12,7 @@ var bill_core={
 	 * @param {mixed} checked_var - 要檢測的變數
 	 * @return {string} 資料型態名稱
 	 */
-	'global_typeof':function(checked_var){
+	static global_typeof(checked_var){
 		if(typeof(checked_var)==='number'){
 			if(checked_var===Number.NaN){
 				return 'Number.NaN';
@@ -62,7 +44,7 @@ var bill_core={
 		}else{
 			return 'unknown';
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -71,13 +53,13 @@ var bill_core={
 	 * @param {mixed} checked_var
 	 * @return string
 	 */
-	'global_is_empty':function(checked_var){
+	static global_is_empty(checked_var){
 		if(checked_var===undefined || checked_var===null || checked_var===''){
 			return '1';
 		}else{
 			return '0';
 		}
-	},
+	}
 	
 	/**
 	 * 
@@ -86,7 +68,7 @@ var bill_core={
 	 * @param {object} obj - 要觀察的object
 	 * @return string
 	 */
-	'global_objToString':function(obj) {
+	static global_objToString(obj) {
 		var out = '';
 		for (var i in obj)
 		{
@@ -95,7 +77,7 @@ var bill_core={
 			
 		}
 		return out;
-	},
+	}
 	
 	/**
 	 * 
@@ -106,7 +88,7 @@ var bill_core={
 	 * @return {string}
 	 *
 	 */
-	 'global_parse_template_string':function(template_string,params){
+	 static global_parse_template_string(template_string,params){
 		if(this.global_typeof(template_string)!=='string'){
 			this.debug_console('template_string argument error','error');
 			return '';
@@ -124,404 +106,10 @@ var bill_core={
 				}
 				return params[capture];
 			}
-		); // "gold ring|string"
-		
-	},
+		); // "gold ring|string"	
+	}
 	
-	/**
-	 * 
-	 * 偵測網頁瀏覽者之環境
-	 *
-	 * @return {object}
-	 */
-	'global_parse_http_user_agent':function() {
-		//若device不為空字串 代表裝置是手機
-		var return_data={
-			'device':'',//若為有長度的字串 代表裝置是非電腦(可能是平板或手機或...)
-			'browser_type':'',//瀏覽器類型
-			'browser_version':'' //瀏覽器版本
-		};
-		
-		if(navigator.userAgent.search(/iPod/i)!==-1){
-			return_data['device']='iPod';
-		}else if(navigator.userAgent.search(/iPhone/i)!==-1){
-			return_data['device']='iPhone';
-		}else if(navigator.userAgent.search(/iPad/i)!==-1){
-			return_data['device']='iPad';
-		}else if(navigator.userAgent.search(/iPad/i)!==-1){
-			return_data['device']='iPad';
-		}else if(navigator.userAgent.search(/Android/i)!==-1){
-			if(navigator.userAgent.search(/mobile/i)!==-1){
-				return_data['device']='Android Mobile';
-			}else{
-				return_data['device']='Android Tablet';
-			}
-		}else if(navigator.userAgent.search(/webOS/i)!==-1){
-			return_data['device']='webOS';
-		}else if(navigator.userAgent.search(/BlackBerry/i)!==-1){
-			return_data['device']='BlackBerry';
-		}else if(navigator.userAgent.search(/RIM Tablet/i)!==-1){
-			return_data['device']='RIM Tablet';
-		}
-		
-		if(navigator.userAgent.search(/MSIE/i)!==-1){
-			
-			return_data['browser_type']='MSIE';
-			var temp_array=navigator.userAgent.split('; ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with(temp_string,'MSIE ')==='1'){
-					return_data['browser_version']=this.lobal_fetch_specific_string(temp_string,'MSIE ','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Firefox/i)!==-1){	
-			return_data['browser_type']='Firefox';
-			
-			var temp_array=navigator.userAgent.split(' ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with('Firefox/',temp_string)==='1'){
-					return_data['browser_version']=this.string_fetch_specific(temp_string,'Firefox/','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Chrome/i)!==-1){		
-			return_data['browser_type']='Chrome';
-			var temp_array=navigator.userAgent.split(' ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with(temp_string,'Chrome/')==='1'){
-					return_data['browser_version']=this.string_fetch_specific(temp_string,'Chrome/','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Safari/i)!==-1){	
-			return_data['browser_type']='Safari';
-			var temp_array=navigator.userAgent.split(' ');
-			for(var kindex in temp_array){
-				var temp_string=temp_array[kindex];
-				if(this.string_is_start_with(temp_string,'Safari/')==='1'){
-					return_data['browser_version']=this.string_fetch_specific(temp_string,'Safari/','');	
-					break;
-				}
-			}
-		}else if(navigator.userAgent.search(/Opera/i)!==-1){
-			//Opera的user_agent比較詭異 版本不好判斷
-			return_data['browser_type']='Opera';	
-		}
-		
-		return return_data;
-	},
-	/**
-	 * 取得某個區域下或符合特定條件下的輸入資料
-	 * @param jquery_expression 
-	 * @param fetch_way meets_the(符合條件)、under_the(某個區域下)
-	 * @return object
-	 */
-	'global_collect_inputs_data':function(jquery_expression,fetch_way) {
-		//抓不到資料 返回null
-		if(this.global_typeof(jquery_expression)!=='string'){
-			this.debug_console('jquery_expression error','error')
-			return;
-		}
-		if(this.global_typeof(fetch_way)!=='string'){
-			this.debug_console('fetch_way error','error')
-			return;
-		}
-		if( fetch_way!=='meets_the' && fetch_way!=='under_the' ){
-			this.debug_console('fetch_way error','error')
-			return;
-		
-		}
-		var return_data={
-			'values':{},
-			'human_read_names':{},
-			'reg_1s':{},
-			'error_msg_1s':{},
-			'all_inputs_jqobject':null
-		};
-		var values=return_data['values'];
-		var human_read_names=return_data['human_read_names'];
-		var reg_1s=return_data['reg_1s'];
-		var error_msg_1s=return_data['error_msg_1s'];
-		
-		var fetch_jquery_expression_input_radio=
-			'input[type="radio"][name][name!=""]:checked:not([non_form_data])';			
-		var fetch_function_input_radio=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;
-			var the_input_value;
-			
-			the_input_name=the_input_jqobject.attr('name');
-			the_input_value=the_input_jqobject.val();
-			values[the_input_name]=the_input_value;
-			
-			human_read_names[the_input_name]=null;
-			reg_1s[the_input_name]=null;
-			error_msg_1s[the_input_name]=null;
-		}
-		
-		var fetch_jquery_expression_textarea=
-			'textarea[name][name!=""]:not([non_form_data])';
-		var fetch_function_textarea=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;
-			var the_input_human_read_name;
-			var the_input_reg_1;
-			var the_input_error_msg_1;
-			var the_input_value;
-			
-			the_input_name=the_input_jqobject.attr('name');
-			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
-			the_input_reg_1=the_input_jqobject.attr('reg_1');
-			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
-		
-			if( the_input_jqobject.is('[component_type="ckeditor"]') ){
-				the_input_value=jQuery.bill_bridge_ckeditor.real_objs[the_input_jqobject.attr('id')].getData();
-			}else{
-				the_input_value=the_input_jqobject.val();
-			}
-			
-			values[the_input_name]=the_input_value;
-			
-			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-				human_read_names[the_input_name]=the_input_human_read_name;
-			}else{
-				human_read_names[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-				reg_1s[the_input_name]=the_input_reg_1;
-			}else{
-				reg_1s[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-				error_msg_1s[the_input_name]=the_input_error_msg_1;
-			}else{
-				error_msg_1s[the_input_name]=null;
-			}
-			
-		}
-		
-		
-		
-		var checkbox_values={};
-		var fetch_jquery_expression_input_checkbox=
-			'input[type="checkbox"][name][name!=""]:checked:not([non_form_data])';
-		var fetch_function_input_checkbox=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;
-			var the_input_value;
-			
-			
-			the_input_name=the_input_jqobject.attr('name');
-			
-			the_input_value=the_input_jqobject.val();
-			
-			if( checkbox_values.hasOwnProperty(the_input_name)===false ){
-				checkbox_values[the_input_name]=[];
-				values[the_input_name]='';
-			}
-			checkbox_values[the_input_name].push(the_input_value);
-			
-			human_read_names[the_input_name]=null;
-			reg_1s[the_input_name]=null;
-			error_msg_1s[the_input_name]=null;
-		}
-		
-		var select_values={};
-		var fetch_jquery_expression_select=
-			'select[name][name!=""]:not([non_form_data])';
-		var fetch_function_select=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;
-			var the_input_human_read_name;
-			var the_input_reg_1;
-			var the_input_error_msg_1;
-			var the_input_value;
-			
-			the_input_name=the_input_jqobject.attr('name');
-			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
-			the_input_reg_1=the_input_jqobject.attr('reg_1');
-			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
-		
-			
-			if( select_values.hasOwnProperty(the_input_name)===false ){
-				select_values[the_input_name]=[];
-				values[the_input_name]='';
-			}
-			the_input_jqobject.find('option:selected').each(
-				function(){
-					select_values[the_input_name].push($(this).val());
-				}
-			)
-			
-			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-				human_read_names[the_input_name]=the_input_human_read_name;
-			}else{
-				human_read_names[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-				reg_1s[the_input_name]=the_input_reg_1;
-			}else{
-				reg_1s[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-				error_msg_1s[the_input_name]=the_input_error_msg_1;
-			}else{
-				error_msg_1s[the_input_name]=null;
-			}
-			
-		}
-		
-		var fetch_jquery_expression_input_file=
-			'input[type="file"][name][name!=""]:not([non_form_data])';
-		var fetch_function_input_file=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;
-			var the_input_human_read_name;
-			var the_input_reg_1;
-			var the_input_error_msg_1;
-			var the_input_value;
-			
-			the_input_name=the_input_jqobject.attr('name');
-			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
-			the_input_reg_1=the_input_jqobject.attr('reg_1');
-			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
-			
-			the_input_value=the_input_jqobject.prop('files');
-			values[the_input_name]=the_input_value;
-				
-			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-				human_read_names[the_input_name]=the_input_human_read_name;
-			}else{
-				human_read_names[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-				reg_1s[the_input_name]=the_input_reg_1;
-			}else{
-				reg_1s[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-				error_msg_1s[the_input_name]=the_input_error_msg_1;
-			}else{
-				error_msg_1s[the_input_name]=null;
-			}
-			
-		}
-		
-		var fetch_jquery_expression_others=
-			'input[type="text"][name][name!=""]:not([non_form_data]),'+
-			'input[type="tel"][name][name!=""]:not([non_form_data]),'+
-			'input[type="date"][name][name!=""]:not([non_form_data]),'+
-			'input[type="hidden"][name][name!=""]:not([non_form_data]),'+
-			'input[type="password"][name][name!=""]:not([non_form_data])';
-		var fetch_function_others=function(){
-			var the_input_jqobject=jQuery(this);
-			var the_input_name;
-			var the_input_human_read_name;
-			var the_input_reg_1;
-			var the_input_error_msg_1;
-			var the_input_value;
-			
-			the_input_name=the_input_jqobject.attr('name');
-			the_input_human_read_name=the_input_jqobject.attr('human_read_name');
-			the_input_reg_1=the_input_jqobject.attr('reg_1');
-			the_input_error_msg_1=the_input_jqobject.attr('error_msg_1');
-			
-			the_input_value=the_input_jqobject.val();
-			values[the_input_name]=the_input_value;
-				
-			if( bill_core.string_is_solid(the_input_human_read_name)==='1' ){
-				human_read_names[the_input_name]=the_input_human_read_name;
-			}else{
-				human_read_names[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_reg_1)==='1' ){
-				reg_1s[the_input_name]=the_input_reg_1;
-			}else{
-				reg_1s[the_input_name]=null;
-			}
-			if( bill_core.string_is_solid(the_input_error_msg_1)==='1' ){
-				error_msg_1s[the_input_name]=the_input_error_msg_1;
-			}else{
-				error_msg_1s[the_input_name]=null;
-			}
-			
-		}
-			
-		if(fetch_way==='meets_the' || fetch_way==='under_the'){
-			var source_range;
-			if(fetch_way==='meets_the'){
-				source_range=jQuery(jquery_expression);
-			}else if(fetch_way==='under_the'){
-				source_range=jQuery(jquery_expression).find('*');
-			}
-			
-			var fetch_target_input_radio=source_range.filter(fetch_jquery_expression_input_radio);
-			var fetch_target_textarea=source_range.filter(fetch_jquery_expression_textarea);
-			var fetch_target_input_checkbox=source_range.filter(fetch_jquery_expression_input_checkbox);
-			var fetch_target_select=source_range.filter(fetch_jquery_expression_select);
-			var fetch_target_input_file=source_range.filter(fetch_jquery_expression_input_file);
-			var fetch_target_others=source_range.filter(fetch_jquery_expression_others);
-			fetch_target_input_radio.each(
-				function(){
-					fetch_function_input_radio.call(this)
-				}
-			);
-			fetch_target_textarea.each(
-				function(){
-					fetch_function_textarea.call(this)
-				}
-			);
-			fetch_target_input_checkbox.each(
-				function(){
-					fetch_function_input_checkbox.call(this)
-				}
-			);
-			fetch_target_select.each(
-				function(){
-					fetch_function_select.call(this)
-				}
-			);
-			fetch_target_input_file.each(
-				function(){
-					fetch_function_input_file.call(this)
-				}
-			);
-			fetch_target_others.each(
-				function(){
-					fetch_function_others.call(this)
-				}
-			);
-			for(var input_name in checkbox_values){
-				var temp_array=checkbox_values[input_name];
-				values[input_name]=bill_core.string_array_to_multivalue(temp_array);
-			}
-			
-			for(var input_name in select_values){
-				var temp_array=select_values[input_name];
-				values[input_name]=bill_core.string_array_to_multivalue(temp_array);
-			}
-			return_data['all_inputs_jqobject']=
-				fetch_target_input_radio.
-				add(fetch_target_textarea).
-				add(fetch_target_input_checkbox).
-				add(fetch_target_select).
-				add(fetch_target_input_file).
-				add(fetch_target_others);
-		}
-		
-		if( Object.keys(values).length==0 ){
-			return_data['values']=null;
-			return_data['human_read_names']=null;
-			return_data['reg_1s']=null;
-			return_data['error_msg_1s']=null;
-		}
-		
-		return return_data;
-	},
-	'string_array_to_multivalue':function(the_array){
+	static string_array_to_multivalue(the_array){
 		if(Array.isArray(the_array)){
 			
 		}else{
@@ -534,8 +122,8 @@ var bill_core={
 		)
 		
 		return temp_array.join(',');
-	},
-	'string_multivalue_to_array':function(the_multivalue){
+	}
+	static string_multivalue_to_array(the_multivalue){
 		if(this.string_is_solid(the_multivalue)==='1'){
 		}else{
 			return [];
@@ -549,8 +137,8 @@ var bill_core={
 		);
 		
 		return temp_array;
-	},
-	'escape_get_for_multivalue':function(the_string){
+	}
+	static escape_get_for_multivalue(the_string){
 		if(this.global_typeof(the_string)==='string'){
 			
 		}else{
@@ -566,8 +154,8 @@ var bill_core={
 					return temp_map[match];
 				}
 			);
-	},
-	'escape_get_from_multivalue':function(the_string){
+	}
+	static escape_get_from_multivalue(the_string){
 		if(this.global_typeof(the_string)==='string'){
 			
 		}else{
@@ -583,8 +171,8 @@ var bill_core={
 					return temp_map[match];
 				}
 			);
-	},
-	'string_options_data_to_string':function(the_array){
+	}
+	static string_options_data_to_string(the_array){
 		if(Array.isArray(the_array)){
 			
 		}else{
@@ -603,8 +191,8 @@ var bill_core={
 		)
 		
 		return temp_array.join(',');
-	},
-	'string_string_to_options_data':function(the_string){
+	}
+	static string_string_to_options_data(the_string){
 		if(this.string_is_solid(the_string)==='1'){
 			
 		}else{
@@ -628,8 +216,8 @@ var bill_core={
 		);
 		
 		return temp_array;
-	},
-	'escape_get_for_options_data_string':function(the_string){
+	}
+	static escape_get_for_options_data_string(the_string){
 		if(this.global_typeof(the_string)==='string'){
 			
 		}else{
@@ -646,8 +234,8 @@ var bill_core={
 					return temp_map[match];
 				}
 			);
-	},
-	'escape_get_from_options_data_string':function(the_string){
+	}
+	static escape_get_from_options_data_string(the_string){
 		if(this.global_typeof(the_string)==='string'){
 			
 		}else{
@@ -664,13 +252,13 @@ var bill_core={
 					return temp_map[match];
 				}
 			);
-	},
+	}
 	/**
 	 * 檢查輸入的變數是否為有長度字串 
 	 * @param {mixed} checked_var - 要檢測的變數
 	 * @return {string}
 	 */
-	'string_is_solid':function(checked_var){
+	static string_is_solid(checked_var){
 		if(this.global_typeof(checked_var)!=='string'){
 			return '0';
 		}
@@ -678,7 +266,7 @@ var bill_core={
 			return '0';
 		}
 		return '1';//若變數的資料型態是string且不為空，則返回'1'
-	},
+	}
 
 	/**
 	 * 
@@ -688,7 +276,7 @@ var bill_core={
 	 * @param {string} subword - 該特定字串
 	 * @return {string}
 	 */
-	'string_is_start_with':function(testword,subword) {
+	static string_is_start_with(testword,subword) {
 		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
 		
 		}else{
@@ -700,7 +288,7 @@ var bill_core={
 		}else{
 			return '0';
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -710,7 +298,7 @@ var bill_core={
 	 * @param {string} subword - 該特定字串
 	 * @return {string}
 	 */
-	'string_is_end_with':function(testword,subword) {
+	static string_is_end_with(testword,subword) {
 		if(this.string_is_solid(subword)==='1' &&  this.string_is_solid(testword)==='1'){
 		
 		}else{
@@ -722,7 +310,7 @@ var bill_core={
 		}else{
 			return '0';
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -740,7 +328,7 @@ var bill_core={
 	 * output為 a80235
 	 *
 	 */
-	 'string_fetch_specific':function(source_string,start_string,end_string){
+	static string_fetch_specific(source_string,start_string,end_string){
 		if(this.global_typeof(source_string)!=='string'){
 			this.debug_console('source_string argument error','error');
 			return '';
@@ -765,7 +353,7 @@ var bill_core={
 			return temp_result[1];
 		}
 		
-	},
+	}
 	
 	/**
 	 * 
@@ -776,7 +364,7 @@ var bill_core={
 	 * @return {string}
 	 *
 	 */
-	'string_add_zero':function(num,digits_count,radix){
+	static string_add_zero(num,digits_count,radix){
 		var return_string='';
 		if(digits_count===undefined){
 			digits_count=2;
@@ -801,8 +389,8 @@ var bill_core={
 		}
 			
 		return  return_string;
-	},
-	'string_pad':function(the_string,pad_char,need_length,direction){
+	}
+	static string_pad(the_string,pad_char,need_length,direction){
 		var return_result='';
 		if(this.global_typeof(the_string)!=='string'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_string error!','error');
@@ -845,7 +433,7 @@ var bill_core={
 			}
 		}
 		return  return_result;
-	},
+	}
 	/**
 	 * 
 	 * 確保變數返回的資料是字串
@@ -854,7 +442,7 @@ var bill_core={
 	 * @return string
 	 *
 	 */
-	'string_ensure':function(checked_var) {
+	static string_ensure(checked_var) {
 
 		var checked_var_type=this.global_typeof(checked_var);
 		if(checked_var_type=='number'){
@@ -867,7 +455,7 @@ var bill_core={
 			return '';
 		}
 
-	},
+	}
 
 	/**
 	 * 
@@ -877,7 +465,7 @@ var bill_core={
 	 * @return string
 	 *
 	 */
-	'string_add_thousand_separator_to':function(num){
+	static string_add_thousand_separator_to(num){
 		var num_string = num.toString(10);
 		var num_string_parts=num_string.split('.');
 		var return_string='';
@@ -908,7 +496,7 @@ var bill_core={
 		}
 		
 		return return_string;
-	},
+	}
 
 	/**
 	 * 
@@ -925,7 +513,7 @@ var bill_core={
 	 * output為 a80235
 	 *
 	 */
-	'string_remove_start':function(source_string,start_string){
+	static string_remove_start(source_string,start_string){
 		if(this.global_typeof(source_string)!=='string'){
 			this.debug_console('source_string argument error','error');
 			return '';
@@ -945,7 +533,7 @@ var bill_core={
 			return temp_result[1];
 		}
 		
-	},
+	}
 	
 	/**
 	 * 
@@ -962,7 +550,7 @@ var bill_core={
 	 * output為 a80235
 	 *
 	 */
-	'string_remove_end':function(source_string,end_string){
+	static string_remove_end(source_string,end_string){
 		if(this.global_typeof(source_string)!=='string'){
 			this.debug_console('source_string argument error','error');
 			return '';
@@ -982,8 +570,8 @@ var bill_core={
 			return temp_result[1];
 		}
 		
-	},
-	 'string_replace':function(source_string,sub_string,new_sub_string){
+	}
+	 static string_replace(source_string,sub_string,new_sub_string){
 		if(this.global_typeof(source_string)!=='string'){
 			this.debug_console('source_string argument error','error');
 			return '';
@@ -1004,8 +592,8 @@ var bill_core={
 			new_sub_string
 		)
 		
-	},
-	'string_random_word':function(wordlength,exclude_chars){
+	}
+	static string_random_word(wordlength,exclude_chars){
 		var return_result='';
 		var args_illegal_is_found='0';
 		if ( 
@@ -1043,8 +631,8 @@ var bill_core={
 		return_result=sGenerator;
 		return return_result;
 		
-	},
-	 'escape_html_specialchars':function(the_html){
+	}
+	static escape_html_specialchars(the_html){
 		var return_result='';
 		if(this.global_typeof(the_html)!=='string'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_html error!','error');
@@ -1064,8 +652,8 @@ var bill_core={
 				}
 			);
 		return return_result;
-	},
-	 'inverse_escape_html_specialchars':function(the_html){
+	}
+	static inverse_escape_html_specialchars(the_html){
 		var return_result='';
 		if(this.global_typeof(the_html)!=='string'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_html error!','error');
@@ -1085,7 +673,7 @@ var bill_core={
 				}
 			);
 		return return_result;
-	},
+	}
 	/**
 	 * 
 	 * 將日期以指定的格式輸出,這邊的格式是依照php的日期格式
@@ -1094,7 +682,7 @@ var bill_core={
 	 * @param string the_format 格式
 	 * @return string
 	 */
-	'datetimebigint_toFormattedString':function(the_datetimebigint,the_format){
+	static datetimebigint_toFormattedString(the_datetimebigint,the_format){
 		if(this.string_is_solid(the_datetimebigint)==='1'){
 		}else{
 			return '';
@@ -1172,7 +760,7 @@ var bill_core={
 			replace('i',the_parsed_minute).
 			replace('s',the_parsed_second);
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -1181,7 +769,7 @@ var bill_core={
 	 * @param string the_datetimebigint 日期
 	 * @return object
 	 */
-	'datetimebigint_parse':function(the_datetimebigint){
+	static datetimebigint_parse(the_datetimebigint){
 		if(this.string_is_solid(the_datetimebigint)==='1'){
 		}else{
 			var now_datetime=new Date();
@@ -1255,7 +843,7 @@ var bill_core={
 				's':the_parsed_second
 			};
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -1266,7 +854,7 @@ var bill_core={
 	 * @param bool second_is_zero 秒數是否為0
 	 * @return string
 	 */
-	'datetimebigint_now':function(hour_is_zero,minute_is_zero,second_is_zero){
+	static datetimebigint_now(hour_is_zero,minute_is_zero,second_is_zero){
 		var now_datetime=new Date(),
 		now_datetime_Y=now_datetime.getFullYear(),
 		now_datetime_m=this.string_add_zero(now_datetime.getMonth()+1,2),
@@ -1290,7 +878,7 @@ var bill_core={
 		}
 		
 		return now_datetime_Y+now_datetime_m+now_datetime_d+now_datetime_H+now_datetime_i+now_datetime_s;
-	},
+	}
 
 	/**
 	 * 
@@ -1299,7 +887,7 @@ var bill_core={
 	 * @param string source_datetimebigint 來源資料
 	 * @return object
 	 */
-	'datetimebigint_to_Date':function(source_datetimebigint){
+	static datetimebigint_to_Date(source_datetimebigint){
 		var target_Date=null,
 		source_datetimebigint_info=this.datetimebigint_parse(source_datetimebigint)
 		;
@@ -1314,7 +902,7 @@ var bill_core={
 		);
 		
 		return target_Date;
-	},
+	}
 
 	
 	/**
@@ -1326,7 +914,7 @@ var bill_core={
 	 * @param string nums_unit 單位
 	 * @return string
 	 */
-	'datetimebigint_add':function(source_datetimebigint, nums, nums_unit) {
+	static datetimebigint_add(source_datetimebigint, nums, nums_unit) {
 		var new_datetimebigint = '',
 
 		source_Date=this.datetimebigint_to_Date(source_datetimebigint);
@@ -1357,7 +945,7 @@ var bill_core={
 		}
 		new_datetimebigint=this.Date_to_datetimebigint(source_Date);
 		return new_datetimebigint;
-	},
+	}
 
 	/**
 	 * 
@@ -1367,13 +955,13 @@ var bill_core={
 	 * @param string b_datetimebigint
 	 * @return number
 	 */
-	'datetimebigint_diff':function(a_datetimebigint,b_datetimebigint) {
+	static datetimebigint_diff(a_datetimebigint,b_datetimebigint) {
 		var datetimebigint_diff = '';
 		var a_Date=this.datetimebigint_to_Date(a_datetimebigint);
 		var b_Date=this.datetimebigint_to_Date(b_datetimebigint);
 		datetimebigint_diff=a_Date-b_Date;
 		return datetimebigint_diff;
-	},
+	}
 
 	
 	/**
@@ -1383,7 +971,7 @@ var bill_core={
 	 * @param string the_datetimebigint
 	 * @return string
 	 */
-	'datetimebigint_week_start':function(the_datetimebigint) {
+	static datetimebigint_week_start(the_datetimebigint) {
 		var return_datetimebigint;	
 		var op_datetimebigint;
 		var op_date;
@@ -1398,7 +986,7 @@ var bill_core={
 		return_datetimebigint=this.datetimebigint_add(op_datetimebigint, -1*((op_date.getDay()-0)/1), 'day');
 		
 		return return_datetimebigint;
-	},
+	}
 
 	/**
 	 * 
@@ -1407,7 +995,7 @@ var bill_core={
 	 * @param string the_datetimebigint
 	 * @return string
 	 */
-	'datetimebigint_trim_time':function(the_datetimebigint) {
+	static datetimebigint_trim_time(the_datetimebigint) {
 
 		var op_datetimebigint;
 		if(this.string_is_solid(the_datetimebigint)==='1'){}else{
@@ -1417,7 +1005,7 @@ var bill_core={
 		var temp_array=this.datetimebigint_parse(the_datetimebigint);
 		op_datetimebigint=temp_array['Y']+temp_array['m']+temp_array['d']+'000000';
 		return op_datetimebigint;
-	},
+	}
 
 	/**
 	 * 
@@ -1426,7 +1014,7 @@ var bill_core={
 	 * @param string the_datetimebigint
 	 * @return string
 	 */
-	'datetimebigint_trim_minute_second':function(the_datetimebigint) {
+	static datetimebigint_trim_minute_second(the_datetimebigint) {
 
 		var op_datetimebigint;
 		if(this.string_is_solid(the_datetimebigint)==='1'){}else{
@@ -1436,7 +1024,7 @@ var bill_core={
 		var temp_array=this.datetimebigint_parse(the_datetimebigint);
 		op_datetimebigint=temp_array['Y']+temp_array['m']+temp_array['d']+temp_array['H']+'0000';
 		return op_datetimebigint;
-	},
+	}
 
 	/**
 	 * 
@@ -1446,7 +1034,7 @@ var bill_core={
 	 * @param string b_datetimebigint
 	 * @return number
 	 */
-	'datetimebigint_hours_diff':function(a_datetimebigint,b_datetimebigint) {
+	static datetimebigint_hours_diff(a_datetimebigint,b_datetimebigint) {
 		var datetimebigint_diff = 0;
 		if(
 			a_datetimebigint === undefined || 
@@ -1457,7 +1045,7 @@ var bill_core={
 		datetimebigint_diff=this.datetimebigint_diff(a_datetimebigint,b_datetimebigint);
 		datetimebigint_diff=datetimebigint_diff/1000/60/60;
 		return datetimebigint_diff;
-	},
+	}
 
 	/**
 	 * 
@@ -1467,7 +1055,7 @@ var bill_core={
 	 * @param string b_datetimebigint
 	 * @return number
 	 */
-	'datetimebigint_days_diff':function(a_datetimebigint,b_datetimebigint) {
+	static datetimebigint_days_diff(a_datetimebigint,b_datetimebigint) {
 		var datetimebigint_diff = 0;
 		if(
 			a_datetimebigint === undefined || 
@@ -1478,8 +1066,8 @@ var bill_core={
 		datetimebigint_diff=this.datetimebigint_diff(a_datetimebigint,b_datetimebigint);
 		datetimebigint_diff=datetimebigint_diff/1000/60/60/24;
 		return datetimebigint_diff;
-	},
-	'datetimebigint_from_human_string':function(the_string) {
+	}
+	static datetimebigint_from_human_string(the_string) {
 		var return_result = '';
 		if(
 			this.global_typeof(the_string)!=='string'
@@ -1500,7 +1088,7 @@ var bill_core={
 		);
 		return_result=this.string_pad(return_result,'0',14,'right');
 		return return_result;
-	},
+	}
 	/**
 	 * 
 	 * 去得知某年的某月有多少天
@@ -1509,11 +1097,11 @@ var bill_core={
 	 * @param number iMonth
 	 * @return number 天數
 	 */
-	'Date_daysInMonth':function(iYear,iMonth)
+	static Date_daysInMonth(iYear,iMonth)
 	{
 		return 32 - new Date(iYear, iMonth-1, 32).getDate();
-	},
-	'Date_check':function(year,month,day){
+	}
+	static Date_check(year,month,day){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -1557,7 +1145,7 @@ var bill_core={
 			return_result='0';
 		}
 		return return_result;
-	},
+	}
 	
 	/**
 	 * 
@@ -1566,7 +1154,7 @@ var bill_core={
 	 * @param object source_Date 來源資料
 	 * @return string
 	 */
-	'Date_to_datetimebigint':function(source_Date){
+	static Date_to_datetimebigint(source_Date){
 		var target_datetimebigint='';
 		target_datetimebigint=
 				source_Date.getFullYear().toString()+
@@ -1576,7 +1164,7 @@ var bill_core={
 				this.string_add_zero(source_Date.getMinutes(),2)+
 				this.string_add_zero(source_Date.getSeconds(),2);
 		return target_datetimebigint;
-	},
+	}
 	
 	/**
 	 * 
@@ -1586,7 +1174,7 @@ var bill_core={
 	 * @param string the_format 格式
 	 * @return string
 	 */
-	'Date_toFormattedString':function(source_Date,the_format){
+	static Date_toFormattedString(source_Date,the_format){
 		if(source_Date instanceof Date){
 		}else{
 			source_Date=new Date();
@@ -1653,7 +1241,7 @@ var bill_core={
 		replace('i',the_parsed_minute).
 		replace('s',the_parsed_second);
 		
-	},
+	}
 	
 	/**
 	 * 
@@ -1662,7 +1250,7 @@ var bill_core={
 	 * @param number seconds 
 	 * @return bool
 	 */
-	'time_sleep':function(seconds) {
+	static time_sleep(seconds) {
 		if(this.global_typeof(seconds)==='number'){
 		
 		}else{
@@ -1681,7 +1269,7 @@ var bill_core={
 			}
 			now_time=new Date().getTime();
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -1690,7 +1278,7 @@ var bill_core={
 	 * @param number the_hour
 	 * @return object
 	 */
-	'time_23_hour_parse':function(the_hour) {
+	static time_23_hour_parse(the_hour) {
 		if(this.global_typeof(the_hour)!=='number'){
 			the_hour=0;
 		}
@@ -1708,7 +1296,7 @@ var bill_core={
 			return_array.push(the_hour-12);
 		}
 		return return_array;
-	},
+	}
 
 	/**
 	 * 
@@ -1718,7 +1306,7 @@ var bill_core={
 	 * @param number hour_number
 	 * @return number
 	 */
-	'time_get_23_hour':function(hour_type,hour_number) {
+	static time_get_23_hour(hour_type,hour_number) {
 		if(this.global_typeof(hour_type)!=='string'){
 			hour_type='am';
 		}
@@ -1740,7 +1328,7 @@ var bill_core={
 			}
 		}
 		return return_hour;
-	},
+	}
 
 	/**
 	 * 
@@ -1749,7 +1337,7 @@ var bill_core={
 	 * @param string filename
 	 * @return string
 	 */
-	'file_fetch_extension':function(filename){
+	static file_fetch_extension(filename){
 		if(this.string_is_solid(filename)==='1'){
 			var file_extension=/[.](.+?)$/.exec(filename);
 			if(file_extension===null){
@@ -1763,7 +1351,7 @@ var bill_core={
 		}else{
 			return '';
 		}
-	},
+	}
 
 	/**
 	 * 
@@ -1772,7 +1360,7 @@ var bill_core={
 	 * @param string filename
 	 * @return string
 	 */
-	'file_fetch_mainname':function(filename){
+	static file_fetch_mainname(filename){
 		if(this.string_is_solid(filename)==='1'){
 			var file_mainname=/\/{0,1}(.+?)[.]{0,1}.*?$/.exec(filename);
 			if(file_mainname===null){
@@ -1786,7 +1374,7 @@ var bill_core={
 		}else{
 			return '';
 		}
-	},
+	}
 	/**
 	 * 
 	 * 取得檔案的檔名
@@ -1794,7 +1382,7 @@ var bill_core={
 	 * @param string filename
 	 * @return string
 	 */
-	'file_fetch_name':function(filename){
+	static file_fetch_name(filename){
 		var temp_reg=new RegExp('['+this.validate_regexp_escape('\\/')+']([^'+this.validate_regexp_escape('\\/')+']+)$');
 		var temp_result=temp_reg.exec(filename);
 		if(temp_result===null){
@@ -1802,7 +1390,7 @@ var bill_core={
 		}else{
 			return temp_result[1];
 		}
-	},
+	}
 	/**
 	 * 
 	 * 變更url的query參數部分
@@ -1817,7 +1405,7 @@ var bill_core={
 	 * output為 http://www.xxxx.com.tw/index.php?a=4&b=5&c=6
 	 *
 	 */
-	 'url_set_params':function(the_url,updated_params){
+	 static url_set_params(the_url,updated_params){
 		var result_string='';
 		if(this.string_is_solid(the_url)==='1' && this.global_typeof(updated_params)==='pure_object'){
 		
@@ -1881,7 +1469,7 @@ var bill_core={
 			}
 			return result_string;
 		}
-	},
+	}
 	
 	/**
 	 * 
@@ -1892,9 +1480,9 @@ var bill_core={
 	 * @return 
 	 *
 	 */
-	'url_custom_href_process':function(href,href_target_is_blank){
+	static url_custom_href_process(href,href_target_is_blank){
 		window.open(href,(href_target_is_blank==='1'?'_blank':'_self'));
-	},
+	}
 
 	/**
 	 * 
@@ -1905,7 +1493,7 @@ var bill_core={
 	 * @return string
 	 *
 	 */
-	'url_get_param':function(the_url,param_name){
+	static url_get_param(the_url,param_name){
 		var result_string='';
 		if(this.string_is_solid(the_url)==='1'){
 		
@@ -1942,7 +1530,7 @@ var bill_core={
 			
 			return result_string;
 		}
-	},
+	}
 	/**
 	 * 
 	 * 取得url的完整路徑
@@ -1952,7 +1540,7 @@ var bill_core={
 	 * @return string
 	 *
 	 */
-	'url_get_full':function(the_url){
+	static url_get_full(the_url){
 		var result_string='';
 		if(this.string_is_solid(the_url)==='1'){
 		
@@ -1974,8 +1562,8 @@ var bill_core={
 			return_string=this.project_root_url+the_url;
 		}
 		return return_string;
-	},
-	'url_get_now_dir':function(){
+	}
+	static url_get_now_dir(){
 		var return_string='';
 		var temp_path=window.location.origin+window.location.pathname;
 		if( this.string_is_end_with(temp_path,'/')==='1' ){
@@ -1985,7 +1573,7 @@ var bill_core={
 			return_string=temp_path.substring(0,be_searched_index+1);
 		}
 		return return_string;
-	},
+	}
 	/**
 	 * 
 	 * 將num四捨五入取到小數點第pos位
@@ -1995,10 +1583,10 @@ var bill_core={
 	 * @return 
 	 *
 	 */
-	'math_round':function(num,pos){
+	static math_round(num,pos){
 		var size = Math.pow(10, pos);
 		return Math.round(num * size) / size;
-	},
+	}
 
 	/**
 	 * 
@@ -2009,7 +1597,7 @@ var bill_core={
 	 * @return number
 	 *
 	 */
-	'math_convert_from_bytenum':function(num,tounit){
+	static math_convert_from_bytenum(num,tounit){
 		
 		var tounitnum=0;	
 		if(tounit=='KB'){
@@ -2024,7 +1612,7 @@ var bill_core={
 		}
 		
 		return tounitnum;
-	},
+	}
 
 	/**
 	 * 
@@ -2034,7 +1622,7 @@ var bill_core={
 	 * @return string 中間的字串
 	 *
 	 */
-	 'validate_regexp_escape':function(source_string){
+	 static validate_regexp_escape(source_string){
 		var return_string='';
 		if(this.global_typeof(source_string)!=='string'){
 			this.debug_console('source_string argument error','error');
@@ -2043,14 +1631,14 @@ var bill_core={
 		return_string=source_string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g,'\\$1');
 		
 		return return_string;
-	},
+	}
 
 	/**
 	 * 
 	 * 驗證用的物件式陣列，索引為驗證器名稱，值為驗證器內容
 	 * 
 	 */
-	'validate_regexp_items':{
+	static validate_regexp_items={
 		'ichar':/[\u0000-\u0008\u000b-\u000c\u000e-\u001f\u007f-\u009f]/g,
 		'rrequired':/^[\s\S]+$/,
 		'orequired':/(^[\s\S]+$)|(^$)/,
@@ -2140,14 +1728,14 @@ var bill_core={
 		'onaturalcarriernum':/^[A-Z]{2}[0-9]{14}$|^$/,
 		'rdonatecode':/^[0-9]{3,7}$/,
 		'odonatecode':/^[0-9]{3,7}$|^$/,
-	},
+	}
 
 	/**
 	 * 
 	 * 驗證用的物件式陣列，索引為驗證器名稱，值為驗證器的提示輸入內容
 	 * 
 	 */
-	'validate_regexp_tips':{
+	static validate_regexp_tips={
 		'rrequired':'~輸入格式~<br />1.必填',
 		'orequired':'~輸入格式~<br />1.非必填',	
 		'rname':'~輸入格式~<br />1.不得為空值',
@@ -2234,7 +1822,7 @@ var bill_core={
 		'onaturalcarriernum':'~輸入格式~<br />1.可為空值<br />2.前2碼為大寫英文字母，後接14碼數字',
 		'rdonatecode':'~輸入格式~<br />1.不得為空值<br />2.數字3至7碼',
 		'odonatecode':'~輸入格式~<br />1.可為空值<br />2.數字3至7碼'
-	},
+	};
 
 	/**
 	 * 
@@ -2246,7 +1834,7 @@ var bill_core={
 	 *
 	 *
 	 */
-	'validate_single':function(how_to_validate,source_string){
+	static validate_single(how_to_validate,source_string){
 		if(this.global_typeof(how_to_validate)!=='string'){
 			this.debug_console('how_to_validate必須為字串','error');
 			return '0';
@@ -2279,8 +1867,8 @@ var bill_core={
 			validate_result = this.validate_single_by_rule(how_to_validate,source_string);
 		}
 		return validate_result;
-	},
-	'validate_check_is_validator':function(how_to_validate){
+	}
+	static validate_check_is_validator(how_to_validate){
 		if(this.global_typeof(how_to_validate)!=='string'){
 			this.debug_console('how_to_validate必須為字串','error');
 			return '0';
@@ -2299,8 +1887,8 @@ var bill_core={
 		}
 		
 		return return_result;
-	},
-	'validate_single_by_validator':function(validator_name,source_string){
+	}
+	static validate_single_by_validator(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
 			this.debug_console('validator_name必須為字串','error');
 			return '0';
@@ -2328,8 +1916,8 @@ var bill_core={
 			}
 		}
 		return validate_result;
-	},
-	'validate_single_by_rule':function(validator_rule,source_string){
+	}
+	static validate_single_by_rule(validator_rule,source_string){
 		if(this.global_typeof(validator_rule)!=='string'){
 			this.debug_console('validator_rule必須為字串','error');
 			return '0';
@@ -2349,8 +1937,8 @@ var bill_core={
 			validate_result='0';
 		}
 		return validate_result;
-	},
-	'validate_fetch':function(validator_name,source_string){
+	}
+	static validate_fetch(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
 			this.debug_console('validator_name必須為字串','error');
 			return '0';
@@ -2368,8 +1956,8 @@ var bill_core={
 			 temp_reg_string = this.validate_regexp_items[validator_name];
 		}
 		return [...source_string.matchAll(temp_reg_string)];
-	},
-	'validate_remove_illegal':function(validator_name,source_string){
+	}
+	static validate_remove_illegal(validator_name,source_string){
 		if(this.global_typeof(validator_name)!=='string'){
 			this.debug_console('validator_name必須為字串','error');
 			return '0';
@@ -2386,120 +1974,8 @@ var bill_core={
 			 temp_reg = new RegExp(this.validate_regexp_items[validator_name],'g');
 		}
 		return source_string.replace(temp_reg,'');
-	},
-	'validate_inputs_data':function(inputs_data){
-		var return_result={
-			'fails':{}
-		};
-		if(this.global_typeof(inputs_data)==='pure_object'){
-			
-		}else{
-			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
-			return_result['fails']=null;
-			return return_result;
-		}
-		
-		if( 
-			this.global_typeof(inputs_data['reg_1s'])==='pure_object' ||
-			this.global_typeof(inputs_data['reg_1s'])==='null_object'
-		
-		){
-			
-		}else{
-			this.debug_console('bill_core.'+arguments.callee.name+' inputs_data error!','error');
-			return_result['fails']=null;
-			return return_result;
-		}
-		
-		var reg_1s=inputs_data['reg_1s'];
-		var values=inputs_data['values'];
-		var human_read_names=inputs_data['human_read_names'];
-		var error_msg_1s=inputs_data['error_msg_1s'];
-		if(this.global_typeof(reg_1s)==='null_object'){
-			return_result['fails']=null;
-			return return_result;
-		}
-		
-		for(var the_input_name in reg_1s ){
-			var the_reg_1=reg_1s[the_input_name];
-			var the_value=values[the_input_name];
-			var the_human_read_name=human_read_names[the_input_name];
-			var the_error_msg_1=error_msg_1s[the_input_name];
-			if(this.global_typeof(the_reg_1)==='null_object'){
-				continue;
-			}
-			
-			if(
-				this.global_typeof(the_value)==='string' || 
-				this.global_typeof(the_value)==='other_object'
-			){}
-			else{
-				this.debug_console('bill_core.'+arguments.callee.name+' input '+the_input_name+' error!','error');
-				return_result['fails']=null;
-				break;
-			}
-			
-			
-			var the_reg_tip=this.validate_regexp_tips[the_reg_1];
-			if(the_reg_tip===undefined){
-				the_reg_tip='請輸入正確的格式';
-			}
-		
-			var the_value_for_validate='';
-			if(the_value.constructor.name==='FileList'){
-				let temp_array=[];
-				for(let temp_File of the_value){
-					temp_array.push(temp_File.name);
-				}
-				if(temp_array.length>1){
-					the_value_for_validate=this.string_array_to_multivalue(temp_array);
-				}else if(temp_array.length===1){
-					the_value_for_validate=temp_array[0];
-				}else{
-					the_value_for_validate='';
-				}
-			}else{
-				the_value_for_validate=the_value;
-			}
-			
-			if(this.validate_single(the_reg_1,the_value_for_validate)==='1'){
-				inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message','');
-			}
-			else{
-				if( return_result.fails.hasOwnProperty(the_input_name)===false ){
-					return_result.fails[the_input_name]={
-						'value':null,
-						'human_read_name':null,
-						'validate_fail_message':null,
-					};
-				}
-				return_result.fails[the_input_name]['value']=the_value_for_validate;
-				
-				if(this.global_typeof(the_human_read_name)==='null_object')
-				{
-					return_result.fails[the_input_name]['human_read_name']=the_input_name;	
-				}else{
-					return_result.fails[the_input_name]['human_read_name']=the_human_read_name;
-				}
-				
-				if(this.global_typeof(the_error_msg_1)==='null_object'){
-					return_result.fails[the_input_name]['validate_fail_message']=the_reg_tip;
-					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_reg_tip);
-				}
-				else{
-					return_result.fails[the_input_name]['validate_fail_message']=the_error_msg_1;
-					inputs_data.all_inputs_jqobject.filter('[name="'+the_input_name+'"]').attr('validate_fail_message',the_error_msg_1);
-				}
-				
-			}
-		}
-		
-		if( Object.keys(return_result.fails).length==0 ){
-			return_result['fails']=null;
-		}
-		return return_result;
-	},
-	'validate_custom_rtaiwan_identity_card':function(the_card_code){
+	}
+	static validate_custom_rtaiwan_identity_card(the_card_code){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -2647,8 +2123,8 @@ var bill_core={
 			}
 		}
 		return return_result;
-	},
-	'validate_custom_otaiwan_identity_card':function(the_card_code){
+	}
+	static validate_custom_otaiwan_identity_card(the_card_code){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -2800,8 +2276,8 @@ var bill_core={
 			}
 		}
 		return return_result;
-	},
-	'array_keep_solid_string_value':function(the_array){
+	}
+	static array_keep_solid_string_value(the_array){
 		if(this.global_typeof(the_array)!=='array_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_array error!','error');
 			return;
@@ -2817,8 +2293,8 @@ var bill_core={
 		}
 		
 		return;
-	},
-	'object_keep_solid_string_value':function(the_object){
+	}
+	static object_keep_solid_string_value(the_object){
 		if(this.global_typeof(the_object)!=='pure_object'){
 			this.debug_console('bill_core.'+arguments.callee.name+' the_object error!','error');
 			return;
@@ -2834,99 +2310,8 @@ var bill_core={
 		}
 		
 		return;
-	},
-	'form_simulate_send':function(param1,param2,param3,param4,param5){
-		//data
-		//data、action
-		//data、action、method
-		//data、action、method、target
-		//data、action、method、target、enctype
-		var data,action,method,enctype,target;
-		if(arguments.length==0){
-			console.error('bill_core.'+arguments.callee.name+' params error!');
-			return;
-		}else if(arguments.length==1){
-			data=param1;
-			action='';
-			method='post';
-			target="_self";
-			enctype='application/x-www-form-urlencoded';
-			
-		}else if(arguments.length==2){
-			data=param1;
-			action=param2;
-			method='post';
-			target="_self";
-			enctype='application/x-www-form-urlencoded';
-			
-		}else if(arguments.length==3){		
-			data=param1;
-			action=param2;
-			method=param3;
-			target="_self";
-			enctype='application/x-www-form-urlencoded';
-			
-		}else if(arguments.length==4){	
-			data=param1;
-			action=param2;
-			method=param3;
-			target=param4;
-			enctype='application/x-www-form-urlencoded';
-			
-		}else if(arguments.length==5){	
-			data=param1;
-			action=param2;
-			method=param3;
-			target=param4;
-			enctype=param5;
-		}else{
-			console.error('bill_core.'+arguments.callee.name+' params error!');
-			return;
-		}
-		if(this.global_typeof(data)!=='pure_object'){
-			this.debug_console('bill_core.'+arguments.callee.name+' data error!','error');
-			return;
-		}
-		if(this.global_typeof(action)!=='string'){
-			this.debug_console('bill_core.'+arguments.callee.name+' action error!','error');
-			return;
-		}
-		if(
-			this.global_typeof(method)!=='string' ||
-			['get','post'].indexOf(method)===-1
-		){
-			this.debug_console('bill_core.'+arguments.callee.name+' method error!','error');
-			return;
-		}
-		
-		if(
-			this.global_typeof(target)!=='string'
-		){
-			this.debug_console('bill_core.'+arguments.callee.name+' target error!','error');
-			return;
-		}
-		if(
-			this.global_typeof(enctype)!=='string' ||
-			['application/x-www-form-urlencoded','multipart/form-data','text/plain'].indexOf(enctype)===-1
-		){
-			this.debug_console('bill_core.'+arguments.callee.name+' enctype error!','error');
-			return;
-		}
-		
-		var temp_form = jQuery(
-			"<form action='"+action+"' method='"+method
-			+"' enctype='"+enctype+"' target='"+target+"' ></form>"
-		);
-
-		jQuery.each(data,function (the_key,the_value) {
-			var temp_input = jQuery("<input type='hidden' />");
-			temp_input.attr("name",the_key);
-			temp_input.val(the_value);
-			temp_form.append(temp_input);
-		});
-		jQuery(document.body).append(temp_form);
-		temp_form.submit().remove();
-	},
+	}
+	
 	/**
 	 *
 	 *
@@ -2934,7 +2319,7 @@ var bill_core={
 	 * @param {string} [param2] - 訊息分類
 	 * @return {void} 
 	 */
-	'debug_console':function(param1,param2){
+	static debug_console(param1,param2){
 		//message
 		//message、level(嚴重性等級)：info、warn、error
 		if(arguments.length==0){
@@ -2957,8 +2342,8 @@ var bill_core={
 			console.error('bill_core.'+arguments.callee.name+' params error!');
 			return;
 		}
-	},
-	'debug_object':function(param1,param2){
+	}
+	static debug_object(param1,param2){
 		//object,string
 		//param1 要debug的物件,param2 資訊的種類 name_and_value,json
 		//若為陣列物件，則其內建的屬性不會顯示出來
@@ -3020,8 +2405,8 @@ var bill_core={
 				temp_string
 			);
 		}
-	},
-	'debug_stopwatch_begin':function(op_name){
+	}
+	static debug_stopwatch_begin(op_name){
 		if(this.global_typeof(op_name)!=='string'){
 			this.debug_console('bill_core.'+arguments.callee.name+' op_name error!','error');
 			return;
@@ -3029,88 +2414,23 @@ var bill_core={
 		bill_core.debug_stopwatch_date=new Date();
 		bill_core.debug_stopwatch_op_name=op_name;
 		
-	},
-	'debug_stopwatch_end':function(){
+	}
+	static debug_stopwatch_end(){
 		if(bill_core.debug_stopwatch_date===undefined){
 			this.debug_console('bill_core.'+arguments.callee.name+' debug stopwatch never begin','error');
 			return;
 		}
 		var now_date=new Date();
 		bill_core.debug_console(bill_core.debug_stopwatch_op_name+' took '+((now_date.getTime()-bill_core.debug_stopwatch_date.getTime())/1000)+' seconds');
-	},
-	'ajax_post':function(param1,param2,param3,param4,param5,param6){
-		//destination_url、post_data、request_success_handler、request_fail_handler
-		//destination_url、post_data、request_success_handler、request_fail_handler、is_sync
-		//destination_url、post_data、request_success_handler、request_fail_handler、is_sync、context
-		if(arguments.length<4){
-			console.error('bill_core.'+arguments.callee.name+' params error!');
-			return;
-		}
-		
-		if(
-			this.global_typeof(param1)=='string' && 
-			(this.global_typeof(param2)=='pure_object' || this.global_typeof(param2)=='other_object') && 
-			this.global_typeof(param3)=='function' &&
-			this.global_typeof(param4)=='function'
-		){	
-		}else{
-			console.error('bill_core.'+arguments.callee.name+' params error!');
-			return;
-		}
-		var is_sync='0';
-		var context=null;
-		if(arguments.length>=5 && (param5==='0' || param5==='1')){
-			is_sync=param5;
-		}
-		if(
-			arguments.length>=6 && 
-			(this.global_typeof(param6)=='pure_object' || this.global_typeof(param6)=='other_object')
-		){
-			context=param6;
-		}
-		
-		var ajax_settings={
-			xhrFields:{
-				withCredentials: true
-			},	
-		   type: "post",
-		   url: param1,
-		   dataType:'json',
-		   data:param2,
-		   success: param3,
-		   error:param4
-		};
-		if(param2 instanceof FormData){
-			ajax_settings['processData']=false;
-			ajax_settings['contentType']=false;
-			ajax_settings['cache']=false;
-		}
-		
-		if(is_sync==='1'){
-			ajax_settings['async']=false;
-		}else{
-			
-			ajax_settings['async']=true;
-		}
-		
-		if(
-			this.global_typeof(context)=='pure_object' ||
-			this.global_typeof(context)=='other_object'
-		){
-			ajax_settings['context']=context;
-			
-		}
-		jQuery.ajax(ajax_settings);
-		
-	},
-	'number_is_solid':function(checked_var){
+	}
+	static number_is_solid(checked_var){
 		if(this.global_typeof(checked_var)!=='number'){
 			return '0';
 		}
 		
 		return '1';//若變數的資料型態是number，則返回'1'
-	},
-	'number_int_random':function(min_int,max_int){
+	}
+	static number_int_random(min_int,max_int){
 		var return_result=0;
 		var args_illegal_is_found='0';
 		if ( 
@@ -3139,32 +2459,9 @@ var bill_core={
 		}
 		return_result=min_int+Math.floor(Math.random()*(max_int-min_int+1));
 		return return_result;
-	},
-	'jquery_outer_html':function(jqobject){
-		return jQuery('<div></div>').append(jqobject.clone()).html();
-	},
-	'img_suitable_width':function(img_url,max_width){
-		var the_img_jqobject=jQuery("<img border='0' src='"+img_url+"' />");
-			
-		if(
-			bill_core.number_is_solid(max_width)==='1' &&
-			max_width>0
-		){
-		}else{
-			max_width=400;
-		}
-		var display_img_width=the_img_jqobject[0].naturalWidth;
+	}
 	
-		if(display_img_width>max_width){
-			display_img_width=max_width;
-		}
-		if(display_img_width==0){
-			display_img_width=max_width;
-		}
-		
-		return display_img_width;
-	},
-	'math_op':function(num_1,num_2,op_name){
+	static math_op(num_1,num_2,op_name){
 		if(this.global_typeof(num_1)!=='number'){
 			this.debug_console('bill_core.'+arguments.callee.name+' num_1 error!','error');
 			return;
@@ -3226,9 +2523,9 @@ var bill_core={
 		
 		return return_result;
 
-	},
-	'_lock_objs_collection':{},
-	'lock_create':function(name,type){
+	}
+	static _lock_objs_collection={};
+	static lock_create(name,type){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		
@@ -3263,8 +2560,8 @@ var bill_core={
 		};
 		return_result='1';
 		return return_result;
-	},
-	'lock_get':function(name,can_wait_time){
+	}
+	static lock_get(name,can_wait_time){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -3322,8 +2619,8 @@ var bill_core={
 		}
 		
 		return return_result;
-	},
-	'lock_release':function(name){
+	}
+	static lock_release(name){
 		var return_result='0';
 		var args_illegal_is_found='0';
 		if ( 
@@ -3352,8 +2649,8 @@ var bill_core={
 		}
 		return_result='1';
 		return return_result;
-	},
-	'html_make_options':function(options_info,selected_value){
+	}
+	static html_make_options(options_info,selected_value){
 		var result_html='';
 		if(
 			this.global_typeof(options_info)==='array_object' &&
@@ -3373,75 +2670,45 @@ var bill_core={
 		}
 		
 		return result_html;
-	},
-	'transform_input_values_data_to_FormData':function(input_values_data){
-		var formdata = new FormData();
-		for(let the_input_name in input_values_data){
-			let the_input_value=input_values_data[the_input_name];
-			let final_input_name=null;
-			let final_input_value=null;
-			if(the_input_value.constructor.name==='FileList'){
-				if(the_input_value.length==0){
-					
-				}else if(the_input_value.length==1){
-					final_input_name=the_input_name;
-					final_input_value=the_input_value[0];
-					formdata.append(final_input_name,final_input_value);
-				}else if(the_input_value.length>1){
-					let temp_next_index=0;
-					for(let temp_file of the_input_value){
-						final_input_name=the_input_name+'['+temp_next_index+']';
-						final_input_value=temp_file;
-						formdata.append(final_input_name,final_input_value);
-						
-						temp_next_index=temp_next_index+1;
-					}
-				}else{
-					
-				}
-			}else{
-				final_input_name=the_input_name;
-				final_input_value=the_input_value;
-				formdata.append(final_input_name,final_input_value);
-			}
-		}
-		return formdata;
-	},
-};
-function bill_string(initial_value){
-	if(bill_core.global_typeof(initial_value)!=='string'){
-		bill_core.debug_console('source_string argument error','error');
-		initial_value='';
 	}
-	this.content=initial_value;
-	this.length=initial_value.length;
+	
 }
-bill_string.prototype={};
-bill_string.prototype.content=null;
-bill_string.prototype.length=null;
-bill_string.prototype.toString=function(){
-	return this.content;
-};
-bill_string.prototype.set_content=function(new_value){
-	if(bill_core.global_typeof(new_value)!=='string'){
-		bill_core.debug_console('new_value argument error','error');
+
+class bill_string{
+	constructor(initial_value){
+		if(bill_core.global_typeof(initial_value)!=='string'){
+			bill_core.debug_console('source_string argument error','error');
+			initial_value='';
+		}
+		this.content=initial_value;
+		this.length=initial_value.length;
+	}
+	content=null;
+	length=null;
+	toString(){
+		return this.content;
+	}
+	set_content(new_value){
+		if(bill_core.global_typeof(new_value)!=='string'){
+			bill_core.debug_console('new_value argument error','error');
+			return this;
+		}
+		this.content=new_value;
+		this.length=new_value.length;
 		return this;
 	}
-	this.content=new_value;
-	this.length=new_value.length;
-	return this;
-};
-bill_string.prototype.remove_start=function(start_string){
-	if(bill_core.global_typeof(start_string)!=='string'){
-		bill_core.debug_console('start_string argument error','error');
+	remove_start(start_string){
+		if(bill_core.global_typeof(start_string)!=='string'){
+			bill_core.debug_console('start_string argument error','error');
+			return this;
+		}
+		start_string=bill_core.validate_regexp_escape(start_string);
+		var temp_reg=new RegExp('^'+start_string+'([\\s\\S]*)$');
+		var temp_result=temp_reg.exec(this);
+		if(temp_result===null){
+		}else{
+			this.set_content(temp_result[1]);
+		}
 		return this;
 	}
-	start_string=bill_core.validate_regexp_escape(start_string);
-	var temp_reg=new RegExp('^'+start_string+'([\\s\\S]*)$');
-	var temp_result=temp_reg.exec(this);
-	if(temp_result===null){
-	}else{
-		this.set_content(temp_result[1]);
-	}
-	return this;
-};
+}
